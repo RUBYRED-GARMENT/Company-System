@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>نموذج طلب إجازة</title>
+    <link rel="icon" href="pic/logooo.png" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: #fff;
+        padding: 30px;
+        direction: rtl;
+      }
+
+      .form-container {
+        width: 750px;
+        margin: 0 auto;
+        background: rgba(15, 23, 42, 0.95);
+        border: 2px solid #38bdf8;
+        padding: 25px 35px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+                height: auto; ;
+        
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 2px solid #38bdf8;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+
+      .header img {
+        width: 70px;
+        margin-right: 15px;
+      }
+
+      .header h2 {
+        font-size: 32px;
+        font-weight: bold;
+        color: #38bdf8;
+      }
+
+      .header h2 span {
+        color: #f87171;
+      }
+
+      h3 {
+        text-align: center;
+        margin: 10px 0 20px;
+        font-size: 24px;
+        color: #fff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        color: #fff;
+      }
+
+      td {
+        border: 1px solid #38bdf8;
+        padding: 8px;
+        width: 52%;
+        background: rgba(30, 41, 59, 0.8);
+      }
+
+      .label {
+        background: rgba(56, 189, 248, 0.2);
+        font-weight: bold;
+        text-align: left;
+        width: 300px;
+        color: #e2e8f0;
+      }
+
+      .footer td {
+        height: 200px; /* Changed from 30vh to fixed height for better print control */
+        font-weight: bold;
+        vertical-align: top;
+        padding-top: 40px;
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .print-btn {
+        display: block;
+        margin: 25px auto;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .print-btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.03);
+      }
+
+      .back-btn {
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        z-index: 999;
+      }
+
+      .back-btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+        .form-container {
+          width: 100%;
+          padding: 15px 20px;
+        }
+        .header {
+          flex-direction: column;
+          text-align: center;
+        }
+        .header img {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+        .header h2 {
+          font-size: 24px;
+        }
+        h3 {
+          font-size: 20px;
+        }
+        table {
+          font-size: 12px;
+        }
+        td {
+          padding: 5px;
+        }
+        .label {
+          width: 250px;
+        }
+        .footer td {
+          font-size: 14px;
+          padding-top: 20px;
+        }
+        .print-btn {
+          padding: 8px 20px;
+          font-size: 14px;
+        }
+        .back-btn {
+          top: 10px;
+          right: 10px;
+          padding: 8px 12px;
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .form-container {
+          padding: 10px 15px;
+        }
+        .header h2 {
+          font-size: 20px;
+        }
+        h3 {
+          font-size: 18px;
+        }
+        table {
+          font-size: 11px;
+        }
+        .label {
+          width: 200px;
+        }
+        .footer td {
+          font-size: 12px;
+          padding-top: 15px;
+        }
+        .print-btn {
+          padding: 6px 15px;
+          font-size: 12px;
+        }
+        .back-btn {
+          padding: 6px 10px;
+          font-size: 11px;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        @page {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          /* Remove default page margins to ensure full form appears */
+        }
+        body {
+          background: white !important;
+          color: black !important;
+          padding: 20px !important; /* Remove padding to fit more content */
+          margin: 0 !important;
+        }
+        .form-container {
+          width: 100% !important; /* Make container full width to avoid cutoff */
+          max-width: none !important;
+          margin: 0 !important;
+          background: white !important;
+          border: 1px solid black !important;
+          box-shadow: none !important;
+          padding: 0 !important; /* Adjust padding for print */
+          border-radius: 0 !important; /* Remove radius for clean print */
+        }
+        .print-btn,
+        .back-btn {
+          display: none !important;
+        }
+        td {
+          background: white !important;
+          border: 1px solid black !important;
+          color: black !important;
+        }
+        .label {
+          background: #f0f0f0 !important;
+          color: black !important;
+        }
+        .header h2 {
+          color: black !important;
+        }
+        .header h2 span {
+          color: red !important;
+        }
+        h3 {
+          color: black !important;
+        }
+        .footer td {
+          border-bottom: 1px solid black !important; /* Ensure bottom borders are visible */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- زرار الرجوع -->
+    <a href="leaves.html" class="back-btn">⬅️ Back</a>
+
+    <div class="form-container" id="leaveForm">
+      <div class="header">
+        <h2>Ruby<span>Red</span> Garment</h2>
+        <img src="pic/logooo.png" alt="logo" />
+      </div>
+
+      <h3>نموذج طلب إجازة</h3>
+
+      <table>
+        <tr>
+          <td id="reqDate"></td>
+          <td class="label">: DATE / التاريخ</td>
+        </tr>
+        <tr>
+          <td id="code"></td>
+          <td class="label">: Code / كود الموظف</td>
+        </tr>
+        <tr>
+          <td id="name"></td>
+          <td class="label">: Name / اسم الموظف</td>
+        </tr>
+        <tr>
+          <td id="dept"></td>
+          <td class="label">: Department / القسم</td>
+        </tr>
+        <tr>
+          <td id="start"></td>
+          <td class="label">: Start From / بداية الإجازة</td>
+        </tr>
+        <tr>
+          <td id="end"></td>
+          <td class="label">: End on / نهاية الإجازة</td>
+        </tr>
+        <tr>
+          <td id="days"></td>
+          <td class="label">: Number of Days / عدد أيام الإجازة</td>
+        </tr>
+        <tr>
+          <td id="remain"></td>
+          <td class="label">: Annual Days Left / المتبقي من الإجازة السنوية</td>
+        </tr>
+        <tr>
+          <td id="reason"></td>
+          <td class="label">: Reason / سبب الإجازة</td>
+        </tr>
+      </table>
+
+      <table class="footer">
+        <tr>
+          <td>توقيع المدير المباشر / Direct Manager Approval</td>
+          <td>موافقة الموارد البشرية / HR Approval</td>
+        </tr>
+      </table>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة / Print</button>
+
+    <script>
+      // قراءة البيانات من sessionStorage بعد تسجيل الإجازة
+      const data = JSON.parse(sessionStorage.getItem("leaveData") || "{}");
+
+      document.getElementById("reqDate").textContent =
+        new Date().toLocaleDateString("en-GB");
+      document.getElementById("code").textContent = data.code || "";
+      document.getElementById("name").textContent = data.name || "";
+      document.getElementById("dept").textContent = data.department || "";
+      document.getElementById("start").textContent = data.startDate || "";
+      document.getElementById("end").textContent = data.endDate || "";
+      document.getElementById("days").textContent = data.days || "";
+      document.getElementById("remain").textContent = data.remaining || "";
+      document.getElementById("reason").textContent = data.reason || "";
+    </script>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUBYRED - Decision</title>
+    <link rel="stylesheet" href="new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="pic/logooo.png">
+    <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #222;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .top-section {
+      background-image: url('pic/sewing.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .name h1 {
+      color: #fff;
+      font-size: 2.5rem;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .name span {
+      color: #ff6b6b;
+    }
+
+    .nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0 0;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .nav a:hover {
+      color: #ff6b6b;
+    }
+
+    /* Menu button styles */
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    /* Sidebar styles */
+    #sidebar {
+      position: fixed;
+      top: 200px;
+      right: -250px;
+      width: 250px;
+      height: calc(100vh - 100px);
+      background: rgb(90, 90, 90);
+      opacity: 90%;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.7);
+      transition: right 0.3s ease;
+      z-index: 1050;
+      padding-top: 1rem;
+    }
+    #sidebar.active {
+      right: 0;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #sidebar ul li {
+      padding: 1rem 1.5rem;
+    }
+    #sidebar ul li a {
+      color: #e0e0e0;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      display: block;
+      transition: color 0.3s ease;
+    }
+    #sidebar ul li a:hover {
+      color: #ff6b6b;
+    }
+
+    /* Responsive styles for mobile */
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: block;
+      }
+      .nav {
+        display: none;
+      }
+      #sidebar {
+        right: -250px;
+      }
+      #sidebar.active {
+        right: 0;
+      }
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .top-section {
+        height: 60vh;
+        padding: 20px;
+      }
+      .name h1 {
+        font-size: 2rem;
+      }
+      .nav ul {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .top-section {
+        height: 65vh;
+      }
+      .name h1 {
+        font-size: 2.2rem;
+      }
+      .nav ul {
+        gap: 20px;
+      }
+    }
+ 
+  </style>
+</head>
+<body>
+  <section class="top-section">
+    <div class="header">
+      <div class="logo">
+        <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
+      </div>
+      <div class="name"><h1>RUBY<span>RED</span> DECISION</h1></div>
+      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="nav" id="navbar">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="HR.html">HR</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <div id="sidebar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="HR.html">HR</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Free space with gray background for wallpaper -->
+  <div class="free-space" style="background: #222; min-height: 50vh; display: flex; justify-content: center; align-items: center; color: #fff;">
+    <div class="frame" style="width: 100vw; display: flex; justify-content: center; align-items: center;">
+      <iframe
+        src="https://docs.google.com/document/d/e/2PACX-1vQ3b9ukPWFL6-RbMzyLk4sgF-D4Udzvsy5w-OmZDpg769J_w0eOD7ocNpbc6fc1n7ceSaK16jwMgnAr/pub?embedded=true"
+        style="width: 500%; height: 100vh; border: none; padding-left: 200px;background-color: transparent; "
+
+      ></iframe>
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="pic/logooo.png" alt="">
+    <p>RUBYRED GARMENT</p>
+    <div class="social">
+      <a href="https://www.facebook.com/RUBYREDGARMENTSAE/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.linkedin.com/company/rubyred-garment-manufacturing-s-a-e/posts/?feedView=all" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <a href="mailto:hr@rubyredgarment.com"><i class="fas fa-envelope"></i></a>
+    </div>
+  </div>
+
+  <style>
+    /* Responsive styles for decision.html */
+    @media (max-width: 768px) {
+      .top-section {
+        height: 60vh;
+        padding: 20px;
+      }
+      .name h1 {
+        font-size: 2rem;
+      }
+      .nav ul {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+      .free-space {
+        min-height: 40vh;
+        padding: 20px;
+      }
+      .footer {
+        padding: 15px 0;
+      }
+      .footer img {
+        width: 50px;
+        height: 50px;
+      }
+      .footer p {
+        font-size: 16px;
+      }
+      .social a {
+        font-size: 20px;
+        margin: 0 6px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .top-section {
+        height: 65vh;
+      }
+      .name h1 {
+        font-size: 2.2rem;
+      }
+      .nav ul {
+        gap: 20px;
+      }
+      .free-space {
+        min-height: 45vh;
+      }
+      .footer {
+        padding: 18px 0;
+      }
+      .footer img {
+        width: 55px;
+        height: 55px;
+      }
+      .footer p {
+        font-size: 17px;
+      }
+      .social a {
+        font-size: 22px;
+        margin: 0 8px;
+      }
+    }
+  </style>
+
+  <script>
+  // Sidebar toggle
+  const menuBtn = document.getElementById('menu-btn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', function() {
+    sidebar.classList.toggle('active');
+  });
+  </script>
+
+</body>
+</html>

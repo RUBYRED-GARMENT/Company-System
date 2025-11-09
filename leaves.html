@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leave Request Portal</title>
+  <link rel="icon" href="pic/logooo.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      padding: 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+
+    input, select {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #334155;
+    }
+
+    input:focus, select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 4px #38bdf8;
+    }
+
+    button {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+      transform: scale(1.03);
+    }
+
+    .info {
+      background: #1e293b;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 12px;
+      display: none;
+      border-left: 4px solid #38bdf8;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .info div { margin: 6px 0; }
+
+    .msg {
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #065f46;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    label {
+      font-size: 14px;
+      color: #cbd5e1;
+      margin-top: 5px;
+      display: block;
+    }
+
+    .home-btn {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .home-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    #historyContainer div {
+      background: #334155;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 6px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #historyContainer div:hover {
+      background: #0ea5e9;
+      transform: scale(1.03);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h3>Leave Request Portal</h3>
+
+    <input id="code" placeholder="Enter employee code" />
+    <button id="btnSearch">Search</button>
+
+    <div id="info" class="info">
+      <div><strong>Name:</strong> <span id="name"></span></div>
+      <div><strong>Department:</strong> <span id="dept"></span></div>
+      <div><strong>Balance:</strong> <span id="balance"></span></div>
+    </div>
+
+    <div id="form" style="display:none">
+      <select id="type">
+        <option value="">Select Leave Type</option>
+        <option>Annual</option>
+        <option>Sick</option>
+      </select>
+      <label>Start Date</label>
+      <input type="date" id="start" />
+      <label>End Date</label>
+      <input type="date" id="end" />
+      <input id="days" readonly placeholder="Days" />
+      <button id="btnRequest">Submit Request</button>
+      <button id="btnPrint" style="background:#0ea5e9;">Print</button>
+      <button id="btnHistory" style="background:#0ea5e9;">History</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+    <div id="historyContainer"></div>
+  </div>
+
+  <a href="index.html" class="home-btn">Home</a>
+
+  <script>
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbxwIkc7OrkV3bARdir2BRQPoNMuLKqM4EH_Yi3xNVOEOuoETIbRfu4ZAgz-tTbJDpKv/exec';
+    const el = id => document.getElementById(id);
+    const showMsg = (text, cls) => {
+      const m = el('msg'); 
+      m.textContent = text;
+      m.className = 'msg ' + (cls || '');
+      m.style.display = text ? 'block' : 'none';
+    };
+
+    el('btnSearch').addEventListener('click', async () => {
+      showMsg('Loading...', 'success');
+      el('info').style.display = 'none';
+      el('form').style.display = 'none';
+      const code = el('code').value.trim();
+      if (!code) { showMsg('Enter code', 'error'); return; }
+
+      try {
+        const res = await fetch(`${apiUrl}?action=getEmployee&code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        if (data.success) {
+          el('name').textContent = data.name;
+          el('dept').textContent = data.department;
+          el('balance').textContent = data.leaveBalance;
+          el('info').style.display = 'block';
+          el('form').style.display = 'block';
+          showMsg('', '');
+          el('days').value = '';
+        } else {
+          showMsg(data.error || 'Employee not found', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showMsg('Connection error', 'error');
+      }
+    });
+
+    function calcDays(s, e) {
+      if (!s || !e) return 0;
+      const sd = new Date(s), ed = new Date(e);
+      if (ed < sd) return 0;
+      return Math.ceil((ed - sd) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    ['start', 'end', 'type'].forEach(id => el(id).addEventListener('change', () => {
+      el('days').value = calcDays(el('start').value, el('end').value) || '';
+    }));
+
+    el('btnRequest').addEventListener('click', async () => {
+      const code = el('code').value.trim();
+      const days = parseInt(el('days').value) || 0;
+      const s = el('start').value, e = el('end').value;
+      const balance = parseInt(el('balance').textContent) || 0;
+
+      if (!code || !s || !e || days <= 0) {
+        showMsg('Complete all fields', 'error');
+        return;
+      }
+
+      if (days > balance) {
+        showMsg('Not enough balance for this leave', 'error');
+        return;
+      }
+
+      showMsg('Submitting...', 'success');
+      try {
+        const res = await fetch(`${apiUrl}?action=updateLeave&code=${encodeURIComponent(code)}&startDate=${encodeURIComponent(s)}&endDate=${encodeURIComponent(e)}`);
+        const data = await res.json();
+
+        if (data.success) {
+          el('balance').textContent = data.newBalance;
+
+          sessionStorage.setItem('leaveData', JSON.stringify({
+            code: code,
+            name: el('name').textContent,
+            department: el('dept').textContent,
+            startDate: s,
+            endDate: e,
+            days: days,
+            remaining: data.newBalance,
+            reason: el('type').value
+          }));
+
+          window.location.href = 'print.html';
+        } else {
+          showMsg(data.error || 'Update failed', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showMsg('Connection error', 'error');
+      }
+    });
+
+    el('btnPrint').addEventListener('click', () => {
+      window.location.href = 'print.html';
+    });
+
+    el('btnHistory').addEventListener('click', async () => {
+      const code = el('code').value.trim();
+      if (!code) { showMsg('Enter code', 'error'); return; }
+
+      try {
+        const res = await fetch(`${apiUrl}?action=getLeaveHistory&code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        const container = el('historyContainer');
+        container.innerHTML = '';
+        if (data.success && data.leaves.length > 0) {
+          data.leaves.forEach(l => {
+            const div = document.createElement('div');
+            div.textContent = `${l.days} days | Remaining: ${l.remaining} | Reason: Annual`; // ← السبب ثابت Annual
+            
+            div.addEventListener('click', () => {
+              sessionStorage.setItem('leaveData', JSON.stringify({
+                code: code,
+                name: el('name').textContent,
+                department: el('dept').textContent,
+                startDate: l.startDate,
+                endDate: l.endDate,
+                days: l.days,
+                remaining: l.remaining,
+                reason: "Annual"
+              }));
+              window.location.href = 'print.html';
+            });
+
+            container.appendChild(div);
+          });
+        } else {
+          container.innerHTML = '<div>No leaves history found</div>';
+        }
+      } catch (err) {
+        console.error(err);
+        showMsg('Connection error', 'error');
+      }
+    });
+
+    el('code').addEventListener('keypress', e => {
+      if(e.key === 'Enter') el('btnSearch').click();
+    });
+  </script>
+</body>
+</html>

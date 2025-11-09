@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Color Scheme Demo</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .color-box {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+      box-shadow:
+        0 0 10px currentColor,
+        0 0 20px currentColor,
+        inset 0 0 10px rgba(255,255,255,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .color-box:hover {
+      transform: scale(1.05);
+      box-shadow:
+        0 0 15px currentColor,
+        0 0 30px currentColor,
+        inset 0 0 15px rgba(255,255,255,0.2);
+    }
+    .color-label {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      color: #bbb;
+    }
+    .box-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #D4AF37; color: #D4AF37;">Gold</div>
+      <div class="color-label">Gold</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #C0C0C0; color: #C0C0C0;">Silver</div>
+      <div class="color-label">Silver</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #E5E4E2; color: #E5E4E2;">Platinum</div>
+      <div class="color-label">Platinum</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #E0BFB8; color: #E0BFB8;">Rose Gold</div>
+      <div class="color-label">Rose Gold</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #CD7F32; color: #CD7F32;">Bronze</div>
+      <div class="color-label">Bronze</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #B87333; color: #B87333;">Copper</div>
+      <div class="color-label">Copper</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #F7E7CE; color: #F7E7CE;">Champagne</div>
+      <div class="color-label">Champagne</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #F8F8FF; color: #F8F8FF;">Pearl</div>
+      <div class="color-label">Pearl</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #878681; color: #878681;">Titanium</div>
+      <div class="color-label">Titanium</div>
+    </div>
+    <div class="box-wrapper">
+      <div class="color-box" style="background: #FFFFF0; color: #FFFFF0;">Ivory</div>
+      <div class="color-label">Ivory</div>
+    </div>
+  </div>
+</body>
+</html>
