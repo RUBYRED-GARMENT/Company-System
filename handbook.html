@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PDF Viewer - Landscape</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#f4f6f9;
+  margin:0;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+}
+
+.container {
+  width: 95%;
+  max-width: 1200px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  overflow-x: auto; /* Scroll أفقي */
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#nav {
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #3a7afe;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e5ce6;
+}
+
+canvas {
+  border:1px solid #ddd;
+  border-radius:12px;
+  max-width:100%;
+  height:auto !important;
+  display:block;
+  margin:auto;
+}
+h1{
+  font-weight: 800;
+  font-size: 50px;
+}
+H1 SPAN{
+  color: RED;
+}
+img{
+  position: absolute;
+  left:20%;
+  top:7%;
+  width: 120px;
+  height: auto;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <img src="pic/logooo.png" alt="">
+  <h1>RUBY<span>RED</span> HANDBOOK</h1>
+  <div id="nav">
+    <button onclick="prevPage()">⬅ Previous</button>
+    <button onclick="nextPage()">➡ Next</button>
+  </div>
+  <canvas id="pdf-canvas"></canvas>
+</div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+
+<script>
+let pdfDoc = null;
+let pageNum = 1;
+const canvas = document.getElementById("pdf-canvas");
+const ctx = canvas.getContext("2d");
+
+// تحميل PDF
+pdfjsLib.getDocument("file.pdf").promise.then(pdf => {
+  pdfDoc = pdf;
+  renderPage(pageNum);
+}).catch(err => {
+  alert("Error loading PDF: " + err);
+});
+
+function renderPage(num) {
+  pdfDoc.getPage(num).then(page => {
+    // Scale مناسب لإظهار الصفحة كاملة داخل العرض
+    let containerWidth = canvas.parentElement.clientWidth;
+    let scale = containerWidth / page.getViewport({ scale: 1 }).width;
+    const viewport = page.getViewport({ scale: scale, rotation: 0 }); // rotation = 0
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    page.render({ canvasContext: ctx, viewport: viewport });
+  });
+}
+
+function nextPage() {
+  if (pageNum >= pdfDoc.numPages) return;
+  pageNum++;
+  renderPage(pageNum);
+}
+
+function prevPage() {
+  if (pageNum <= 1) return;
+  pageNum--;
+  renderPage(pageNum);
+}
+</script>
+
+</body>
+</html>

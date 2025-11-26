@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUBYRED - Home</title>
+    <title>RUBYRED - Samples</title>
     <link rel="stylesheet" href="new.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" href="pic/logooo.png">
@@ -64,78 +64,6 @@
       color: #ff6b6b;
     }
 
-    .cards-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      justify-items: center;
-    }
-
-    .card {
-      background: linear-gradient(135deg, #444, #222);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-      color: #fff;
-      text-align: center;
-      width: 100%;
-      max-width: 300px;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-decoration: none;
-      display: block;
-    }
-    .card:hover {
-      transform: translateY(-13px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.9);
-    }
-
- 
-    .card p {
-      margin: 10px 0;
-      font-size: 20px;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
-      .cards-container {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 10px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
-      }
-      .name h1 {
-        font-size: 2.2rem;
-      }
-      .nav ul {
-        gap: 20px;
-      }
-      .cards-container {
-        gap: 15px;
-        padding: 15px;
-      }
-    }
-
     /* Menu button styles */
     .menu-btn {
       display: none;
@@ -146,6 +74,9 @@
       cursor: pointer;
       margin: 10px 0;
     }
+
+
+    
 
     /* Sidebar styles */
     #sidebar {
@@ -200,34 +131,31 @@
       }
     }
 
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .top-section {
+        height: 60vh;
+        padding: 20px;
+      }
+      .name h1 {
+        font-size: 2rem;
+      }
+      .nav ul {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+    }
+
     .cards-container {
       display: grid;
-      grid-template-columns: repeat(3,2, 1fr);
-      gap: 30px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
       max-width: 1200px;
-      margin: 60px auto;
+      margin: 0 auto;
       padding: 20px;
       justify-items: center;
     }
-
-    .managers-container {
-      max-width: 1200px;
-      margin: 0 auto 20px auto;
-      display: flex;
-      justify-content: center;
-    }
-
-    .managers-container .card {
-      width: 395px;
-      height: 200px;
-      perspective: 1000px;
-      cursor: pointer;
-      outline: none;
-      position: relative;
-      margin-top: 30px;
-    }
-
-
 
     .card {
       width: 100%;
@@ -268,13 +196,27 @@
       white-space: nowrap;
       z-index: 10;
     }
-    .card h3 {
-      margin-top: 50px;
-        color: #da3535;
-      font-size: 30px;
+
+    @media (max-width: 1024px) {
+      .top-section {
+        height: 65vh;
+      }
+      .name h1 {
+        font-size: 2.2rem;
+      }
+      .nav ul {
+        gap: 20px;
+      }
+      .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        padding: 15px;
+      }
+      .card-text {
+        font-size: 1.3rem;
+      }
     }
-
-
+    
   </style>
 </head>
 <body>
@@ -283,7 +225,7 @@
       <div class="logo">
         <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
       </div>
-      <div class="name"><h1>RUBY<span>RED</span> GARMENT</h1></div>
+      <div class="name"><h1>RUBY<span>RED</span> SAMPLES</h1></div>
       <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
         <i class="fas fa-bars"></i>
       </button>
@@ -303,22 +245,43 @@
       <li><a href="contact.html">Contact</a></li>
     </ul>
   </div>
+ 
+  <!-- Free space with gray background for wallpaper -->
+  <div class="free-space" style="background: #222; padding: 20px; color: #fff;">
 
+
+  </div>
   <div class="cards-container">
-    <a href="overtime.html" class="card">
-      <h3>OverTime</h3>
-      <p>Manage overtime requests and approvals for all departments.</p>
+    <a href="handbook.html" class="card" role="link" tabindex="0" aria-label="hand book">
+      <div class="card-inner"></div>
+      <div class="card-text">HAND BOOK</div>
     </a>
-    <a href="decision.html" class="card">
-      <h3>Decisions</h3>
-      <p>View and manage company decisions and policies.</p>
+
+    <a href="EVALUATION.HTML" class="card" role="link" tabindex="0" aria-label="Cutting Department">
+      <div class="card-inner"></div>
+      <div class="card-text">EVALUATION FORM</div>
     </a>
-    <a href="samples.html" class="card">
-      <h3>SAMPLES</h3>
-      <p>Samples of the company forms</p>
+
+    <a href="#" class="card" role="link" tabindex="0" aria-label="QA Department">
+      <div class="card-inner"></div>
+      <div class="card-text">ORGANIZATION CHART</div>
+    </a>
+
+    <a href="grade_up.html" class="card" role="link" tabindex="0" aria-label="Printing Department">
+      <div class="card-inner"></div>
+      <div class="card-text">GRADE UP SYSTEM</div>
+    </a>
+
+    <a href="#" class="card" role="link" tabindex="0" aria-label="Embroidery Department">
+      <div class="card-inner"></div>
+      <div class="card-text">COMPETANCE</div>
+    </a>
+
+    <a href="#" class="card" role="link" tabindex="0" aria-label="Warehouse Department">
+      <div class="card-inner"></div>
+      <div class="card-text">ACADEMIA</div>
     </a>
   </div>
-
   <div class="footer">
     <img src="pic/logooo.png" alt="">
     <p>RUBYRED GARMENT</p>
@@ -330,7 +293,7 @@
   </div>
 
   <style>
-    /* Responsive styles for index.html */
+    /* Responsive styles for decision.html */
     @media (max-width: 768px) {
       .top-section {
         height: 60vh;
@@ -344,8 +307,17 @@
         gap: 15px;
         margin-top: 20px;
       }
+      .free-space {
+        min-height: 40vh;
+        padding: 20px;
+      }
       .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
         padding: 10px;
+      }
+      .card-text {
+        font-size: 1.2rem;
       }
       .footer {
         padding: 15px 0;
@@ -373,8 +345,20 @@
       .nav ul {
         gap: 20px;
       }
+      .free-space {
+        min-height: 45vh;
+      }
       .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
         padding: 15px;
+      }
+      .managers-container .card {
+        width: 100%;
+        max-width: 395px;
+      }
+      .card-text {
+        font-size: 1.3rem;
       }
       .footer {
         padding: 18px 0;
@@ -393,14 +377,6 @@
     }
   </style>
 
-  <script>
-  // Sidebar toggle
-  const menuBtn = document.getElementById('menu-btn');
-  const sidebar = document.getElementById('sidebar');
-  menuBtn.addEventListener('click', function() {
-    sidebar.classList.toggle('active');
-  });
-  </script>
 
 </body>
 </html>

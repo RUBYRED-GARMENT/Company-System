@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RUBYRED Dashboard</title>
+<link rel="icon" href="pic/logooo.png">
+
+<!-- Chart.js for graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Font Import */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+  /* Base Styles */
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  :root{
+    --bg-dark: #121217;
+    --surface-dark: #181821;
+    --muted-dark: #a3a3b3;
+    --text-dark: #e0e0e0;
+    --accent: #7c40fa;
+
+    --bg-light: #f4f4f9;
+    --surface-light: #ffffff;
+    --muted-light: #666;
+    --text-light: #111827;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+    transition: background .25s, color .25s;
+  }
+
+  /* Light mode when .light-mode added to documentElement */
+  .light-mode body {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+  }
+
+  /* Layout */
+  .container {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background-color: var(--surface-dark);
+    width: 260px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background .25s, color .25s;
+  }
+
+  .light-mode .sidebar {
+    background-color: var(--surface-light);
+  }
+
+  .sidebar .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 40px;
+  }
+
+  .menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu li {
+    margin-bottom: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted-dark);
+    display: flex;
+    align-items: center;
+    transition: color 0.3s;
+  }
+
+  .menu li.active,
+  .menu li:hover {
+    color: var(--accent);
+  }
+
+  .menu li a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .menu li svg { margin-right: 12px; }
+
+  .sidebar .bottom {
+    font-size: 14px;
+    color: #555565;
+    cursor: pointer;
+  }
+
+  /* Main content */
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 40px;
+    overflow-y: auto;
+  }
+
+  /* Header */
+  .header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:30px;
+    gap:12px;
+  }
+
+  .welcome { font-size:20px; font-weight:600; }
+
+  .controls-flex {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .search-box {
+    background-color: #22222a;
+    border-radius: 10px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+  }
+
+  .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e0e0e0;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .search-box svg { fill: #88889e; width: 18px; height: 18px; margin-left: 8px; }
+
+  .header-icons svg {
+    fill: #a3a3b3;
+    width: 24px; height: 24px;
+    margin-left: 25px;
+    cursor: pointer;
+    transition: fill 0.3s;
+  }
+
+  .header-icons svg:hover { fill: var(--accent); }
+
+  /* Dashboard Grid - 2 rows for 6 cards */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface-dark);
+    border-radius: 16px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 12px rgba(124, 64, 250, 0.08);
+    color: var(--text-dark);
+    text-align: center;
+    align-items: center;
+    transition: background .25s, color .25s, box-shadow .25s;
+  }
+
+  .light-mode .card {
+    background: var(--surface-light);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.04);
+  }
+
+  .card .icon-circle {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #7c40fa, #a560ff);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom: 14px; margin-left: 130px;
+  }
+
+  .card .icon-circle svg { fill: white; width:24px; height:24px; }
+
+  .card h3 { font-size:16px; font-weight:600; margin:0 0 8px 0; color: var(--accent); }
+  .card .value { font-size:32px; font-weight:700; color: inherit; }
+
+  /* Charts Section */
+  .charts-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .chart-card {
+    background: var(--surface-dark);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(124,64,250,0.08);
+    transition: background .25s, color .25s;
+  }
+
+  .light-mode .chart-card {
+    background: var(--surface-light);
+    box-shadow: 0 3px 8px rgba(2,6,23,0.04);
+  }
+
+  .chart-card h3 { font-size:18px; font-weight:600; margin-bottom:15px; color: var(--accent); }
+
+  .chart-container { height: 300px; }
+
+  /* Error Message */
+  .error { color: #cc0000; text-align:center; margin-top:30px; font-weight:bold; font-size:1.1em; }
+
+  /* Meeting Room Card */
+  .meeting-room {
+    background: var(--surface-dark);
+    border-radius: 16px; padding:20px;
+    color: var(--text-dark);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+
+  .light-mode .meeting-room { background: var(--surface-light); }
+
+  .meeting-room h3 { margin-bottom: 10px; color: var(--accent); }
+  .meeting-value { font-size:40px; font-weight:700; color: var(--accent); }
+
+  /* Hamburger Button */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.3s;
+  }
+
+  .hamburger:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .hamburger svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-container { height: 220px; }
+    .card .icon-circle { margin-left: 20px; }
+  }
+
+  @media (max-width: 700px) {
+    .hamburger { display: block; }
+
+    .container { flex-direction: column; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      height: 100vh;
+      width: 260px;
+      z-index: 1000;
+      transition: left 0.3s ease;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .main-content { padding: 12px; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .charts-section { grid-template-columns: 1fr; }
+    .card .icon-circle { margin-left: 0; }
+    .search-box { width: 100%; }
+  }
+
+  /* RTL support when dir="rtl" on <html> */
+  [dir="rtl"] .menu li { direction: rtl; }
+  [dir="rtl"] .menu li svg { margin-left: 12px; margin-right: 0; }
+  [dir="rtl"] .search-box svg { margin-left: 0; margin-right: 8px; transform: scaleX(-1); }
+  [dir="rtl"] .card .icon-circle { margin-left: 0; margin-right: 130px; }
+
+  .calendar-weather-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #22222a;
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: #e0e0e0;
+}
+
+.light-mode .calendar-weather-box {
+  background-color: #fff;
+  color: #111827;
+}
+
+.date-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.date-info #dayName { font-weight: 600; }
+.date-info #fullDate { font-weight: 400; }
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+button {
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: background-color 0.5s, transform 0.5s;
+  width: 90%;
+}
+BUTTON:hover {
+  background-color: #5a2edc;
+  scale: 1.05;
+}
+button a {
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Sidebar with Hyperlinks -->
+  <nav class="sidebar">
+    <div>
+      <div class="logo" id="logoText">RUBYRED</div>
+      <ul class="menu" id="sidebarMenu">
+        <li class="active"><a href="DASHBOARD2.HTML" data-i18="menu_meeting">Meeting room</a></li>
+        <li><a href="enterance.html" data-i18="menu_entrance">Entrance permission</a></li>
+        <li><a href="exit.html" data-i18="menu_exit">Exit permission</a></li>
+        <li><a href="late.html" data-i18="menu_late">Late employees with reason</a></li>
+        <li><a href="overnight.html" data-i18="menu_overnight">Overnight shift</a></li>
+        <li><a href="nightshift.html" data-i18="menu_night">Night shift</a></li>
+      </ul>
+      <button><a href="HR.html">HR</a></button>
+    </div>
+    <div class="bottom" id="footerText">© RUBYRED</div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="hamburger" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="welcome" id="welcomeText" data-i18="welcome">Welcome</div>
+      </div>
+
+      <div class="controls-flex">
+        <!-- Search -->
+<!-- Calendar / Weather Box -->
+<div class="calendar-weather-box">
+  <div class="date-info">
+    <div id="dayName">Monday</div>
+    <div id="fullDate">Nov 26, 2025</div>
+  </div>
+  <div class="weather-info">
+    <span id="weatherIcon">☀️</span>
+    <span id="temperature">25°C</span>
+  </div>
+</div>        <!-- Language Dropdown (ADDED - only this) -->
+        <select id="langSelect" style="padding:8px 12px;border-radius:8px;background:#22222a;color:#fff;border:none;">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+          <option value="tr">Türkçe</option>
+        </select>
+
+        <!-- Language Dropdown & Theme Toggle (original header-icons kept intact) -->
+        <!-- <div class="header-icons" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        </div>
+      </div> -->
+    </header>
+
+    <!-- Metrics - All 6 Cards -->
+    <section class="dashboard-grid">
+      <div class="card">
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 8-4 8-4s8 0 8 4"/></svg>
+        </div>
+        <h3 data-i18="interviews_blue">Interviews (Blue)</h3>
+        <div class="value" id="blue-interviews">Loading...</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle" style="background: linear-gradient(135deg,#ed64a6,#da22ff);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/></svg>
+        </div>
+        <h3 data-i18="interviews_white">Interviews (White)</h3>
+        <div class="value" id="white-interviews">Loading...</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle" style="background: linear-gradient(135deg,#4f46e5,#9f7aea);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2v20M5 12h14"/></svg>
+        </div>
+        <h3 data-i18="documents">Documents Submitted</h3>
+        <div class="value" id="documents-submitted">Loading...</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle" style="background: linear-gradient(135deg,#f59e0b,#d97706);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 data-i18="resign">Resignations</h3>
+        <div class="value" id="resignations">Loading...</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle" style="background: linear-gradient(135deg,#10b981,#059669);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <h3 data-i18="waiting_paper">Waiting His Paper</h3>
+        <div class="value" id="waiting-paper">Loading...</div>
+      </div>
+
+      <div class="card">
+        <div class="icon-circle" style="background: linear-gradient(135deg,#ef4444,#dc2626);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+        </div>
+        <h3 data-i18="waiting_salary">Waiting Salary</h3>
+        <div class="value" id="waiting-salary">Loading...</div>
+      </div>
+    </section>
+
+    <section style="display:flex;gap:25px;margin-bottom:40px;">
+      <div class="meeting-room" style="flex: 1;">
+        <h3 id="meetingTitle" data-i18="meetingRoom">People in Meeting Room</h3>
+        <div class="meeting-value" id="people-in-meeting">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-card">
+        <h3 data-i18="trends">Trends Over Time</h3>
+        <div class="chart-container">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3 data-i18="shift">Shift Distribution</h3>
+        <div class="chart-container">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <div class="error" id="error-message"></div>
+  </main>
+</div>
+
+<script>
+  // ========== Google Sheets config ==========
+  const SHEET_ID = '1BQFKE2dG2Ve-KwE5N76HVj0VNDVUpfHooJBq7J671jw';
+  const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
+  const RANGE = 'Dashboard';
+
+  async function fetchData() {
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await response.json();
+      if (!data.values || data.values.length < 2) throw new Error('Invalid data format in sheet');
+
+      const numbers = data.values[1];
+
+      document.getElementById('blue-interviews').textContent = numbers[0] || 0;
+      document.getElementById('white-interviews').textContent = numbers[1] || 0;
+      document.getElementById('documents-submitted').textContent = numbers[2] || 0;
+      document.getElementById('resignations').textContent = numbers[3] || 0;
+      document.getElementById('waiting-paper').textContent = numbers[4] || 0;
+      document.getElementById('waiting-salary').textContent = numbers[5] || 0;
+
+      // "Total Users" from G2 (index 6)
+      document.getElementById('people-in-meeting').textContent = numbers[6] || 0;
+
+      document.getElementById('error-message').textContent = '';
+    } catch (err) {
+      document.getElementById('error-message').textContent = `Error: ${err.message}`;
+      console.error('Failed to fetch data:', err);
+    }
+  }
+
+  fetchData();
+
+  // ========== Charts (initial dummy data, will remain independent) ==========
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  const lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+      datasets: [{
+        label: 'Interviews',
+        data: [12,19,3,5,2,3],
+        borderColor: '#7c40fa',
+        backgroundColor: 'rgba(124, 64, 250, 0.15)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  const pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Day Shift','Night Shift','Overnight'],
+      datasets: [{ data: [50,30,20], backgroundColor: ['#7c40fa','#ed64a6','#4f46e5'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  // ========== Translations & Theme (kept original — no automatic translation applied) ==========
+  const translations = {
+    en: {
+      logo: "RUBYRED",
+      welcome: "Welcome",
+      searchPlaceholder: "Search here...",
+      menu_meeting: "Meeting room",
+      menu_entrance: "Entrance permission",
+      menu_exit: "Exit permission",
+      menu_late: "Late employees with reason",
+      menu_overnight: "Overnight shift",
+      menu_night: "Night shift",
+      interviews_blue: "Interviews (Blue)",
+      interviews_white: "Interviews (White)",
+      documents: "Documents Submitted",
+      resign: "Resignations",
+      waiting_paper: "Waiting His Paper",
+      waiting_salary: "Waiting Salary",
+      meetingRoom: "People in Meeting Room",
+      trends: "Trends Over Time",
+      shift: "Shift Distribution",
+      footer: "© RUBYRED"
+    },
+    ar: {
+      logo: "روبي ريد",
+      welcome: "أهلاً",
+      searchPlaceholder: "ابحث هنا...",
+      menu_meeting: "غرفة الاجتماعات",
+      menu_entrance: "تصريح الدخول",
+      menu_exit: "تصريح الخروج",
+      menu_late: "المتأخرون مع السبب",
+      menu_overnight: "الوردية الليلية",
+      menu_night: "الدوام الليلي",
+      interviews_blue: "المقابلات (أزرق)",
+      interviews_white: "المقابلات (أبيض)",
+      documents: "الملفات المقدمة",
+      resign: "الاستقالات",
+      waiting_paper: "في انتظار أوراقه",
+      waiting_salary: "في انتظار المرتب",
+      meetingRoom: "عدد الأشخاص داخل غرفة الاجتماعات",
+      trends: "اتجاه البيانات",
+      shift: "توزيع الورديات",
+      footer: "© روبي ريد"
+    },
+    tr: {
+      logo: "RUBYRED",
+      welcome: "Hoşgeldiniz",
+      searchPlaceholder: "Burada ara...",
+      menu_meeting: "Toplantı odası",
+      menu_entrance: "Giriş izni",
+      menu_exit: "Çıkış izni",
+      menu_late: "Geç kalanlar ve sebep",
+      menu_overnight: "Gece vardiyası",
+      menu_night: "Gece vardiyası",
+      interviews_blue: "Mülakatlar (Mavi)",
+      interviews_white: "Mülakatlar (Beyaz)",
+      documents: "Gönderilen Belgeler",
+      resign: "İstifalar",
+      waiting_paper: "Belgesini Bekleyen",
+      waiting_salary: "Maaş Bekleyen",
+      meetingRoom: "Toplantı Odasındaki Kişiler",
+      trends: "Zaman İçinde Trendler",
+      shift: "Vardiya Dağılımı",
+      footer: "© RUBYRED"
+    }
+  };
+
+  // NOTE: I added ONLY the language selector element above.
+  // The selector will persist user's choice to localStorage but will NOT change UI automatically.
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    // restore saved value if present
+    const saved = localStorage.getItem('site_locale');
+    if (saved) {
+      langSelect.value = saved;
+    }
+    langSelect.addEventListener('change', (e) => {
+      localStorage.setItem('site_locale', e.target.value);
+      // no UI changes performed — per your request "don't change anything else"
+    });
+  }
+function applyTranslations(lang) {
+  const elems = document.querySelectorAll('[data-i18]');
+  elems.forEach(el => {
+    const key = el.getAttribute('data-i18');
+    if(translations[lang] && translations[lang][key]){
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  // غير placeholder في البحث
+  const searchInput = document.getElementById('searchInput');
+  if(searchInput) searchInput.placeholder = translations[lang].searchPlaceholder || searchInput.placeholder;
+
+  // شعار الشركة
+  const logo = document.getElementById('logoText');
+  if(logo) logo.textContent = translations[lang].logo || logo.textContent;
+
+  // Footer
+  const footer = document.getElementById('footerText');
+  if(footer) footer.textContent = translations[lang].footer || footer.textContent;
+}
+
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('site_locale') || 'en';
+  applyTranslations(savedLang);
+  const langSelect = document.getElementById('langSelect');
+  if(langSelect){
+    langSelect.value = savedLang;
+    langSelect.addEventListener('change', (e)=>{
+      const selectedLang = e.target.value;
+      localStorage.setItem('site_locale', selectedLang);
+      applyTranslations(selectedLang);
+    });
+  }
+});
+  // keep original init behaviour (no auto-translation applied)
+function updateDateWeather() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  document.getElementById('dayName').textContent = days[now.getDay()];
+  document.getElementById('fullDate').textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  // حالة الطقس (تقدر تربطه بأي API لاحقاً)
+  // مثال ثابت:
+  document.getElementById('weatherIcon').textContent = '☀️';
+  document.getElementById('temperature').textContent = '25°C';
+}
+
+// حدث عند تحميل الصفحة
+updateDateWeather();
+
+// ========== Sidebar Toggle ==========
+const hamburger = document.querySelector('.hamburger');
+const sidebar = document.querySelector('.sidebar');
+
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 700 && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+    sidebar.classList.remove('open');
+  }
+});
+
+</script>
+
+
+</body>
+</html>
