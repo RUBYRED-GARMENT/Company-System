@@ -55,9 +55,14 @@
       transition: background 0.3s ease, box-shadow 0.3s ease;
       z-index: 9999;
     }
-    #logout-btn:hover {
-      background: #555555;
+  #logout-btn:hover {
+      background: #9e0e0e;
       box-shadow: 0 0 25px #555555;
+    }
+    #logout-btn a {
+      color: white;
+      text-decoration: none;
+      width: 100%;
     }
 
     @keyframes rotate {
@@ -172,28 +177,16 @@
       <img src="pic/closed.jpg" alt="closed">
     </div>
 
-    <button id="logout-btn" aria-label="Logout from RUBYRED">Logout</button>
+    <button id="logout-btn" ><a href="DASHBOARD2.HTML">Back</a></button>
   </div>
 
 
 
 
-  <script>
-    (function () {
-      const logoutBtn = document.getElementById("logout-btn");
-
-      // Login removed; no login logic needed
-      // Optional: Remove logout button event or leave it as placeholder
-
-      logoutBtn.addEventListener("click", function () {
-        alert('Logout function removed because login was disabled.');
-      });
-
-    })();
-  </script>
+  
 
 <!--Start of Tawk.to Script-->
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -208,7 +201,7 @@ Tawk_API.onLoad = function(){
         name : 'warehouse dep'
     });
 };
-</script>
+</script> -->
 <!--End of Tawk.to Script-->
 
 </body>

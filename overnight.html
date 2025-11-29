@@ -60,6 +60,12 @@
       box-shadow: 0 0 25px #555555;
     }
 
+     #logout-btn a {
+      color: white;
+      text-decoration: none;
+      width: 100%;
+    }
+
     @keyframes rotate {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -141,10 +147,7 @@
     </header>
     <div class="text"><h1>OVERNIGHT</h1></div>
 
-    <div id="countdown" style="position: absolute; top: 137px; left: 0px; color: rgb(255, 255, 255); font-weight: bold; font-family: monospace; font-size: 1.48rem; display: none; text-shadow: 0 0 10px rgb(0, 0, 0); background: gray; padding: 15px; border-radius: 10px; box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); border: 3px solid red; animation: border-pulse 2s infinite alternate;">
-      Time left: 00:00:00
-      <span style="display: inline-block; margin-left: 10px; animation: led-blink 1s linear infinite;">&#9679;</span>
-    </div>
+    
 
     <style>
   @keyframes border-pulse {
@@ -172,28 +175,15 @@
       <img src="pic/closed.jpg" alt="closed">
     </div>
 
-    <button id="logout-btn" aria-label="Logout from RUBYRED">Logout</button>
+    <button id="logout-btn" ><a href="DASHBOARD2.HTML">Back</a></button>
   </div>
 
 
 
 
-  <script>
-    (function () {
-      const logoutBtn = document.getElementById("logout-btn");
-
-      // Login removed; no login logic needed
-      // Optional: Remove logout button event or leave it as placeholder
-
-      logoutBtn.addEventListener("click", function () {
-        alert('Logout function removed because login was disabled.');
-      });
-
-    })();
-  </script>
-
+ 
 <!--Start of Tawk.to Script-->
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -208,7 +198,7 @@ Tawk_API.onLoad = function(){
         name : 'warehouse dep'
     });
 };
-</script>
+</script> -->
 <!--End of Tawk.to Script-->
 
 </body>
