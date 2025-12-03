@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RUBYRED - PREGNANT ATTENDANCE</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+  />
+  <link rel="icon" href="pic/logooo.png" />
+  <link rel="stylesheet" href="about.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff;
+      color: #000;
+    }
+    /* Content Section full screen */
+    #content-section {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+      background: #fff;
+      color: #000;
+      position: relative;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      body,
+      html {
+        min-height: 100vh;
+      }
+      header {
+        padding: 1rem;
+      }
+      .menu-btn {
+        display: block;
+      }
+      nav#navbar {
+        display: none;
+      }
+      #sidebar {
+        left: -250px;
+      }
+      #sidebar.active {
+        left: 0;
+      }
+      #content-section {
+        margin-left: 0;
+      }
+      .frame {
+        margin-top: 80px;
+        height: calc(100vh - 80px);
+      }
+    }
+
+    /* Responsive styles for iPad and tablets */
+    @media (max-width: 1024px) {
+      header {
+        padding: 1rem 2rem;
+      }
+      #sidebar {
+        width: 200px;
+      }
+      #sidebar.active {
+        left: 0;
+      }
+      #content-section {
+        margin-left: 0;
+      }
+      .frame {
+        margin-top: 80px;
+        height: calc(100vh - 80px);
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Content Section full screen -->
+  <div id="content-section">
+    <header>
+      <h2>RUBY<span>RED</span></h2>
+      <div class="logo"><img src="pic/logooo.png" alt="rubyred" /></div>
+      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="navbar">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="HR.html">HR</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="text"><h1>PREGNANT ATTENDANCE</h1></div>
+
+   
+    <style>
+  @keyframes border-pulse {
+        0% {
+          border-color: rgb(219, 16, 16);
+          box-shadow: 0 0 10px rgb(122, 14, 14);
+        }
+        100% {
+          border-color: rgb(129, 28, 28);
+          box-shadow: 0 0 30px rgb(70, 4, 4);
+        }
+      }
+      @keyframes led-blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.3; }
+      }
+                #off img{
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      margin-left: 380px;
+    }
+    #logout-btn {
+      position: absolute;
+      top: 125px;
+      right: 15px;
+      background: #df0c0c;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 1rem;
+      box-shadow: 0 0 15px #df0c0c;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      z-index: 9999;
+    }
+    #logout-btn:hover {
+      background: #a30808;
+      box-shadow: 0 0 25px #a30808;
+    }
+
+    </style>
+      <a href="index.html"><button id="logout-btn" aria-label="Logout from RUBYRED">Back</button></a>
+
+    <div class="frame">
+      <iframe
+        src="https://docs.google.com/spreadsheets/d/1tanBWQb-amdfwuaiYmbPXNng-kAIxghyHsVgWU1Y4D8/edit?usp=sharing"
+      ></iframe>
+    </div>
+
+    <div id="off" style="display: none;">
+      <img src="pic/closed.jpg" alt="closed">
+    </div>
+
+
+  </div>
+
+  
+<!--Start of Tawk.to Script-->
+
+<!--End of Tawk.to Script-->
+
+</body>
+</html>
