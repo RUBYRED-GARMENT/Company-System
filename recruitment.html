@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HR Recruitment Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* Base Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+:root{
+  --bg-dark: #0f0f13; --surface-dark: #181821; --muted-dark: #a3a3b3; --text-dark: #f0f0f0;
+  --accent: #7c40fa; --secondary-accent: #ff6f00; --danger: #ef4444; --success: #10b981;
+  --bg-light: #f8fafc; --surface-light: #ffffff; --text-light: #1e293b;
+}
+body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); transition: all .3s; }
+.light-mode { background-color: var(--bg-light); color: var(--text-light); }
+.container { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar { background-color: var(--surface-dark); width: 260px; padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; height: 100vh;}
+.light-mode .sidebar { background-color: var(--surface-light); border-right: 1px solid #e2e8f0; }
+.sidebar-link { transition: all 0.3s ease; display: flex; align-items: center; padding: 12px 15px; border-radius: 10px; text-decoration: none; color: var(--muted-dark); font-weight: 600; margin-bottom: 8px; gap: 12px;}
+.sidebar-link:hover, .sidebar-link.active { color: var(--accent); background: rgba(124, 64, 250, 0.08); transform: translateX(5px); }
+
+/* Main Content */
+.main-content { flex-grow: 1; padding: 30px 40px; overflow-y: auto; }
+.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
+.controls-flex { display:flex; align-items:center; gap:15px; }
+.control-select, .theme-toggle { background: var(--surface-dark); padding: 10px; border-radius: 10px; color: inherit; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+.light-mode .control-select, .light-mode .theme-toggle { background: white; border-color: #cbd5e1; }
+
+/* Dashboard Layout */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); grid-gap: 20px; margin-bottom: 30px; }
+.card { background: var(--surface-dark); border-radius: 18px; padding: 22px; border: 1px solid rgba(255,255,255,0.03); transition: 0.3s; }
+.card:hover { transform: translateY(-5px); border-color: var(--accent); }
+.light-mode .card { background: white; border: 1px solid #e2e8f0; }
+
+.card h3 { font-size:11px; font-weight:700; margin:0; color: var(--muted-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+.card .value { font-size:28px; font-weight:800; margin-top: 10px; color: var(--accent); }
+
+/* Chart Area */
+.chart-container { background: var(--surface-dark); padding: 30px; border-radius: 24px; margin-top: 20px; height: 380px; border: 1px solid rgba(124, 64, 250, 0.1); }
+.light-mode .chart-container { background: white; border: 1px solid #e2e8f0; }
+
+.section-title { margin: 40px 0 15px; font-size: 14px; color: var(--accent); letter-spacing: 1.5px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.section-title::after { content: ""; height: 1px; flex: 1; background: rgba(124, 64, 250, 0.15); }
+
+@media (max-width: 1024px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; position: relative; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav class="sidebar">
+    <div>
+      <div class="logo" style="font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 40px; padding: 0 10px;">RUBYRED</div>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="recruitment.html" class="sidebar-link active"><i class="fa-solid fa-users"></i> <span data-i18="SIDEBAR_RECRUITMENT">RECRUITMENT</span></a></li>
+        <li><a href="managers.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i> <span data-i18="SIDEBAR_OVERTIME">OVERTIME DASHBOARD</span></a></li>
+      </ul>
+    </div>
+    <div style="font-size: 11px; color: var(--muted-dark); padding: 10px;">© 2025 RUBYRED HR</div>
+  </nav>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="welcome" data-i18="welcome" style="font-size: 22px; font-weight: 800;">HR Insights Dashboard</div>
+      <div class="controls-flex">
+        <select id="langSelect" class="control-select">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        <button id="themeToggle" class="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+      </div>
+    </header>
+
+    <div class="section-title" data-i18="SECTION_SUMMARY">Main Summary</div>
+    <section class="dashboard-grid">
+      <div class="card"><h3 data-i18="PROD_HIRE_MONTH">Total Hire</h3><div class="value" id="PROD_HIRE_MONTH" style="color: var(--success);">0</div></div>
+      <div class="card"><h3 data-i18="PROD_LEFT_MONTH">Total Left</h3><div class="value" id="PROD_LEFT_MONTH" style="color: var(--danger);">0</div></div>
+      <div class="card" style="border: 2px solid var(--accent);"><h3 data-i18="NET_EMPLOYMENT">Net Employment</h3><div class="value" id="NET_EMPLOYMENT">0</div></div>
+    </section>
+
+    <div class="section-title" data-i18="SECTION_TODAY">Today's Recruitment</div>
+    <section class="dashboard-grid">
+      <div class="card"><h3 data-i18="TOTAL_TODAY">Total Today</h3><div class="value" id="TOTAL_TODAY">0</div></div>
+      <div class="card"><h3 data-i18="MACHINE_TODAY">Machine Today</h3><div class="value" id="MACHINE_TODAY">0</div></div>
+      <div class="card"><h3 data-i18="IRONING_TODAY">Ironing Today</h3><div class="value" id="IRONING_TODAY">0</div></div>
+    </section>
+
+    <div class="section-title" data-i18="SECTION_CUMULATIVE">Operators Cumulative & Left</div>
+    <section class="dashboard-grid">
+      <div class="card"><h3 data-i18="TOTAL_MACHINE_NOW">Total Machine Now</h3><div class="value" id="TOTAL_MACHINE_NOW" style="color: #3b82f6;">0</div></div>
+      <div class="card"><h3 data-i18="TOTAL_IRONING_NOW">Total Ironing Now</h3><div class="value" id="TOTAL_IRONING_NOW" style="color: #ec4899;">0</div></div>
+      <div class="card"><h3 data-i18="MACHINE_LEFT">Machine Left</h3><div class="value" id="MACHINE_LEFT" style="color: var(--danger);">0</div></div>
+      <div class="card"><h3 data-i18="IRONING_LEFT">Ironing Left</h3><div class="value" id="IRONING_LEFT" style="color: var(--danger);">0</div></div>
+    </section>
+
+    <div class="section-title" data-i18="TREND_ANALYSIS">Employment Trend Analysis</div>
+    <div class="chart-container">
+      <canvas id="employmentChart"></canvas>
+    </div>
+  </main>
+</div>
+
+<script>
+const SHEET_ID = '1j7IFj_tylNeqwui57JU7coeB6XXj0Lt7d4yBHaqmutE';
+const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
+const RANGE = 'recruitment!A2:J2'; 
+
+let employmentChart;
+
+const translations = {
+  en: {
+    welcome: "HR Insights Dashboard", SECTION_SUMMARY: "Main Summary",
+    SECTION_TODAY: "Today's Recruitment", SECTION_CUMULATIVE: "Operators Cumulative & Left",
+    SIDEBAR_RECRUITMENT: "RECRUITMENT", SIDEBAR_OVERTIME: "OVERTIME DASHBOARD",
+    PROD_HIRE_MONTH: "Total Hiring", PROD_LEFT_MONTH: "Total Left", NET_EMPLOYMENT: "Net Employment",
+    TOTAL_TODAY: "Today's Hiring", MACHINE_TODAY: "Machine Operators", IRONING_TODAY: "Ironing Operators",
+    TOTAL_MACHINE_NOW: "Machine Operators Till Now", TOTAL_IRONING_NOW: "Ironing Operators Till Now",
+    MACHINE_LEFT: "Machine Operators Left", IRONING_LEFT: "Ironing Operators Left", TREND_ANALYSIS: "Growth Analysis"
+  },
+  ar: {
+    welcome: "لوحة بيانات التوظيف", SECTION_SUMMARY: "الملخص العام",
+    SECTION_TODAY: "توظيف اليوم", SECTION_CUMULATIVE: "الإحصائيات التراكمية والمغادرين",
+    SIDEBAR_RECRUITMENT: "التوظيف", SIDEBAR_OVERTIME: "لوحة العمل الإضافي",
+    PROD_HIRE_MONTH: "إجمالي التعيينات", PROD_LEFT_MONTH: "إجمالي المغادرين", NET_EMPLOYMENT: "صافي التوظيف",
+    TOTAL_TODAY: "إجمالي اليوم", MACHINE_TODAY: "عمًال ماكينة اليوم", IRONING_TODAY: "عمًال مكواة اليوم",
+    TOTAL_MACHINE_NOW: "إجمالي الماكينات", TOTAL_IRONING_NOW: "إجمالي المكواة",
+    MACHINE_LEFT: "مغادري الماكينات", IRONING_LEFT: "مغادري المكواة", TREND_ANALYSIS: "تحليل النمو"
+  },
+  tr: {
+    welcome: "İK İşe Alım Paneli", SECTION_SUMMARY: "Genel Özet",
+    SECTION_TODAY: "Bugünkü İşe Alım", SECTION_CUMULATIVE: "Kümülatif ve Ayrılanlar",
+    SIDEBAR_RECRUITMENT: "İŞE ALIM", SIDEBAR_OVERTIME: "MESAİ PANELİ",
+    PROD_HIRE_MONTH: "Toplam İşe Alım", PROD_LEFT_MONTH: "Toplam Ayrılan", NET_EMPLOYMENT: "Net İstihdam",
+    TOTAL_TODAY: "Bugün Toplam", MACHINE_TODAY: "Bugün Makine", IRONING_TODAY: "Bugün Ütü",
+    TOTAL_MACHINE_NOW: "Makine Şimdi", TOTAL_IRONING_NOW: "Ütü Şimdi",
+    MACHINE_LEFT: "Ayrılan Makine", IRONING_LEFT: "Ayrılan Ütü", TREND_ANALYSIS: "Büyüme Analizi"
+  }
+};
+
+function initChart() {
+  const ctx = document.getElementById('employmentChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(124, 64, 250, 0.4)');
+  gradient.addColorStop(1, 'rgba(124, 64, 250, 0.0)');
+
+  employmentChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Hire', 'Left', 'Net'],
+      datasets: [{
+        data: [0, 0, 0],
+        borderColor: '#7c40fa',
+        backgroundColor: gradient,
+        borderWidth: 4,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointBackgroundColor: '#7c40fa'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, datalabels: { color: '#7c40fa', font: { weight: 'bold', size: 14 }, align: 'top' } },
+      scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#a3a3b3', font: { weight: '600' } } } }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+async function fetchData() {
+  try {
+    const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+    const data = await response.json();
+    const vals = data.values[0];
+    
+    // mapping based on your sheet: A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9
+    const ids = [
+      'TOTAL_TODAY', 'MACHINE_TODAY', 'IRONING_TODAY',
+      'TOTAL_MACHINE_NOW', 'TOTAL_IRONING_NOW', 'PROD_HIRE_MONTH',
+      'MACHINE_LEFT', 'IRONING_LEFT', 'PROD_LEFT_MONTH', 'NET_EMPLOYMENT'
+    ];
+
+    ids.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = vals[i] || '0';
+    });
+
+    // Update Chart with Hire(Index 5), Left(Index 8), Net(Index 9)
+    employmentChart.data.datasets[0].data = [vals[5], vals[8], vals[9]];
+    employmentChart.update();
+  } catch (e) { console.error(e); }
+}
+
+function setLanguage(lang) {
+  const texts = translations[lang];
+  document.querySelectorAll('[data-i18]').forEach(el => {
+    const key = el.getAttribute('data-i18');
+    if (texts[key]) el.textContent = texts[key];
+  });
+  document.documentElement.dir = (lang === 'ar' ? 'rtl' : 'ltr');
+  
+  // Update Chart Labels
+  employmentChart.data.labels = [texts.PROD_HIRE_MONTH, texts.PROD_LEFT_MONTH, texts.NET_EMPLOYMENT];
+  employmentChart.update();
+  localStorage.setItem('lang', lang);
+}
+
+document.getElementById('langSelect').addEventListener('change', e => setLanguage(e.target.value));
+document.getElementById('themeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  const icon = document.querySelector('#themeToggle i');
+  icon.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+});
+
+initChart();
+const savedLang = localStorage.getItem('lang') || 'en';
+document.getElementById('langSelect').value = savedLang;
+setLanguage(savedLang);
+fetchData();
+setInterval(fetchData, 300000);
+</script>
+</body>
+</html>
