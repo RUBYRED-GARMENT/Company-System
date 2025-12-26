@@ -383,10 +383,14 @@ button.hr-button a {
 [dir="rtl"] .menu li a i { margin-left: 12px; margin-right: 0; }
 [dir="rtl"] .card { text-align: right; align-items: flex-end; }
 [dir="rtl"] .total-metric-card { align-items: flex-end; }
+.back-button { position: fixed;top:200px;left: 30px;width: 250px; background: var(--surface-dark); color: inherit; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: background 0.3s; z-index: 1000; font-size: 18px;font-weight: bold;}
+.back-button a { text-decoration: none; color: inherit; }
+.back-button:hover { background: var(--accent); color: #fff; }
+  
 </style>
 </head>
 <body class="dark-mode">
-
+<a href="index.html"><button class="back-button">Back</button></a>
 <div class="container">
   <nav class="sidebar" id="sidebar">
     <div style="display:flex; flex-direction:column; flex-grow:1;">
@@ -856,6 +860,7 @@ button.hr-button a {
 </script>
 </body>
 </html>
+
 
 
 
