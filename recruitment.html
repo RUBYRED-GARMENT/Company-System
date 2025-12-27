@@ -17,19 +17,50 @@
   --accent: #7c40fa; --secondary-accent: #ff6f00; --danger: #ef4444; --success: #10b981;
   --bg-light: #f8fafc; --surface-light: #ffffff; --text-light: #1e293b;
 }
-body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); transition: all .3s; }
+body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); transition: all .3s; overflow-x: hidden; }
 .light-mode { background-color: var(--bg-light); color: var(--text-light); }
 .container { display: flex; min-height: 100vh; }
 
 /* Sidebar */
-.sidebar { background-color: var(--surface-dark); width: 260px; padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; height: 100vh;}
+.sidebar { 
+    background-color: var(--surface-dark); 
+    width: 260px; 
+    padding: 25px 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    border-right: 1px solid rgba(255,255,255,0.05); 
+    position: sticky; 
+    top: 0; 
+    height: 100vh;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
 .light-mode .sidebar { background-color: var(--surface-light); border-right: 1px solid #e2e8f0; }
+
+/* Back Button inside Sidebar */
+.back-container { margin-bottom: 20px; }
+.back-button-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: rgba(124, 64, 250, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.3s;
+}
+.back-button-nav:hover { background: var(--accent); color: white; }
+
 .sidebar-link { transition: all 0.3s ease; display: flex; align-items: center; padding: 12px 15px; border-radius: 10px; text-decoration: none; color: var(--muted-dark); font-weight: 600; margin-bottom: 8px; gap: 12px;}
 .sidebar-link:hover, .sidebar-link.active { color: var(--accent); background: rgba(124, 64, 250, 0.08); transform: translateX(5px); }
 
 /* Main Content */
-.main-content { flex-grow: 1; padding: 30px 40px; overflow-y: auto; }
-.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
+.main-content { flex-grow: 1; padding: 30px 40px; overflow-y: auto; width: 100%; }
+.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; gap: 15px; }
 .controls-flex { display:flex; align-items:center; gap:15px; }
 .control-select, .theme-toggle { background: var(--surface-dark); padding: 10px; border-radius: 10px; color: inherit; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
 .light-mode .control-select, .light-mode .theme-toggle { background: white; border-color: #cbd5e1; }
@@ -50,20 +81,44 @@ body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-d
 .section-title { margin: 40px 0 15px; font-size: 14px; color: var(--accent); letter-spacing: 1.5px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
 .section-title::after { content: ""; height: 1px; flex: 1; background: rgba(124, 64, 250, 0.15); }
 
-@media (max-width: 1024px) { .container { flex-direction: column; } .sidebar { width: 100%; height: auto; position: relative; } }
+/* Hamburger Menu */
+.hamburger { display: none; background: none; border: none; color: inherit; font-size: 24px; cursor: pointer; }
 
-.back-button { position: fixed;top:200px;left: 30px;width: 250px; background: var(--surface-dark); color: inherit; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: background 0.3s; z-index: 1000; font-size: 18px;font-weight: bold;}
-.back-button a { text-decoration: none; color: inherit; }
-.back-button:hover { background: var(--accent); color: #fff; 
-                    
+/* RTL Support */
+[dir="rtl"] .sidebar { border-right: none; border-left: 1px solid rgba(255,255,255,0.05); }
+[dir="rtl"] .sidebar-link:hover, [dir="rtl"] .sidebar-link.active { transform: translateX(-5px); }
+
+@media (max-width: 1024px) {
+  .hamburger { display: block; }
+  .sidebar { 
+      position: fixed; 
+      left: -260px; 
+      top: 0; 
+      height: 100vh; 
+      transition: left 0.3s ease; 
+  }
+  [dir="rtl"] .sidebar { left: auto; right: -260px; transition: right 0.3s ease; }
+  .sidebar.open { left: 0; }
+  [dir="rtl"] .sidebar.open { right: 0; }
+  .main-content { padding: 20px; }
+  .header { flex-direction: row; flex-wrap: wrap; }
+}
+
 </style>
 </head>
 <body>
-<a href="index.html"><button class="back-button">Back</button></a>
+
 <div class="container">
-  <nav class="sidebar">
+  <nav class="sidebar" id="mainSidebar">
     <div>
-      <div class="logo" style="font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 40px; padding: 0 10px;">RUBYRED</div>
+      <div class="back-container">
+        <a href="index.html" class="back-button-nav">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span data-i18="BACK">Back</span>
+        </a>
+      </div>
+      
+      <div class="logo" style="font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 30px; padding: 0 10px;">RUBYRED</div>
       <ul style="list-style: none; padding: 0;">
         <li><a href="recruitment.html" class="sidebar-link active"><i class="fa-solid fa-users"></i> <span data-i18="SIDEBAR_RECRUITMENT">RECRUITMENT</span></a></li>
         <li><a href="managers.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i> <span data-i18="SIDEBAR_OVERTIME">OVERTIME DASHBOARD</span></a></li>
@@ -74,7 +129,10 @@ body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-d
 
   <main class="main-content">
     <header class="header">
-      <div class="welcome" data-i18="welcome" style="font-size: 22px; font-weight: 800;">HR Insights Dashboard</div>
+      <div style="display:flex; align-items:center; gap:15px;">
+        <button class="hamburger" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+        <div class="welcome" data-i18="welcome" style="font-size: 22px; font-weight: 800;">HR Insights Dashboard</div>
+      </div>
       <div class="controls-flex">
         <select id="langSelect" class="control-select">
           <option value="en">English</option>
@@ -123,7 +181,7 @@ let employmentChart;
 
 const translations = {
   en: {
-    welcome: "HR Insights Dashboard", SECTION_SUMMARY: "Main Summary",
+    welcome: "HR Insights Dashboard", SECTION_SUMMARY: "Main Summary", BACK: "Back",
     SECTION_TODAY: "Today's Recruitment", SECTION_CUMULATIVE: "Operators Cumulative & Left",
     SIDEBAR_RECRUITMENT: "RECRUITMENT", SIDEBAR_OVERTIME: "OVERTIME DASHBOARD",
     PROD_HIRE_MONTH: "Total Hiring", PROD_LEFT_MONTH: "Total Left", NET_EMPLOYMENT: "Net Employment",
@@ -132,7 +190,7 @@ const translations = {
     MACHINE_LEFT: "Machine Operators Left", IRONING_LEFT: "Ironing Operators Left", TREND_ANALYSIS: "Growth Analysis"
   },
   ar: {
-    welcome: "لوحة بيانات التوظيف", SECTION_SUMMARY: "الملخص العام",
+    welcome: "لوحة بيانات التوظيف", SECTION_SUMMARY: "الملخص العام", BACK: "رجوع",
     SECTION_TODAY: "توظيف اليوم", SECTION_CUMULATIVE: "الإحصائيات التراكمية والمغادرين",
     SIDEBAR_RECRUITMENT: "التوظيف", SIDEBAR_OVERTIME: "لوحة العمل الإضافي",
     PROD_HIRE_MONTH: "إجمالي التعيينات", PROD_LEFT_MONTH: "إجمالي المغادرين", NET_EMPLOYMENT: "صافي التوظيف",
@@ -141,7 +199,7 @@ const translations = {
     MACHINE_LEFT: "مغادري الماكينات", IRONING_LEFT: "مغادري المكواة", TREND_ANALYSIS: "تحليل النمو"
   },
   tr: {
-    welcome: "İK İşe Alım Paneli", SECTION_SUMMARY: "Genel Özet",
+    welcome: "İK İşe Alım Paneli", SECTION_SUMMARY: "Genel Özet", BACK: "Geri",
     SECTION_TODAY: "Bugünkü İşe Alım", SECTION_CUMULATIVE: "Kümülatif ve Ayrılanlar",
     SIDEBAR_RECRUITMENT: "İŞE ALIM", SIDEBAR_OVERTIME: "MESAİ PANELİ",
     PROD_HIRE_MONTH: "Toplam İşe Alım", PROD_LEFT_MONTH: "Toplam Ayrılan", NET_EMPLOYMENT: "Net İstihdam",
@@ -187,7 +245,6 @@ async function fetchData() {
     const data = await response.json();
     const vals = data.values[0];
     
-    // mapping based on your sheet: A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9
     const ids = [
       'TOTAL_TODAY', 'MACHINE_TODAY', 'IRONING_TODAY',
       'TOTAL_MACHINE_NOW', 'TOTAL_IRONING_NOW', 'PROD_HIRE_MONTH',
@@ -199,7 +256,6 @@ async function fetchData() {
       if (el) el.textContent = vals[i] || '0';
     });
 
-    // Update Chart with Hire(Index 5), Left(Index 8), Net(Index 9)
     employmentChart.data.datasets[0].data = [vals[5], vals[8], vals[9]];
     employmentChart.update();
   } catch (e) { console.error(e); }
@@ -213,13 +269,17 @@ function setLanguage(lang) {
   });
   document.documentElement.dir = (lang === 'ar' ? 'rtl' : 'ltr');
   
-  // Update Chart Labels
   employmentChart.data.labels = [texts.PROD_HIRE_MONTH, texts.PROD_LEFT_MONTH, texts.NET_EMPLOYMENT];
   employmentChart.update();
   localStorage.setItem('lang', lang);
 }
 
-document.getElementById('langSelect').addEventListener('change', e => setLanguage(e.target.value));
+// Menu Toggle for Mobile
+document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('mainSidebar').classList.toggle('open');
+});
+
+// Theme Toggle
 document.getElementById('themeToggle').addEventListener('click', () => {
   document.body.classList.toggle('light-mode');
   const icon = document.querySelector('#themeToggle i');
@@ -232,8 +292,15 @@ document.getElementById('langSelect').value = savedLang;
 setLanguage(savedLang);
 fetchData();
 setInterval(fetchData, 300000);
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('mainSidebar');
+    const menuBtn = document.getElementById('menuBtn');
+    if (window.innerWidth <= 1024 && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+    }
+});
 </script>
 </body>
-
 </html>
-
