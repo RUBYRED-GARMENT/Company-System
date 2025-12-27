@@ -1,673 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Managers Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="icon" href="pic/logooo.png" />
-<style>
-/* Font Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Managers Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="pic/logooo.png" />
+    <style>
+        /* Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* Base Styles */
-* { box-sizing: border-box; }
-html, body { height: 100%; margin:0; font-family: 'Inter', sans-serif; }
+        /* Base Styles */
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
 
-/* Color Variables */
-:root{
-  --bg-dark: #121217;
-  --surface-dark: #181821;
-  --muted-dark: #a3a3b3;
-  --text-dark: #e0e0e0;
-  --chart-text-dark: #ffffff;
-  --accent: #7c40fa;
-  --secondary-accent: #ff6f00;
+        :root {
+            --bg-dark: #121217;
+            --surface-dark: #181821;
+            --muted-dark: #a3a3b3;
+            --text-dark: #e0e0e0;
+            --chart-text-dark: #ffffff;
+            --accent: #7c40fa;
+            --secondary-accent: #ff6f00;
+            --bg-light: #f4f4f9;
+            --surface-light: #ffffff;
+            --muted-light: #666;
+            --text-light: #111827;
+            --chart-text-light: #111827;
+        }
 
-  --bg-light: #f4f4f9;
-  --surface-light: #ffffff;
-  --muted-light: #666;
-  --text-light: #111827;
-  --chart-text-light: #111827;
-}
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            transition: background .3s, color .3s;
+        }
 
-/* Body */
-body {
-  background-color: var(--bg-dark);
-  color: var(--text-dark);
-  transition: background .3s, color .3s;
-}
+        .light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
 
-/* Light Mode */
-.light-mode {
-  background-color: var(--bg-light);
-  color: var(--text-light);
-}
-.light-mode .sidebar { background-color: var(--surface-light); }
-.light-mode .card,
-.light-mode .chart-card,
-.light-mode .total-metric-card,
-.light-mode .calendar-weather-box { 
-    background: var(--surface-light); 
-    box-shadow: 0 4px 10px rgba(2,6,23,0.04);
-}
-.light-mode #langSelect { background: #e0e0e0; color: var(--text-light); }
-.light-mode .control-select, .light-mode .theme-toggle {
-  background: var(--surface-light);
-  border: 1px solid #ccc;
-  color: var(--text-light);
-}
-.light-mode .error { background: var(--surface-light); }
+        /* Sidebar Logic */
+        .sidebar {
+            background-color: var(--surface-dark);
+            width: 260px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all .3s;
+            z-index: 1100;
+        }
 
-/* Container Layout */
-.container { display: flex; height: 100vh; }
+        .light-mode .sidebar { background-color: var(--surface-light); border-right: 1px solid #ddd; }
+        [dir="rtl"].light-mode .sidebar { border-right: none; border-left: 1px solid #ddd; }
 
-/* Sidebar */
-.sidebar {
-  background-color: var(--surface-dark);
-  width: 260px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all .3s;
-}
-.light-mode .menu li { color: var(--muted-light); }
-.sidebar .logo {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 40px;
-}
+        /* Back Button Inside Sidebar */
+        .back-nav { margin-bottom: 20px; }
+        .back-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: rgba(124, 64, 250, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .back-button:hover { background: var(--accent); color: #fff; }
 
-/* Menu Items */
-.menu { list-style: none; padding: 0; margin: 0; }
-.menu li { margin-bottom: 20px; font-weight: 600; cursor: pointer; color: var(--muted-dark); display: flex; align-items: center; transition: color 0.3s; }
-.menu li.active, .menu li:hover { color: var(--accent); }
-.menu li a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
+        .sidebar .logo { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
+        .menu { list-style: none; padding: 0; margin: 0; }
+        .menu li { margin-bottom: 20px; font-weight: 600; cursor: pointer; color: var(--muted-dark); display: flex; align-items: center; transition: color 0.3s; }
+        .menu li.active, .menu li:hover { color: var(--accent); }
+        .menu li a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
 
-/* Sidebar Footer */
-.sidebar .bottom {
-  font-size: 14px;
-  color: var(--muted-dark);
-  cursor: pointer;
-}
+        .container { display: flex; height: 100vh; }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; }
 
-/* Main Content */
-.main-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 40px;
-  overflow-y: auto;
-}
+        /* Header & Controls */
+        .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; gap:12px; }
+        .welcome { font-size:24px; font-weight:700; }
+        .controls-flex { display:flex; align-items:center; gap:18px; }
+        .control-select, .theme-toggle { background: var(--surface-dark); padding: 8px 12px; border-radius: 8px; border: none; color: var(--text-dark); font-weight: 600; cursor: pointer; }
+        .light-mode .control-select, .light-mode .theme-toggle { background: var(--surface-light); border: 1px solid #ccc; color: var(--text-light); }
 
-/* Header */
-.header {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:30px;
-  gap:12px;
-}
-.welcome { font-size:24px; font-weight:700; }
-.controls-flex { display:flex; align-items:center; gap:18px; }
+        /* Grid & Cards */
+        .totals-row { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 20px; margin-bottom: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 20px; margin-bottom: 40px; }
+        .card, .total-metric-card, .chart-card { background: var(--surface-dark); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.3s; }
+        .light-mode .card, .light-mode .total-metric-card, .light-mode .chart-card { background: var(--surface-light); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        .card h3 { font-size:14px; color: var(--muted-dark); margin: 0 0 10px; }
+        .card .value { font-size:28px; font-weight:700; color: var(--accent); }
+        .total-metric-card .value { font-size:48px; font-weight:700; color: var(--secondary-accent); }
 
-/* Control Styles */
-.control-select, .theme-toggle {
-  background: var(--surface-dark);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  color: var(--text-dark);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-}
-.light-mode .control-select, .light-mode .theme-toggle {
-  background: var(--surface-light);
-  border: 1px solid #ccc;
-  color: var(--text-light);
-}
-.theme-toggle { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; }
-.theme-toggle i { font-size: 18px; }
+        .hamburger { display: none; background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
 
-/* Totals Section */
-.totals-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
-    margin-bottom: 20px;
-}
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .sidebar { position: fixed; top: 0; left: -260px; height: 100vh; width: 260px; }
+            .sidebar.open { left: 0; }
+            [dir="rtl"] .sidebar { left: auto; right: -260px; }
+            [dir="rtl"] .sidebar.open { right: 0; }
+            .main-content { padding: 15px; }
+            .dashboard-grid, .totals-row { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+        }
 
-/* Cards Grid */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  grid-gap: 20px;
-  margin-bottom: 40px;
-}
-
-/* Card Styles */
-.card {
-  background: var(--surface-dark);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(124, 64, 250, 0.08);
-  color: var(--text-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  transition: background .25s, color .25s, box-shadow .25s;
-}
-.card .icon-circle {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #a560ff);
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom: 10px;
-}
-.card .icon-circle i { color: white; font-size: 18px; }
-.card h3 { font-size:14px; font-weight:600; margin:0 0 5px 0; color: var(--muted-dark); }
-.light-mode .card h3 { color: var(--muted-light); }
-.card .value { font-size:28px; font-weight:700; color: var(--accent); }
-
-/* Charts Section */
-.charts-section {
-  display: grid;
-  grid-template-columns: 1fr; 
-  gap: 25px;
-  margin-bottom: 40px;
-}
-.chart-card {
-  background: var(--surface-dark);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(124,64,250,0.08);
-  transition: background .25s, color .25s;
-}
-.chart-card h3 { font-size:18px; font-weight:700; margin-bottom:15px; color: var(--text-dark); }
-.light-mode .chart-card h3 { color: var(--text-light); }
-.chart-container { position: relative; height: 400px; }
-
-/* Total Metrics Card */
-.total-metric-card {
-  background: var(--surface-dark);
-  border-radius: 16px; padding:25px;
-  color: var(--text-dark);
-  display:flex; flex-direction:column; 
-  justify-content:center;
-  align-items: flex-start;
-  transition: background .25s, color .25s;
-}
-.light-mode .total-metric-card { background: var(--surface-light); }
-.total-metric-card h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; color: var(--muted-dark); }
-.total-metric-card .value { font-size:48px; font-weight:700; color: var(--secondary-accent); }
-.total-metric-card .subtitle { font-size: 14px; color: var(--muted-dark); margin-top: 5px; }
-.light-mode .total-metric-card .subtitle { color: var(--muted-light); }
-
-/* Calendar / Weather Box */
-.calendar-weather-box {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background-color: var(--surface-dark);
-  padding: 8px 15px;
-  border-radius: 8px;
-  color: var(--text-dark);
-}
-.light-mode .calendar-weather-box { background-color: var(--surface-light); color: var(--text-light); border: 1px solid #ccc; }
-
-/* HR Button */
-button.hr-button {
-  background-color: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 20px;
-  transition: background-color 0.3s, transform 0.3s;
-  width: 90%;
-  align-self: center;
-}
-button.hr-button:hover { background-color: #5a2edc; transform: translateY(-2px); }
-button.hr-button a { color: inherit; text-decoration: none; }
-
-/* Hamburger Button */
-.hamburger { display: none; background: none; border: none; color: var(--text-dark); cursor: pointer; padding: 8px; border-radius: 4px; transition: background 0.3s; }
-.light-mode .hamburger { color: var(--text-light); }
-
-/* Error Message */
-.error { color: #ff3333; background: var(--surface-dark); padding: 10px; border-radius: 8px; text-align:center; margin-top:30px; font-weight:bold; font-size:1em; }
-.light-mode .error { background: var(--surface-light); }
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
-  .charts-section { grid-template-columns: 1fr; }
-  .chart-container { height: 350px; }
-}
-
-</style>
+        [dir="rtl"] { direction: rtl; }
+        [dir="rtl"] .back-button i { transform: rotate(180deg); }
+    </style>
 </head>
 <body class="dark-mode">
 
-<a href="index.html"><button class="back-button">Back</button></a>
+<div class="container">
+    <nav class="sidebar" id="sidebar">
+        <div style="display:flex; flex-direction:column; flex-grow:1;">
+            <div class="logo">RUBYRED</div>
+            
+            <div class="back-nav">
+                <a href="index.html" class="back-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span data-i18="BACK">Back</span>
+                </a>
+            </div>
 
-<div class="container">  
-<nav class="sidebar" id="sidebar">
-<div style="display:flex; flex-direction:column; flex-grow:1;">
-  <div class="logo" id="logoText">RUBYRED</div>
-  <ul class="menu" id="sidebarMenu">
-    <li class="active"><a href="managers.html" data-i18="OVERTIME_DASHBOARD"></i>OVERTIME DASHBOARD</a></li>
-    <li><a href="recruitment.html" data-i18="RECRUITMENT"><i class="fa-solid fa-industry"></i>RECRUITMENT</a></li>
-  </ul>
-</div>
-<div class="bottom" id="footerText">© RUBYRED</div>
-</nav>
+            <ul class="menu">
+                <li class="active">
+                    <a href="managers.html">
+                        <i class="fa-solid fa-gauge"></i>
+                        <span data-i18="OVERTIME_DASHBOARD">OVERTIME DASHBOARD</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="recruitment.html">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span data-i18="RECRUITMENT">RECRUITMENT</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="bottom" id="footerText">© RUBYRED</div>
+    </nav>
 
-<main class="main-content">
-<header class="header">
-<div style="display:flex;align-items:center;gap:12px;">
-  <button class="hamburger" aria-label="Toggle menu" id="hamburgerBtn">
-    <i class="fa-solid fa-bars"></i>
-  </button>
-  <div class="welcome" id="welcomeText" data-i18="welcome">Welcome Back!</div>
-</div>
-<div class="controls-flex">
-  <div class="calendar-weather-box">
-    <div class="date-info">
-      <div id="dayName">Monday</div>
-      <div id="fullDate">Nov 26, 2025</div>
-    </div>
-    <div class="weather-info">
-      <span id="weatherIcon">☀️</span>
-      <span id="temperature">25°C</span>
-    </div>
-  </div>
-  <select id="langSelect" class="control-select">
-    <option value="en">English</option>
-    <option value="ar">العربية</option>
-    <option value="tr">Türkçe</option>
-  </select>
-  <button id="themeToggle" class="theme-toggle" aria-label="Toggle light and dark theme">
-      <i class="fa-solid fa-moon"></i>
-  </button>
-</div>
-</header>
+    <main class="main-content">
+        <header class="header">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+                <div class="welcome" data-i18="welcome">Welcome Back!</div>
+            </div>
+            
+            <div class="controls-flex">
+                <div class="calendar-weather-box" style="display:flex; gap:10px; align-items:center;">
+                    <div id="dayName">Monday</div>
+                    <div id="fullDate">Nov 26, 2025</div>
+                    <div id="temperature">22°C</div>
+                </div>
 
-<section class="totals-row">
-<div class="total-metric-card">
-  <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
-  <div class="value" id="TOTAL_OVERTIME">0</div>
-  <div class="subtitle">Hours accrued this week</div>
-</div>
-<div class="total-metric-card">
-  <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
-  <div class="value" id="TOTAL_OVERNIGHT">0</div>
-  <div class="subtitle">Total overnight attendance</div>
-</div>
-</section>
+                <select id="langSelect" class="control-select">
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                    <option value="tr">Türkçe</option>
+                </select>
 
-<section class="dashboard-grid">
-<div class="card">
-  <div class="icon-circle"><i class="fa-solid fa-industry"></i></div>
-  <h3 data-i18="PRODUCTION">PRODUCTION</h3>
-  <div class="value" id="PRODUCTION">0</div>
-</div>
+                <button id="themeToggle" class="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
 
-<div class="card">
-  <div class="icon-circle" style="background: linear-gradient(135deg,#ed64a6,#da22ff);"><i class="fa-solid fa-check-double"></i></div>
-  <h3 data-i18="QA">QA</h3>
-  <div class="value" id="QA">0</div>
-</div>
+        <section class="totals-row">
+            <div class="total-metric-card">
+                <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
+                <div class="value" id="TOTAL_OVERTIME">0</div>
+            </div>
+            <div class="total-metric-card">
+                <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
+                <div class="value" id="TOTAL_OVERNIGHT">0</div>
+            </div>
+        </section>
 
-<div class="card">
-  <div class="icon-circle" style="background: linear-gradient(135deg,#4f46e5,#9f7aea);"><i class="fa-solid fa-scissors"></i></div>
-  <h3 data-i18="CUTTING">CUTTING</h3>
-  <div class="value" id="CUTTING">0</div>
-</div>
-<div class="card">
-  <div class="icon-circle" style="background: linear-gradient(135deg,#f97316,#fb923c);"><i class="fa-solid fa-truck"></i></div>
-  <h3 data-i18="LOGISTICS">LOGISTICS</h3>
-  <div class="value" id="LOGISTICS">0</div>
-</div>
+        <section class="dashboard-grid">
+            <div class="card"><h3 data-i18="PRODUCTION">PRODUCTION</h3><div class="value" id="PRODUCTION">0</div></div>
+            <div class="card"><h3 data-i18="QA">QA</h3><div class="value" id="QA">0</div></div>
+            <div class="card"><h3 data-i18="CUTTING">CUTTING</h3><div class="value" id="CUTTING">0</div></div>
+            <div class="card"><h3 data-i18="PRINTING">PRINTING</h3><div class="value" id="PRINTING">0</div></div>
+            <div class="card"><h3 data-i18="EMBROIDERY">EMBROIDERY</h3><div class="value" id="EMBROIDERY">0</div></div>
+            <div class="card"><h3 data-i18="WAREHOUSE">WAREHOUSE</h3><div class="value" id="WAREHOUSE">0</div></div>
+            <div class="card"><h3 data-i18="MODELING">MODELING</h3><div class="value" id="MODELING">0</div></div>
+            <div class="card"><h3 data-i18="ACCESSORIES">ACCESSORIES</h3><div class="value" id="ACCESSORIES">0</div></div>
+            <div class="card"><h3 data-i18="ADMINISTRATION">ADMINISTRATION</h3><div class="value" id="ADMINISTRATION">0</div></div>
+            <div class="card"><h3 data-i18="FABRIC_STORE">FABRIC STORE</h3><div class="value" id="FABRIC_STORE">0</div></div>
+        </section>
 
-<div class="card">
-  <div class="icon-circle" style="background: linear-gradient(135deg,#10b981,#34d399);"><i class="fa-solid fa-users"></i></div>
-  <h3 data-i18="HR">HR</h3>
-  <div class="value" id="HR">0</div>
-</div>
-</section>
-
-<section class="charts-section">
-<div class="chart-card">
-  <h3 data-i18="OVERTIME_BY_DEPARTMENT">OVERTIME BY DEPARTMENT</h3>
-  <canvas id="overtimeChart" class="chart-container"></canvas>
-</div>
-
-<div class="chart-card">
-  <h3 data-i18="ATTENDANCE_TRENDS">ATTENDANCE TRENDS</h3>
-  <canvas id="attendanceChart" class="chart-container"></canvas>
-</div>
-</section>
-
-<button class="hr-button"><a href="hr-dashboard.html" data-i18="GO_TO_HR">Go to HR Dashboard</a></button>
-
-<div id="errorMessage" class="error" style="display:none;" data-i18="NO_DATA">No data available</div>
-</main>
+        <div class="chart-card">
+            <h3 data-i18="department_performance">Department Staff Count Overview</h3>
+            <div style="height: 400px;"><canvas id="barChart"></canvas></div>
+        </div>
+        <div class="error" id="error-message"></div>
+    </main>
 </div>
 
 <script>
-// Language translations
+const SHEET_ID = '1aPFd7hzDjneSwDeuZ96TD-a0THkhugCdlHu-2ekYf1Y';
+const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
+const RANGE = 'OT_DASHBOARD!A2:L2';
+
+let barChart = null;
+const DEPARTMENTS = ['PRODUCTION', 'QA', 'CUTTING', 'PRINTING', 'EMBROIDERY', 'WAREHOUSE', 'MODELING', 'ACCESSORIES', 'ADMINISTRATION', 'FABRIC_STORE'];
+
 const translations = {
-  en: {
-    welcome: "Welcome Back!",
-    OVERTIME_DASHBOARD: "OVERTIME DASHBOARD",
-    RECRUITMENT: "RECRUITMENT",
-    TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)",
-    TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS",
-    PRODUCTION: "PRODUCTION",
-    QA: "QA",
-    CUTTING: "CUTTING",
-    LOGISTICS: "LOGISTICS",
-    HR: "HR",
-    OVERTIME_BY_DEPARTMENT: "OVERTIME BY DEPARTMENT",
-    ATTENDANCE_TRENDS: "ATTENDANCE TRENDS",
-    GO_TO_HR: "Go to HR Dashboard",
-    NO_DATA: "No data available"
-  },
-  ar: {
-    welcome: "مرحبا بعودتك!",
-    OVERTIME_DASHBOARD: "لوحة ساعات العمل الإضافية",
-    RECRUITMENT: "التوظيف",
-    TOTAL_OVERTIME: "إجمالي ساعات العمل الإضافية",
-    TOTAL_OVERNIGHT: "إجمالي نوبات الليل",
-    PRODUCTION: "الإنتاج",
-    QA: "مراقبة الجودة",
-    CUTTING: "القص",
-    LOGISTICS: "اللوجستيات",
-    HR: "الموارد البشرية",
-    OVERTIME_BY_DEPARTMENT: "العمل الإضافي حسب القسم",
-    ATTENDANCE_TRENDS: "اتجاهات الحضور",
-    GO_TO_HR: "اذهب إلى لوحة الموارد البشرية",
-    NO_DATA: "لا توجد بيانات"
-  },
-  tr: {
-    welcome: "Tekrar Hoşgeldiniz!",
-    OVERTIME_DASHBOARD: "FAZLA MESAI PANELI",
-    RECRUITMENT: "İŞE ALIM",
-    TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ (Saat)",
-    TOTAL_OVERNIGHT: "TOPLAM GECE NÖBETİ",
-    PRODUCTION: "ÜRETİM",
-    QA: "KALİTE KONTROL",
-    CUTTING: "KESİM",
-    LOGISTICS: "LOJİSTİK",
-    HR: "İK",
-    OVERTIME_BY_DEPARTMENT: "DEPARTMANA GÖRE FAZLA MESAİ",
-    ATTENDANCE_TRENDS: "KATILIM TRENDLERİ",
-    GO_TO_HR: "İK Paneline Git",
-    NO_DATA: "Veri yok"
-  }
+    en: {
+        welcome: "Welcome Back!", BACK: "Back", OVERTIME_DASHBOARD: "OVERTIME DASHBOARD", RECRUITMENT: "RECRUITMENT",
+        PRODUCTION: "PRODUCTION", QA: "QA", CUTTING: "CUTTING", PRINTING: "PRINTING", EMBROIDERY: "EMBROIDERY", WAREHOUSE: "WAREHOUSE", MODELING: "MODELING", ACCESSORIES: "ACCESSORIES", ADMINISTRATION: "ADMINISTRATION", FABRIC_STORE: "FABRIC STORE",
+        TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)", TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS", department_performance: "Department Staff Count Overview"
+    },
+    ar: {
+        welcome: "أهلاً بك مجدداً!", BACK: "رجوع", OVERTIME_DASHBOARD: "لوحة العمل الإضافي", RECRUITMENT: "التوظيف",
+        PRODUCTION: "الإنتاج", QA: "الجودة", CUTTING: "القص", PRINTING: "الطباعة", EMBROIDERY: "التطريز", WAREHOUSE: "المستودع", MODELING: "النمذجة", ACCESSORIES: "الإكسسوارات", ADMINISTRATION: "الإدارة", FABRIC_STORE: "مخزن القماش",
+        TOTAL_OVERTIME: "إجمالي الساعات الإضافية", TOTAL_OVERNIGHT: "إجمالي المناوبات الليلية", department_performance: "أعداد موظفي الأقسام"
+    },
+    tr: {
+        welcome: "Tekrar Hoş Geldiniz!", BACK: "Geri", OVERTIME_DASHBOARD: "FAZLA MESAİ PANOSU", RECRUITMENT: "İŞE ALIM",
+        PRODUCTION: "ÜRETİM", QA: "KALİTE", CUTTING: "KESİM", PRINTING: "BASKI", EMBROIDERY: "NAKIŞ", WAREHOUSE: "DEPO", MODELING: "MODELLEME", ACCESSORIES: "AKSESUARLAR", ADMINISTRATION: "YÖNETİM", FABRIC_STORE: "KUMAŞ DEPOSU",
+        TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ", TOTAL_OVERNIGHT: "TOPLAM GECE VARDİYASI", department_performance: "Departman Personel Sayısı"
+    }
 };
 
-// Apply language
-const langSelect = document.getElementById('langSelect');
 function setLanguage(lang) {
-  document.querySelectorAll('[data-i18]').forEach(el => {
-    const key = el.getAttribute('data-i18');
-    if(translations[lang][key]) el.innerText = translations[lang][key];
-  });
+    const texts = translations[lang] || translations['en'];
+    document.querySelectorAll('[data-i18]').forEach(el => {
+        const key = el.getAttribute('data-i18');
+        if (texts[key]) el.textContent = texts[key];
+    });
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    localStorage.setItem('dashboard_language', lang);
+    if (barChart) reRenderCharts();
 }
-langSelect.addEventListener('change', e => setLanguage(e.target.value));
-setLanguage('en');
 
-// Sidebar hamburger toggle
-const hamburger = document.getElementById('hamburgerBtn');
-const sidebar = document.getElementById('sidebar');
-hamburger.addEventListener('click', () => {
-  sidebar.classList.toggle('collapsed');
-});
+function toggleTheme() {
+    const body = document.body;
+    body.classList.toggle('light-mode');
+    const isLight = body.classList.contains('light-mode');
+    document.getElementById('themeToggle').innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    localStorage.setItem('dashboard_theme', isLight ? 'light' : 'dark');
+    if (barChart) reRenderCharts();
+}
 
-// Dark / Light Mode Toggle
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-  document.body.classList.toggle('light-mode');
-  const icon = themeToggle.querySelector('i');
-  if(document.body.classList.contains('light-mode')) icon.classList.replace('fa-moon','fa-sun');
-  else icon.classList.replace('fa-sun','fa-moon');
-});
+function updateBarChart(labels, data) {
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const isLight = document.body.classList.contains('light-mode');
+    const textColor = isLight ? '#111827' : '#ffffff';
 
-// Dummy Data
-const dummyData = {
-  TOTAL_OVERTIME: 120,
-  TOTAL_OVERNIGHT: 15,
-  PRODUCTION: 560,
-  QA: 120,
-  CUTTING: 250,
-  LOGISTICS: 90,
-  HR: 50,
-  overtimeByDept: {
-    labels: ["Production", "QA", "Cutting", "Logistics", "HR"],
-    values: [560,120,250,90,50]
-  },
-  attendanceTrend: {
-    labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-    values: [450, 500, 480, 470, 490, 300, 0]
-  }
-};
-
-// Populate Values
-document.getElementById('TOTAL_OVERTIME').innerText = dummyData.TOTAL_OVERTIME;
-document.getElementById('TOTAL_OVERNIGHT').innerText = dummyData.TOTAL_OVERNIGHT;
-document.getElementById('PRODUCTION').innerText = dummyData.PRODUCTION;
-document.getElementById('QA').innerText = dummyData.QA;
-document.getElementById('CUTTING').innerText = dummyData.CUTTING;
-document.getElementById('LOGISTICS').innerText = dummyData.LOGISTICS;
-document.getElementById('HR').innerText = dummyData.HR;
-
-// Charts
-const overtimeCtx = document.getElementById('overtimeChart').getContext('2d');
-const overtimeChart = new Chart(overtimeCtx, {
-    type: 'bar',
-    data: {
-        labels: dummyData.overtimeByDept.labels,
-        datasets: [{
-            label: 'Hours',
-            data: dummyData.overtimeByDept.values,
-            backgroundColor: ['#7c40fa','#ed64a6','#4f46e5','#f97316','#10b981']
-        }]
-    },
-    options: {
-        plugins: {
-            legend: { display: false },
-            datalabels: { color: '#fff', anchor: 'end', align: 'top' }
+    if (barChart) barChart.destroy();
+    barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Staff Count',
+                data: data,
+                backgroundColor: ['#7c40fa', '#ed64a6', '#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#a855f7', '#65a30d', '#eab308'],
+                borderRadius: 5
+            }]
         },
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: { beginAtZero:true }
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, datalabels: { color: textColor, font: { weight: 'bold' } } },
+            scales: {
+                x: { ticks: { color: textColor } },
+                y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)' } }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+function reRenderCharts() {
+    const lang = document.getElementById('langSelect').value;
+    const labels = DEPARTMENTS.map(id => translations[lang][id]);
+    const data = DEPARTMENTS.map(id => Number(document.getElementById(id).textContent.replace(/,/g, '')) || 0);
+    updateBarChart(labels, data);
+}
+
+async function fetchDashboardData() {
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.values && data.values[0]) {
+            const vals = data.values[0];
+            DEPARTMENTS.concat(['TOTAL_OVERTIME', 'TOTAL_OVERNIGHT']).forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = Number(vals[i]).toLocaleString();
+            });
+            reRenderCharts();
         }
-    },
-    plugins: [ChartDataLabels]
-});
+    } catch (err) { console.error('Error fetching data:', err); }
+}
 
-const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
-const attendanceChart = new Chart(attendanceCtx, {
-    type: 'line',
-    data: {
-        labels: dummyData.attendanceTrend.labels,
-        datasets: [{
-            label: 'Employees',
-            data: dummyData.attendanceTrend.values,
-            fill: true,
-            backgroundColor: 'rgba(124,64,250,0.2)',
-            borderColor: '#7c40fa',
-            tension: 0.4,
-            pointRadius: 6,
-            pointBackgroundColor: '#7c40fa'
-        }]
-    },
-    options: {
-        plugins: { legend: { display: false } },
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { beginAtZero:true } }
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('dashboard_language') || 'en';
+    const savedTheme = localStorage.getItem('dashboard_theme');
+    if (savedTheme === 'light') toggleTheme();
+    document.getElementById('langSelect').value = savedLang;
+    setLanguage(savedLang);
+    fetchDashboardData();
+
+    document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
 });
 </script>
-
-<script>
-// Date & Weather
-const dayNameEl = document.getElementById('dayName');
-const fullDateEl = document.getElementById('fullDate');
-const temperatureEl = document.getElementById('temperature');
-const weatherIconEl = document.getElementById('weatherIcon');
-const date = new Date();
-const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-dayNameEl.innerText = days[date.getDay()];
-fullDateEl.innerText = date.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
-temperatureEl.innerText = '25°C'; // dummy
-weatherIconEl.innerText = '☀️';
-</script>
-
-<script>
-// Responsive Sidebar for Mobile
-function handleResize() {
-  if(window.innerWidth <= 768) sidebar.classList.add('collapsed');
-  else sidebar.classList.remove('collapsed');
-}
-window.addEventListener('resize', handleResize);
-handleResize();
-</script>
-
-<style>
-/* Additional styles for responsive sidebar */
-@media (max-width: 768px) {
-  #sidebar { 
-    width: 0;
-    overflow-x: hidden;
-  }
-  #sidebar.collapsed { width: 250px; }
-  main { margin-left: 0; transition: margin 0.3s; }
-}
-@media (min-width: 769px) {
-  #sidebar { width: 250px; }
-  #sidebar.collapsed { width: 80px; }
-  main { margin-left: 250px; transition: margin 0.3s; }
-}
-
-/* Hamburger */
-#hamburgerBtn {
-  display: none;
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 999;
-}
-@media (max-width: 768px) { #hamburgerBtn { display: block; } }
-
-/* Sidebar items animation */
-.sidebar ul li {
-  transition: all 0.3s ease;
-}
-.sidebar.collapsed ul li span { display: none; }
-.sidebar.collapsed ul li { text-align: center; }
-
-/* Language selector */
-#langSelect { margin: 10px; padding: 5px; }
-
-/* Dark/Light Mode */
-body.light-mode { background-color: #f3f4f6; color: #111827; }
-body.light-mode .sidebar { background-color: #fff; }
-body.light-mode .card { background-color: #fff; color: #111827; }
-
-/* Cards hover */
-.card { transition: transform 0.2s; }
-.card:hover { transform: translateY(-5px); }
-
-/* Chart container height */
-.chart-container { height: 250px; }
-
-/* HR Button style */
-.hr-button {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #7c40fa;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-.hr-button:hover { background-color: #5b2adf; }
-.hr-button a { color: inherit; text-decoration: none; }
-
-/* Error message */
-.error { color: red; font-weight: bold; margin-top: 15px; }
-
-/* Icon circles */
-.icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; margin-bottom: 10px; }
-</style>
-
-<script>
-// Optional: Update weather dynamically (dummy API simulation)
-function updateWeather() {
-  const temp = 22 + Math.floor(Math.random()*8);
-  const icons = ['☀️','🌤','⛅','🌧','🌩','❄️'];
-  temperatureEl.innerText = `${temp}°C`;
-  weatherIconEl.innerText = icons[Math.floor(Math.random()*icons.length)];
-}
-setInterval(updateWeather, 60000); // every 60 sec
-updateWeather();
-
-// Optional: Animate cards values (count-up effect)
-function animateValue(id, start, end, duration) {
-  let range = end - start;
-  let current = start;
-  let increment = end > start ? 1 : -1;
-  let stepTime = Math.abs(Math.floor(duration / range));
-  let obj = document.getElementById(id);
-  let timer = setInterval(() => {
-    current += increment;
-    obj.innerText = current;
-    if (current == end) clearInterval(timer);
-  }, stepTime);
-}
-
-// Animate dashboard cards
-animateValue('TOTAL_OVERTIME', 0, dummyData.TOTAL_OVERTIME, 1000);
-animateValue('TOTAL_OVERNIGHT', 0, dummyData.TOTAL_OVERNIGHT, 1000);
-animateValue('PRODUCTION', 0, dummyData.PRODUCTION, 1000);
-animateValue('QA', 0, dummyData.QA, 1000);
-animateValue('CUTTING', 0, dummyData.CUTTING, 1000);
-animateValue('LOGISTICS', 0, dummyData.LOGISTICS, 1000);
-animateValue('HR', 0, dummyData.HR, 1000);
-
-// Optional: Sidebar tooltip for collapsed mode
-document.querySelectorAll('.sidebar ul li').forEach(item => {
-  item.addEventListener('mouseenter', () => {
-    if(sidebar.classList.contains('collapsed')) {
-      let tooltip = document.createElement('span');
-      tooltip.classList.add('tooltip');
-      tooltip.innerText = item.querySelector('span')?.innerText || '';
-      item.appendChild(tooltip);
-    }
-  });
-  item.addEventListener('mouseleave', () => {
-    let tooltip = item.querySelector('.tooltip');
-    if(tooltip) tooltip.remove();
-  });
-});
-</script>
-
-<!-- End of Dashboard HTML -->
 </body>
 </html>
