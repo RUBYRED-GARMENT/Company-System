@@ -1,327 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Managers Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" href="pic/logooo.png" />
-    <style>
-        /* Font Import */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Managers Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        /* Base Styles */
-        * { box-sizing: border-box; }
-        html, body { height: 100%; }
+<style>
+/* Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cairo:wght@400;700&display=swap');
 
-        :root {
-            --bg-dark: #121217;
-            --surface-dark: #181821;
-            --muted-dark: #a3a3b3;
-            --text-dark: #e0e0e0;
-            --chart-text-dark: #ffffff;
-            --accent: #7c40fa;
-            --secondary-accent: #ff6f00;
-            --bg-light: #f4f4f9;
-            --surface-light: #ffffff;
-            --muted-light: #666;
-            --text-light: #111827;
-            --chart-text-light: #111827;
-        }
+/* Base Styles */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-            transition: background .3s, color .3s;
-        }
+:root{
+  --bg-dark: #121217;
+  --surface-dark: #181821;
+  --muted-dark: #a3a3b3;
+  --text-dark: #e0e0e0;
+  --accent: #7c40fa;
+  --secondary-accent: #ff6f00;
+  --bg-light: #f4f4f9;
+  --surface-light: #ffffff;
+  --text-light: #111827;
+}
 
-        .light-mode {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-        }
+body {
+  margin: 0;
+  font-family: 'Inter', 'Cairo', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
 
-        /* Sidebar Logic */
-        .sidebar {
-            background-color: var(--surface-dark);
-            width: 260px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all .3s;
-            z-index: 1100;
-        }
+.light-mode { background-color: var(--bg-light); color: var(--text-light); }
 
-        .light-mode .sidebar { background-color: var(--surface-light); border-right: 1px solid #ddd; }
-        [dir="rtl"].light-mode .sidebar { border-right: none; border-left: 1px solid #ddd; }
+/* Layout */
+.container { display: flex; height: 100vh; }
 
-        /* Back Button Inside Sidebar */
-        .back-nav { margin-bottom: 20px; }
-        .back-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            background: rgba(124, 64, 250, 0.1);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .back-button:hover { background: var(--accent); color: #fff; }
+/* Sidebar */
+.sidebar {
+  background-color: var(--surface-dark);
+  width: 260px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform .3s ease;
+  z-index: 2000;
+}
+.light-mode .sidebar { background-color: var(--surface-light); }
 
-        .sidebar .logo { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
-        .menu { list-style: none; padding: 0; margin: 0; }
-        .menu li { margin-bottom: 20px; font-weight: 600; cursor: pointer; color: var(--muted-dark); display: flex; align-items: center; transition: color 0.3s; }
-        .menu li.active, .menu li:hover { color: var(--accent); }
-        .menu li a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1500;
+}
+.sidebar-overlay.active { display: block; }
 
-        .container { display: flex; height: 100vh; }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; }
+.sidebar .logo { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 40px; }
+.menu { list-style: none; padding: 0; margin: 0; }
+.menu li { margin-bottom: 20px; font-weight: 600; cursor: pointer; color: var(--muted-dark); transition: color 0.3s; }
+.menu li.active, .menu li:hover { color: var(--accent); }
+.menu li a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
 
-        /* Header & Controls */
-        .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; gap:12px; }
-        .welcome { font-size:24px; font-weight:700; }
-        .controls-flex { display:flex; align-items:center; gap:18px; }
-        .control-select, .theme-toggle { background: var(--surface-dark); padding: 8px 12px; border-radius: 8px; border: none; color: var(--text-dark); font-weight: 600; cursor: pointer; }
-        .light-mode .control-select, .light-mode .theme-toggle { background: var(--surface-light); border: 1px solid #ccc; color: var(--text-light); }
+/* Main content */
+.main-content { flex-grow: 1; display: flex; flex-direction: column; padding: 20px 40px; overflow-y: auto; }
 
-        /* Grid & Cards */
-        .totals-row { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 20px; margin-bottom: 20px; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 20px; margin-bottom: 40px; }
-        .card, .total-metric-card, .chart-card { background: var(--surface-dark); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.3s; }
-        .light-mode .card, .light-mode .total-metric-card, .light-mode .chart-card { background: var(--surface-light); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        .card h3 { font-size:14px; color: var(--muted-dark); margin: 0 0 10px; }
-        .card .value { font-size:28px; font-weight:700; color: var(--accent); }
-        .total-metric-card .value { font-size:48px; font-weight:700; color: var(--secondary-accent); }
+/* Header */
+.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; gap:12px; }
+.welcome { font-size:24px; font-weight:700; }
+.controls-flex { display:flex; align-items:center; gap:18px; }
 
-        .hamburger { display: none; background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; }
+.control-select, .theme-toggle {
+  background: var(--surface-dark);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  color: var(--text-dark);
+  font-weight: 600;
+  cursor: pointer;
+}
+.light-mode .control-select, .light-mode .theme-toggle {
+  background: var(--surface-light);
+  border: 1px solid #ccc;
+  color: var(--text-light);
+}
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .hamburger { display: block; }
-            .sidebar { position: fixed; top: 0; left: -260px; height: 100vh; width: 260px; }
-            .sidebar.open { left: 0; }
-            [dir="rtl"] .sidebar { left: auto; right: -260px; }
-            [dir="rtl"] .sidebar.open { right: 0; }
-            .main-content { padding: 15px; }
-            .dashboard-grid, .totals-row { grid-template-columns: 1fr; }
-            .header { flex-direction: column; align-items: flex-start; }
-        }
+/* Cards */
+.totals-row { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 20px; margin-bottom: 20px; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 20px; margin-bottom: 40px; }
+.card { background: var(--surface-dark); border-radius: 16px; padding: 20px; }
+.light-mode .card { background: var(--surface-light); }
+.card .value { font-size:28px; font-weight:700; color: var(--accent); }
 
-        [dir="rtl"] { direction: rtl; }
-        [dir="rtl"] .back-button i { transform: rotate(180deg); }
-    </style>
+.total-metric-card { background: var(--surface-dark); border-radius: 16px; padding:25px; }
+.light-mode .total-metric-card { background: var(--surface-light); }
+.total-metric-card .value { font-size:48px; font-weight:700; color: var(--secondary-accent); }
+
+.charts-section { margin-bottom: 40px; }
+.chart-card { background: var(--surface-dark); border-radius: 16px; padding: 20px; }
+.light-mode .chart-card { background: var(--surface-light); }
+.chart-container { position: relative; height: 400px; }
+
+/* Hamburger */
+.hamburger { display: none; background: none; border: none; color: var(--text-dark); cursor: pointer; font-size: 20px; }
+.light-mode .hamburger { color: var(--text-light); }
+
+button.hr-button { background-color: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 90%; align-self: center; }
+.hr-button a { text-decoration: none; color: #fff; }
+
+/* --- RESPONSIVE LOGIC --- */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+  
+  /* الإنجليزية - السايد بار يخرج لليسار */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+  }
+
+  /* العربية - السايد بار يخرج لليمين */
+  [dir="rtl"] .sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  /* كلاس الفتح يعمل للاثنين */
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  .main-content { padding: 15px; }
+  .dashboard-grid, .totals-row { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body class="dark-mode">
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="container">
-    <nav class="sidebar" id="sidebar">
-        <div style="display:flex; flex-direction:column; flex-grow:1;">
-            <div class="logo">RUBYRED</div>
-            
-            <div class="back-nav">
-                <a href="index.html" class="back-button">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span data-i18="BACK">Back</span>
-                </a>
-            </div>
+  <nav class="sidebar" id="sidebar">
+    <div style="display:flex; flex-direction:column; flex-grow:1;">
+      <div class="logo">RUBYRED</div>
+      <ul class="menu" id="sidebarMenu">
+        <li class="active"><a href="managers.html" data-i18="OVERTIME_DASHBOARD"><i class="fa-solid fa-chart-pie"></i> OVERTIME DASHBOARD</a></li>
+        <li><a href="recruitment.html" data-i18="RECRUITMENT"><i class="fa-solid fa-users"></i> RECRUITMENT</a></li>
+        <li><a href="annualLeaveBalance.html" data-i18="ANNUAL_LEAVES_ANALYSIS"><i class="fa-solid fa-calendar-days"></i> ANNUAL LEAVES</a></li>
+      </ul>
+      <button class="hr-button"><a href="index.html" data-i18="BACK">BACK</a></button>
+    </div>
+    <div class="bottom">© RUBYRED</div>
+  </nav>
 
-            <ul class="menu">
-                <li class="active">
-                    <a href="managers.html">
-                        <i class="fa-solid fa-gauge"></i>
-                        <span data-i18="OVERTIME_DASHBOARD">OVERTIME DASHBOARD</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="recruitment.html">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span data-i18="RECRUITMENT">RECRUITMENT</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="bottom" id="footerText">© RUBYRED</div>
-    </nav>
+  <main class="main-content">
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+        <div class="welcome" data-i18="welcome">Welcome Back!</div>
+      </div>
+      <div class="controls-flex">
+        <select id="langSelect" class="control-select">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        <button id="themeToggle" class="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+      </div>
+    </header>
 
-    <main class="main-content">
-        <header class="header">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
-                <div class="welcome" data-i18="welcome">Welcome Back!</div>
-            </div>
-            
-            <div class="controls-flex">
-                <div class="calendar-weather-box" style="display:flex; gap:10px; align-items:center;">
-                    <div id="dayName">Monday</div>
-                    <div id="fullDate">Nov 26, 2025</div>
-                    <div id="temperature">22°C</div>
-                </div>
+    <section class="totals-row">
+      <div class="total-metric-card">
+        <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
+        <div class="value" id="TOTAL_OVERTIME">0</div>
+      </div>
+      <div class="total-metric-card">
+        <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
+        <div class="value" id="TOTAL_OVERNIGHT">0</div>
+      </div>
+    </section>
 
-                <select id="langSelect" class="control-select">
-                    <option value="en">English</option>
-                    <option value="ar">العربية</option>
-                    <option value="tr">Türkçe</option>
-                </select>
+    <section class="dashboard-grid">
+      <div class="card"><h3 data-i18="PRODUCTION">PRODUCTION</h3><div class="value" id="PRODUCTION">0</div></div>
+      <div class="card"><h3 data-i18="QA">QA</h3><div class="value" id="QA">0</div></div>
+      <div class="card"><h3 data-i18="CUTTING">CUTTING</h3><div class="value" id="CUTTING">0</div></div>
+      <div class="card"><h3 data-i18="PRINTING">PRINTING</h3><div class="value" id="PRINTING">0</div></div>
+      <div class="card"><h3 data-i18="EMBROIDERY">EMBROIDERY</h3><div class="value" id="EMBROIDERY">0</div></div>
+      <div class="card"><h3 data-i18="WAREHOUSE">WAREHOUSE</h3><div class="value" id="WAREHOUSE">0</div></div>
+      <div class="card"><h3 data-i18="MODELING">MODELING</h3><div class="value" id="MODELING">0</div></div>
+      <div class="card"><h3 data-i18="ACCESSORIES">ACCESSORIES</h3><div class="value" id="ACCESSORIES">0</div></div>
+      <div class="card"><h3 data-i18="ADMINISTRATION">ADMINISTRATION</h3><div class="value" id="ADMINISTRATION">0</div></div>
+      <div class="card"><h3 data-i18="FABRIC_STORE">FABRIC STORE</h3><div class="value" id="FABRIC_STORE">0</div></div>
+    </section>
 
-                <button id="themeToggle" class="theme-toggle"><i class="fa-solid fa-moon"></i></button>
-            </div>
-        </header>
-
-        <section class="totals-row">
-            <div class="total-metric-card">
-                <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
-                <div class="value" id="TOTAL_OVERTIME">0</div>
-            </div>
-            <div class="total-metric-card">
-                <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
-                <div class="value" id="TOTAL_OVERNIGHT">0</div>
-            </div>
-        </section>
-
-        <section class="dashboard-grid">
-            <div class="card"><h3 data-i18="PRODUCTION">PRODUCTION</h3><div class="value" id="PRODUCTION">0</div></div>
-            <div class="card"><h3 data-i18="QA">QA</h3><div class="value" id="QA">0</div></div>
-            <div class="card"><h3 data-i18="CUTTING">CUTTING</h3><div class="value" id="CUTTING">0</div></div>
-            <div class="card"><h3 data-i18="PRINTING">PRINTING</h3><div class="value" id="PRINTING">0</div></div>
-            <div class="card"><h3 data-i18="EMBROIDERY">EMBROIDERY</h3><div class="value" id="EMBROIDERY">0</div></div>
-            <div class="card"><h3 data-i18="WAREHOUSE">WAREHOUSE</h3><div class="value" id="WAREHOUSE">0</div></div>
-            <div class="card"><h3 data-i18="MODELING">MODELING</h3><div class="value" id="MODELING">0</div></div>
-            <div class="card"><h3 data-i18="ACCESSORIES">ACCESSORIES</h3><div class="value" id="ACCESSORIES">0</div></div>
-            <div class="card"><h3 data-i18="ADMINISTRATION">ADMINISTRATION</h3><div class="value" id="ADMINISTRATION">0</div></div>
-            <div class="card"><h3 data-i18="FABRIC_STORE">FABRIC STORE</h3><div class="value" id="FABRIC_STORE">0</div></div>
-        </section>
-
-        <div class="chart-card">
-            <h3 data-i18="department_performance">Department Staff Count Overview</h3>
-            <div style="height: 400px;"><canvas id="barChart"></canvas></div>
-        </div>
-        <div class="error" id="error-message"></div>
-    </main>
+    <section class="charts-section">
+      <div class="chart-card">
+        <h3 data-i18="department_performance">Department Staff Count Overview</h3>
+        <div class="chart-container"><canvas id="barChart"></canvas></div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script>
-const SHEET_ID = '1aPFd7hzDjneSwDeuZ96TD-a0THkhugCdlHu-2ekYf1Y';
-const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
-const RANGE = 'OT_DASHBOARD!A2:L2';
+  const SHEET_ID = '1aPFd7hzDjneSwDeuZ96TD-a0THkhugCdlHu-2ekYf1Y';
+  const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
+  const RANGE = 'OT_DASHBOARD!A2:L2'; 
+  
+  let barChart = null;
+  const DEPARTMENTS = ['PRODUCTION', 'QA', 'CUTTING', 'PRINTING', 'EMBROIDERY', 'WAREHOUSE', 'MODELING', 'ACCESSORIES', 'ADMINISTRATION', 'FABRIC_STORE'];
 
-let barChart = null;
-const DEPARTMENTS = ['PRODUCTION', 'QA', 'CUTTING', 'PRINTING', 'EMBROIDERY', 'WAREHOUSE', 'MODELING', 'ACCESSORIES', 'ADMINISTRATION', 'FABRIC_STORE'];
+  const translations = {
+      en: { welcome: "Welcome Back", PRODUCTION: "PRODUCTION", QA: "QA", CUTTING: "CUTTING", PRINTING: "PRINTING", EMBROIDERY: "EMBROIDERY", WAREHOUSE: "WAREHOUSE", MODELING: "MODELING", ACCESSORIES: "ACCESSORIES", ADMINISTRATION: "ADMINISTRATION", FABRIC_STORE: "FABRIC STORE", TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)", TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS", department_performance: "Department Staff Count Overview", BACK: "BACK", RECRUITMENT: "RECRUITMENT", ANNUAL_LEAVES_ANALYSIS: "ANNUAL LEAVES", OVERTIME_DASHBOARD: "OVERTIME DASHBOARD" },
+      ar: { welcome: "أهلا بك مجدداً", PRODUCTION: "الإنتاج", QA: "مراقبة الجودة", CUTTING: "القص", PRINTING: "الطباعة", EMBROIDERY: "التطريز", WAREHOUSE: "المستودع", MODELING: "النمذجة", ACCESSORIES: "الإكسسوارات", ADMINISTRATION: "الإدارة", FABRIC_STORE: "مخزن الأقمشة", TOTAL_OVERTIME: "إجمالي العمل الإضافي", TOTAL_OVERNIGHT: "المناوبات الليلية", department_performance: "أعداد الموظفين", BACK: "العودة", RECRUITMENT: "التوظيف", ANNUAL_LEAVES_ANALYSIS: "الإجازات السنوية", OVERTIME_DASHBOARD: "لوحة العمل الإضافي" },
+      tr: { welcome: "Tekrar Hoş Geldiniz", PRODUCTION: "ÜRETİM", QA: "KALİTE GÜVENCE", CUTTING: "KESİM", PRINTING: "BASKI", EMBROIDERY: "NAKIŞ", WAREHOUSE: "DEPO", MODELING: "MODELLEME", ACCESSORIES: "AKSESUARLAR", ADMINISTRATION: "YÖNETİM", FABRIC_STORE: "KUMAŞ DEPOSU", TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ", TOTAL_OVERNIGHT: "GECE VARDİYALARI", department_performance: "Personel Sayısı", BACK: "GERİ DÖN", RECRUITMENT: "İŞE ALIM", ANNUAL_LEAVES_ANALYSIS: "YILLIK İZİNLER", OVERTIME_DASHBOARD: "FAZLA MESAİ PANOSU" }
+  };
 
-const translations = {
-    en: {
-        welcome: "Welcome Back!", BACK: "Back", OVERTIME_DASHBOARD: "OVERTIME DASHBOARD", RECRUITMENT: "RECRUITMENT",
-        PRODUCTION: "PRODUCTION", QA: "QA", CUTTING: "CUTTING", PRINTING: "PRINTING", EMBROIDERY: "EMBROIDERY", WAREHOUSE: "WAREHOUSE", MODELING: "MODELING", ACCESSORIES: "ACCESSORIES", ADMINISTRATION: "ADMINISTRATION", FABRIC_STORE: "FABRIC STORE",
-        TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)", TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS", department_performance: "Department Staff Count Overview"
-    },
-    ar: {
-        welcome: "أهلاً بك مجدداً!", BACK: "رجوع", OVERTIME_DASHBOARD: "لوحة العمل الإضافي", RECRUITMENT: "التوظيف",
-        PRODUCTION: "الإنتاج", QA: "الجودة", CUTTING: "القص", PRINTING: "الطباعة", EMBROIDERY: "التطريز", WAREHOUSE: "المستودع", MODELING: "النمذجة", ACCESSORIES: "الإكسسوارات", ADMINISTRATION: "الإدارة", FABRIC_STORE: "مخزن القماش",
-        TOTAL_OVERTIME: "إجمالي الساعات الإضافية", TOTAL_OVERNIGHT: "إجمالي المناوبات الليلية", department_performance: "أعداد موظفي الأقسام"
-    },
-    tr: {
-        welcome: "Tekrar Hoş Geldiniz!", BACK: "Geri", OVERTIME_DASHBOARD: "FAZLA MESAİ PANOSU", RECRUITMENT: "İŞE ALIM",
-        PRODUCTION: "ÜRETİM", QA: "KALİTE", CUTTING: "KESİM", PRINTING: "BASKI", EMBROIDERY: "NAKIŞ", WAREHOUSE: "DEPO", MODELING: "MODELLEME", ACCESSORIES: "AKSESUARLAR", ADMINISTRATION: "YÖNETİM", FABRIC_STORE: "KUMAŞ DEPOSU",
-        TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ", TOTAL_OVERNIGHT: "TOPLAM GECE VARDİYASI", department_performance: "Departman Personel Sayısı"
-    }
-};
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
 
-function setLanguage(lang) {
-    const texts = translations[lang] || translations['en'];
-    document.querySelectorAll('[data-i18]').forEach(el => {
-        const key = el.getAttribute('data-i18');
-        if (texts[key]) el.textContent = texts[key];
-    });
-    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-    localStorage.setItem('dashboard_language', lang);
-    if (barChart) reRenderCharts();
-}
+  function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+  }
 
-function toggleTheme() {
-    const body = document.body;
-    body.classList.toggle('light-mode');
-    const isLight = body.classList.contains('light-mode');
-    document.getElementById('themeToggle').innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-    localStorage.setItem('dashboard_theme', isLight ? 'light' : 'dark');
-    if (barChart) reRenderCharts();
-}
+  hamburgerBtn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+  
+  function setLanguage(lang) {
+      const texts = translations[lang] || translations['en'];
+      document.querySelectorAll('[data-i18]').forEach(el => {
+          const key = el.getAttribute('data-i18');
+          if (texts[key]) el.textContent = texts[key];
+      });
+      document.documentElement.dir = (lang === 'ar' ? 'rtl' : 'ltr');
+      localStorage.setItem('dashboard_language', lang);
+      if (barChart) reRenderCharts();
+  }
 
-function updateBarChart(labels, data) {
-    const ctx = document.getElementById('barChart').getContext('2d');
-    const isLight = document.body.classList.contains('light-mode');
-    const textColor = isLight ? '#111827' : '#ffffff';
+  function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      document.getElementById('themeToggle').querySelector('i').className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      localStorage.setItem('dashboard_theme', isLight ? 'light' : 'dark');
+      if (barChart) reRenderCharts();
+  }
 
-    if (barChart) barChart.destroy();
-    barChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Staff Count',
-                data: data,
-                backgroundColor: ['#7c40fa', '#ed64a6', '#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#a855f7', '#65a30d', '#eab308'],
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, datalabels: { color: textColor, font: { weight: 'bold' } } },
-            scales: {
-                x: { ticks: { color: textColor } },
-                y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)' } }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-}
+  function reRenderCharts() {
+      const lang = document.getElementById('langSelect').value;
+      const chartLabels = DEPARTMENTS.map(id => translations[lang][id]);
+      const chartData = DEPARTMENTS.map(id => Number(document.getElementById(id).textContent.replace(/,/g, '')) || 0);
+      updateBarChart(chartLabels, chartData);
+  }
 
-function reRenderCharts() {
-    const lang = document.getElementById('langSelect').value;
-    const labels = DEPARTMENTS.map(id => translations[lang][id]);
-    const data = DEPARTMENTS.map(id => Number(document.getElementById(id).textContent.replace(/,/g, '')) || 0);
-    updateBarChart(labels, data);
-}
+  function updateBarChart(labels, data) {
+      const ctxBar = document.getElementById('barChart').getContext('2d');
+      const isLight = document.body.classList.contains('light-mode');
+      const textColor = isLight ? '#111827' : '#ffffff';
 
-async function fetchDashboardData() {
-    try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-        const resp = await fetch(url);
-        const data = await resp.json();
-        if (data.values && data.values[0]) {
-            const vals = data.values[0];
-            DEPARTMENTS.concat(['TOTAL_OVERTIME', 'TOTAL_OVERNIGHT']).forEach((id, i) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = Number(vals[i]).toLocaleString();
-            });
-            reRenderCharts();
-        }
-    } catch (err) { console.error('Error fetching data:', err); }
-}
+      if (barChart) barChart.destroy();
+      barChart = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+              labels: labels,
+              datasets: [{
+                  data: data,
+                  backgroundColor: ['#7c40fa', '#ed64a6', '#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#3b82f6', '#a855f7', '#65a30d', '#eab308'],
+                  borderRadius: 5
+              }]
+          },
+          options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { display: false }, datalabels: { color: textColor, font: { weight: 'bold' } } },
+              scales: {
+                  x: { ticks: { color: textColor } },
+                  y: { ticks: { color: textColor }, grid: { color: isLight ? '#eee' : '#333' } }
+              }
+          },
+          plugins: [ChartDataLabels]
+      });
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('dashboard_language') || 'en';
-    const savedTheme = localStorage.getItem('dashboard_theme');
-    if (savedTheme === 'light') toggleTheme();
-    document.getElementById('langSelect').value = savedLang;
-    setLanguage(savedLang);
-    fetchDashboardData();
+  async function fetchDashboardData() {
+      try {
+          const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+          const data = await resp.json();
+          if (data.values && data.values[0]) {
+              const numbers = data.values[0];
+              const ids = DEPARTMENTS.concat(['TOTAL_OVERTIME', 'TOTAL_OVERNIGHT']);
+              ids.forEach((id, index) => {
+                  const el = document.getElementById(id);
+                  if (el) el.textContent = numbers[index] ? Number(numbers[index]).toLocaleString() : '0';
+              });
+              reRenderCharts();
+          }
+      } catch (err) { console.error(err); }
+  }
 
-    document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-    document.getElementById('hamburgerBtn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-});
+  document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('dashboard_theme');
+      const savedLang = localStorage.getItem('dashboard_language') || 'en';
+      if (savedTheme === 'light') toggleTheme();
+      document.getElementById('langSelect').value = savedLang;
+      setLanguage(savedLang);
+      fetchDashboardData();
+      document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  });
 </script>
 </body>
 </html>

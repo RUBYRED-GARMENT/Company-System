@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUBYRED | Live Factory Analytics</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="pic/logooo.png" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap');
+        
+        :root {
+            --bg: #0a0b0e; --card: #14161c; --accent: #00f2ff;
+            --danger: #ff3366; --success: #00f5a0; --text: #ffffff;
+            --border: #22262c; --header-bg: #1a1d23;
+        }
+
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Cairo', sans-serif; margin: 0; padding: 25px; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; position: relative; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .controls { display: flex; gap: 10px; align-items: center; }
+
+        .burger-menu-btn { display: none; font-size: 24px; color: var(--accent); cursor: pointer; background: none; border: none; order: 2; }
+
+        .btn-base { font-size: 12px; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; color: #000; text-decoration: none; white-space: nowrap; }
+        .print-btn { background: var(--success); height: 33px; }
+        #btn-overtime, #btn-recruitment { background-color: var(--accent); height: 22px; }
+        
+        select.lang-select { background: var(--card); color: var(--accent); border: 1px solid var(--accent); padding: 0 10px; border-radius: 8px; cursor: pointer; height: 43px; font-family: 'Cairo'; z-index: 1001; }
+
+        @media (max-width: 850px) {
+            .print-btn { display: none !important; }
+            .burger-menu-btn { display: block; }
+            .controls { 
+                display: none; 
+                flex-direction: column; position: absolute; top: 60px; right: 0; 
+                background: var(--card); width: 220px; padding: 15px; border: 1px solid var(--border); 
+                border-radius: 10px; z-index: 1000; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            }
+            .controls.active { display: flex; }
+            .btn-base { width: 100%; justify-content: flex-start; }
+            h1 { font-size: 16px; }
+        }
+
+        .section-title { font-size: 13px; text-transform: uppercase; color: #94a3b8; margin: 25px 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+        .dept-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative; transition: 0.3s; }
+        .dept-card.over-limit { border-color: var(--danger); box-shadow: 0 0 10px rgba(255, 51, 102, 0.2); }
+        .danger-icon { position: absolute; top: 10px; right: 10px; color: var(--danger); font-size: 18px; display: none; }
+        .dept-card.over-limit .danger-icon { display: block; }
+        .dept-card h3 { margin: 0; font-size: 11px; color: #94a3b8; }
+        .dept-card .val { font-size: 24px; font-weight: 700; margin: 5px 0; }
+        .dept-card .target { font-size: 10px; color: var(--success); }
+
+        .table-box { background: var(--card); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; margin-top: 20px; }
+        .table-wrapper { height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        [dir="rtl"] table { text-align: right; }
+        thead th { position: sticky; top: 0; background: var(--header-bg); padding: 15px; color: var(--accent); font-size: 12px; z-index: 10; border-bottom: 2px solid var(--border); }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: #cbd5e1; }
+        .use-pill { background: rgba(255, 51, 102, 0.15); color: var(--danger); padding: 4px 8px; border-radius: 4px; font-weight: 900; }
+        
+        .chart-box { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid var(--border); height: 400px; margin-top: 25px; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+
+        @media print {
+            .nav-right, .loading-overlay, .burger-menu-btn { display: none !important; }
+            body { background: white; color: black; padding: 0; }
+            .dept-card, .table-box, .chart-box { border: 1px solid #ccc; page-break-inside: avoid; }
+            .table-wrapper { height: auto; overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading" class="loading-overlay"><h2>Loading Live Data...</h2></div>
+
+    <div class="top-bar">
+        <h1 id="main-logo">RUBYRED <span style="color:var(--accent)">ANALYTICS</span></h1>
+        
+        <div class="nav-right">
+            <select class="lang-select" onchange="setLang(this.value)">
+                <option value="en">English</option>
+                <option value="tr">Türkçe</option>
+                <option value="ar">العربية</option>
+            </select>
+
+            <button class="burger-menu-btn" onclick="toggleMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="controls" id="navControls">
+                <button onclick="window.print()" class="btn-base print-btn">
+                    <i class="fa-solid fa-file-pdf"></i> <span id="t-print">Print PDF</span>
+                </button>
+                
+                <a href="managers.html" class="btn-base" id="btn-overtime">
+                    <i class="fa-solid fa-chart-line"></i> <span id="t-overtime">OVERTIME DASHBOARD</span>
+                </a>
+                
+                <a href="recruitment.html" class="btn-base" id="btn-recruitment">
+                    <i class="fa-solid fa-users"></i> <span id="t-recruitment">RECRUITMENT</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-industry"></i> <span id="t-dept-title">Departments Overview</span></div>
+    <div class="dept-grid" id="deptGrid"></div>
+
+    <div class="section-title"><i class="fa-solid fa-user-clock"></i> <span id="t-table-title">Critical List (+30 Days)</span></div>
+    <div class="table-box">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr id="t-th"><th>Code</th><th>Name</th><th>Dept</th><th>Balance</th><th>Required Use</th></tr>
+                </thead>
+                <tbody id="employeeBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-chart-column"></i> <span id="t-chart-title">Statistical Analysis</span></div>
+    <div class="chart-box"><canvas id="factoryChart"></canvas></div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navControls').classList.toggle('active');
+        }
+
+        Chart.register(ChartDataLabels);
+
+        const deptTranslations = {
+            "PRODUCTION": { en: "Production", tr: "Üretim", ar: "الإنتاج" },
+            "QUALITY ASSURANCE": { en: "Quality Assurance", tr: "Kalite Güvence", ar: "تأكيد الجودة" },
+            "CUTTING&SORTING": { en: "Cutting", tr: "Kesim", ar: "القص" },
+            "FABRIC STORE": { en: "Fabric Store", tr: "Kumaş Deposu", ar: "مخزن القماش" },
+            "MODELING": { en: "Modeling", tr: "Modelhane", ar: "النمذجة" },
+            "ACCESSORIES STORE": { en: "Accessories", tr: "Aksesuar", ar: "الإكسسوارات" },
+            "WAREHOUSE": { en: "Warehouse", tr: "Depo", ar: "المستودع" },
+            "PRINTING": { en: "Printing", tr: "Baskı", ar: "الطباعة" },
+            "EMBROIDERY": { en: "Embroidery", tr: "Nakış", ar: "التطريز" },
+            "ADMINISTRATION": { en: "Administration", tr: "Yönetim", ar: "الإدارة" },
+            "MESS HALL": { en: "Messhall", tr: "Yemekhane", ar: "المطعم" },
+            "FABRIC&ACC. PLANNING": { en: "Fabric Planning", tr: "Kumaş Planlama", ar: "تخطيط القماش" },
+            "HUMAN RESOURCE": { en: "Human Resources", tr: "İnsan Kaynakları", ar: "الموارد البشرية" },
+            "ACCOUNTING": { en: "Accounting", tr: "Muhasebe", ar: "المحاسبة" },
+            "MERCHANDISING": { en: "Merchandising", tr: "Merchandising", ar: "التسويق" },
+            "PLANNING": { en: "Planning", tr: "Planlama", ar: "التخطيط" },
+            "OUTSOURCE": { en: "Outsource", tr: "Fason", ar: "الخارجي" },
+            "SUPPLY CHAIN": { en: "Supply Chain", tr: "Tedarik Zinciri", ar: "سلاسل الإمداد" },
+            "PURCHASING": { en: "Purchasing", tr: "Satın Alma", ar: "المشتريات" },
+            "EXPORT AND IMPORT": { en: "Export & Import", tr: "İthalat İhracat", ar: "التصدير والاستيراد" }
+        };
+
+        const translations = {
+            en: { 
+                mainTitle: 'RUBYRED <span style="color:var(--accent)">ANALYTICS</span>',
+                print: "Print PDF", overtime: "OVERTIME DASHBOARD", recruitment: "RECRUITMENT",
+                deptTitle: "Departments Overview", tableTitle: "Critical List (+30 Days)", 
+                chartTitle: "Statistical Analysis", chartLabel: "Staff with 30+ Days", 
+                th: ["Code","Name","Dept","Balance","To Use"], allowed: "Allowed" 
+            },
+            tr: { 
+                mainTitle: 'RUBYRED <span style="color:var(--accent)">ANALİZ</span>',
+                print: "Yazdır", overtime: "FAZLA MESAİ PANELİ", recruitment: "İŞE ALIM",
+                deptTitle: "Departman Genel Bakışı", tableTitle: "Kritik Liste (+30 Gün)", 
+                chartTitle: "İstatistiksel Analiz", chartLabel: "30+ günü olan personel", 
+                th: ["Kod","İsim","Bölüm","Bakiye","Kullanmalı"], allowed: "İzin" 
+            },
+            ar: { 
+                mainTitle: '<span style="color:var(--accent)">تحليلات</span> روبي ريد',
+                print: "طباعة التقرير", overtime: "لوحة الإضافي", recruitment: "التوظيف",
+                deptTitle: "نظرة عامة على الأقسام", tableTitle: "قائمة الحالات الحرجة (+30 يوم)", 
+                chartTitle: "التحليل الإحصائي", chartLabel: "عدد الموظفين (30 يوم فأكثر)", 
+                th: ["الكود","الاسم","القسم","الرصيد","للاستخدام"], allowed: "المسموح" 
+            }
+        };
+
+        let currentData = [];
+        let factoryChart;
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzSSxwgrYf9CotR3lvOidIoFrYwJUWDnwT5rtc8wFU6Ed2b5mZqHwuGIRcJ3w6N1ZfO/exec';
+
+        async function init() {
+            try {
+                const res = await fetch(WEB_APP_URL);
+                currentData = await res.json();
+                document.getElementById('loading').style.display = 'none';
+                setLang('en');
+            } catch(e) {
+                document.getElementById('loading').innerHTML = "<h2 style='color:red'>Connection Error. Check your Script URL.</h2>";
+            }
+        }
+
+        function setLang(lang) {
+            const t = translations[lang];
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Update Main Title
+            document.getElementById('main-logo').innerHTML = t.mainTitle;
+            
+            // Update Buttons & Titles
+            document.getElementById('t-print').innerText = t.print;
+            document.getElementById('t-overtime').innerText = t.overtime;
+            document.getElementById('t-recruitment').innerText = t.recruitment;
+            document.getElementById('t-dept-title').innerText = t.deptTitle;
+            document.getElementById('t-table-title').innerText = t.tableTitle;
+            document.getElementById('t-chart-title').innerText = t.chartTitle;
+            
+            const ths = document.getElementById('t-th').children;
+            t.th.forEach((txt, i) => ths[i].innerText = txt);
+            
+            render(currentData, lang);
+            if(window.innerWidth <= 850) document.getElementById('navControls').classList.remove('active');
+        }
+
+        function render(rows, lang) {
+            const stats = {};
+            Object.keys(deptTranslations).forEach(d => stats[d] = { total: 0, staff: 0, criticalCount: 0 });
+            const tbody = document.getElementById('employeeBody');
+            tbody.innerHTML = "";
+
+            rows.forEach(r => {
+                const bal = parseInt(r[4]) || 0;
+                const deptKey = r[2];
+                if(stats[deptKey]) {
+                    stats[deptKey].total += bal;
+                    stats[deptKey].staff++;
+                    if(bal >= 30) {
+                        stats[deptKey].criticalCount++;
+                        tbody.innerHTML += `<tr><td>#${r[0]}</td><td>${r[1]}</td><td>${deptTranslations[deptKey][lang]}</td><td>${bal} d</td><td><span class="use-pill">${bal-5} d</span></td></tr>`;
+                    }
+                }
+            });
+
+            document.getElementById('deptGrid').innerHTML = Object.keys(deptTranslations).map(d => {
+                const allowed = stats[d].staff * 5;
+                const isOver = stats[d].total > allowed && allowed > 0;
+                return `<div class="dept-card ${isOver ? 'over-limit' : ''}"><i class="fa-solid fa-triangle-exclamation danger-icon"></i><h3>${deptTranslations[d][lang]}</h3><div class="val">${stats[d].total}</div><div class="target">${translations[lang].allowed}: ${allowed}</div></div>`;
+            }).join('');
+
+            updateChart(stats, lang);
+        }
+
+        function updateChart(stats, lang) {
+            const ctx = document.getElementById('factoryChart').getContext('2d');
+            if(factoryChart) factoryChart.destroy();
+            factoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(stats).map(d => deptTranslations[d][lang]),
+                    datasets: [{ label: translations[lang].chartLabel, data: Object.values(stats).map(s => s.criticalCount), backgroundColor: '#ff3366', borderRadius: 5 }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { datalabels: { color: '#fff', anchor: 'end', align: 'top', font: { weight: 'bold' } } },
+                    scales: { 
+                        y: { beginAtZero: true, suggestedMax: 50, grid: { color: '#222' }, ticks: { color: '#94a3b8' } }, 
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 }, autoSkip: false } } 
+                    }
+                }
+            });
+        }
+        init();
+    </script>
+</body>
+</html>
