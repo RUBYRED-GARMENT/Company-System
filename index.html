@@ -1,408 +1,220 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RUBYRED - Home</title>
-    <link rel="stylesheet" href="new.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" href="pic/logooo.png">
     <style>
+    /* الأساسيات */
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
       min-height: 100vh;
-      padding: 0;
+      color: #fff;
     }
 
     .top-section {
-      background-image: url('pic/sewing.jpg');
+      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('pic/sewing.jpg');
       background-size: cover;
       background-position: center;
-      height: 70vh;
+      height: 55vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-    }
-
-    .header {
+      margin-bottom: 50px;
       text-align: center;
-      margin-bottom: 40px;
     }
 
-    .name h1 {
-      color: #fff;
-      font-size: 2.5rem;
-      margin: 0;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
+    .name h1 { font-size: 3.5rem; margin: 0; letter-spacing: 3px; text-shadow: 3px 3px 15px rgba(0,0,0,1); }
+    .name span { color: #da3535; }
 
-    .name span {
-      color: #ff6b6b;
-    }
-
-    .nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0 0 0;
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-    }
-
-    .nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-
-    .nav a:hover {
-      color: #ff6b6b;
-    }
-
-    .cards-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      justify-items: center;
-    }
-
-    .card {
-      background: linear-gradient(135deg, #444, #222);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-      color: #fff;
-      text-align: center;
+    /* القائمة في المنتصف */
+    .nav {
       width: 100%;
-      max-width: 300px;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-decoration: none;
-      display: block;
-    }
-    .card:hover {
-      transform: translateY(-13px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.9);
-    }
-
- 
-    .card p {
-      margin: 10px 0;
-      font-size: 20px;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
-      .cards-container {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 10px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
-      }
-      .name h1 {
-        font-size: 2.2rem;
-      }
-      .nav ul {
-        gap: 20px;
-      }
-      .cards-container {
-        gap: 15px;
-        padding: 15px;
-      }
-    }
-
-    /* Menu button styles */
-    .menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-      margin: 10px 0;
-    }
-
-    /* Sidebar styles */
-    #sidebar {
-      position: fixed;
-      top: 200px;
-      right: -250px;
-      width: 250px;
-      height: calc(100vh - 100px);
-      background: rgb(90, 90, 90);
-      opacity: 90%;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.7);
-      transition: right 0.3s ease;
-      z-index: 1050;
-      padding-top: 1rem;
-    }
-    #sidebar.active {
-      right: 0;
-    }
-    #sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    #sidebar ul li {
-      padding: 1rem 1.5rem;
-    }
-    #sidebar ul li a {
-      color: #e0e0e0;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 1rem;
-      display: block;
-      transition: color 0.3s ease;
-    }
-    #sidebar ul li a:hover {
-      color: #ff6b6b;
-    }
-
-    /* Responsive styles for mobile */
-    @media (max-width: 768px) {
-      .menu-btn {
-        display: block;
-      }
-      .nav {
-        display: none;
-      }
-      #sidebar {
-        right: -250px;
-      }
-      #sidebar.active {
-        right: 0;
-      }
-    }
-
-    .cards-container {
-      display: grid;
-      grid-template-columns: repeat(3,2, 1fr);
-      gap: 30px;
-      max-width: 1200px;
-      margin: 60px auto;
-      padding: 20px;
-      justify-items: center;
-    }
-
-    .managers-container {
-      max-width: 1200px;
-      margin: 0 auto 20px auto;
       display: flex;
       justify-content: center;
-    }
-
-    .managers-container .card {
-      width: 395px;
-      height: 200px;
-      perspective: 1000px;
-      cursor: pointer;
-      outline: none;
-      position: relative;
       margin-top: 30px;
     }
 
+    .nav ul {
+      list-style: none; padding: 0; display: flex; gap: 50px; margin: 0;
+    }
 
+    .nav a { 
+      color: #fff; text-decoration: none; font-weight: 600; text-transform: uppercase; 
+      letter-spacing: 1.5px; transition: 0.3s; font-size: 1.1rem;
+    }
+    .nav a:hover { color: #da3535; }
+
+    /* الكروت */
+    .managers-row { display: flex; justify-content: center; margin-bottom: 60px; padding: 0 20px; }
+    .cards-container {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+      max-width: 1200px; margin: 0 auto 80px; padding: 0 20px;
+    }
 
     .card {
-      width: 100%;
-      height: 200px;
-      perspective: 1000px;
-      cursor: pointer;
-      outline: none;
-      position: relative;
-    }
-
-    .card-inner {
-      background: linear-gradient(135deg, #444, #222);
-      width: 100%;
-      height: 100%;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-      transition: transform 1s;
-      transform-style: preserve-3d;
-      will-change: transform;
-      position: relative;
-    }
-
-    .card:hover .card-inner {
-      transform: rotateY(360deg);
-    }
-
-    /* Text container absolutely centered and above the card */
-    .card-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      background: #252525;
+      padding: 40px 30px;
+      border-radius: 20px;
+      border: 1px solid #333;
+      text-align: center;
+      text-decoration: none;
       color: #fff;
-      font-size: 1.5rem;
-      font-weight: bold;
-      user-select: none;
-      pointer-events: none;
-      white-space: nowrap;
-      z-index: 10;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      display: flex; flex-direction: column; justify-content: center;
     }
-    .card h3 {
-      margin-top: 50px;
-        color: #da3535;
-      font-size: 30px;
+    .card:hover { transform: translateY(-15px); border-color: #da3535; box-shadow: 0 15px 40px rgba(218, 53, 53, 0.2); }
+    .card h3 { color: #da3535; font-size: 28px; margin-bottom: 15px; text-transform: uppercase; }
+    .card p { color: #aaa; line-height: 1.6; }
+
+    /* نافذة تسجيل الدخول */
+    .login-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 3000;
+      justify-content: center; align-items: center;
     }
 
+    .login-content {
+      background: #222; padding: 50px; border-radius: 30px; width: 90%; max-width: 400px;
+      border: 1px solid #da3535; text-align: center; position: relative;
+      animation: modalFade 0.4s ease-out;
+    }
 
-  </style>
+    @keyframes modalFade { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .login-content h2 { margin-bottom: 35px; font-size: 24px; letter-spacing: 1px; }
+    .login-content h2 span { color: #da3535; }
+
+    .input-group { position: relative; margin-bottom: 25px; }
+    .input-group .main-icon { position: absolute; left: 15px; top: 18px; color: #da3535; }
+    
+    .input-group input {
+      width: 100%; padding: 15px 45px 15px 45px; background: #111; border: 1px solid #333;
+      border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s;
+    }
+    .input-group input:focus { border-color: #da3535; background: #000; }
+
+    /* أيقونة العين */
+    .toggle-password {
+      position: absolute; right: 15px; top: 18px; color: #555; cursor: pointer; transition: 0.3s;
+    }
+    .toggle-password:hover { color: #da3535; }
+
+    .login-btn {
+      width: 100%; padding: 15px; background: #da3535; border: none; border-radius: 12px;
+      color: #fff; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s;
+    }
+    .login-btn:hover { background: #b32a2a; transform: translateY(-2px); }
+
+    .close-modal { position: absolute; top: 20px; right: 20px; color: #555; cursor: pointer; font-size: 22px; }
+    #error-msg { color: #ff4d4d; margin-top: 15px; font-size: 14px; display: none; font-weight: bold; }
+
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+    </style>
 </head>
 <body>
+
   <section class="top-section">
     <div class="header">
-      <div class="logo">
-        <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
-      </div>
       <div class="name"><h1>RUBY<span>RED</span> GARMENT</h1></div>
-      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="nav" id="navbar">
+      <nav class="nav">
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="HR.html">HR</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
-      </div>
+      </nav>
     </div>
   </section>
-  <div id="sidebar">
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="HR.html">HR</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
+
+  <div class="managers-row">
+    <div class="card" style="max-width: 500px;" onclick="openLogin()">
+      <h3>Managers</h3>
+      <p>Strategic Analysis & Executive Reports<br><i class="fas fa-lock" style="margin-top:10px;"></i> Restricted Access</p>
+    </div>
   </div>
 
   <div class="cards-container">
-    <a href="overtime.html" class="card">
-      <h3>OverTime</h3>
-      <p>Manage overtime requests and approvals for all departments.</p>
-    </a>
-    <a href="decision.html" class="card">
-      <h3>Decisions</h3>
-      <p>View and manage company decisions and policies.</p>
-    </a>
-    <a href="samples.html" class="card">
-      <h3>SAMPLES</h3>
-      <p>Samples of the company forms</p>
-    </a>
-    
+    <a href="overtime.html" class="card"><h3>OverTime</h3><p>Operations & Departmental Approvals</p></a>
+    <a href="decision.html" class="card"><h3>Decisions</h3><p>Corporate Policies & Official Records</p></a>
+    <a href="samples.html" class="card"><h3>SAMPLES</h3><p>Standardized Templates & Forms</p></a>
   </div>
 
-  <div class="footer">
-    <img src="pic/logooo.png" alt="">
-    <p>RUBYRED GARMENT</p>
-    <div class="social">
-      <a href="https://www.facebook.com/RUBYREDGARMENTSAE/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://www.linkedin.com/company/rubyred-garment-manufacturing-s-a-e/posts/?feedView=all" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-      <a href="mailto:hr@rubyredgarment.com"><i class="fas fa-envelope"></i></a>
+  <div class="login-modal" id="loginModal">
+    <div class="login-content">
+      <i class="fas fa-times close-modal" onclick="closeLogin()"></i>
+      <h2>MANAGERS <span>LOGIN</span></h2>
+      
+      <div class="input-group">
+        <i class="fas fa-user main-icon"></i>
+        <input type="text" id="username" placeholder="Username" autocomplete="off">
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock main-icon"></i>
+        <input type="password" id="password" placeholder="Password">
+        <i class="fas fa-eye toggle-password" id="eyeIcon" onclick="togglePassword()"></i>
+      </div>
+
+      <button class="login-btn" onclick="validateLogin()">Login Access</button>
+      <div id="error-msg">Invalid Credentials. Access Denied!</div>
     </div>
   </div>
 
-  <style>
-    /* Responsive styles for index.html */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
-      .cards-container {
-        padding: 10px;
-      }
-      .footer {
-        padding: 15px 0;
-      }
-      .footer img {
-        width: 50px;
-        height: 50px;
-      }
-      .footer p {
-        font-size: 16px;
-      }
-      .social a {
-        font-size: 20px;
-        margin: 0 6px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
-      }
-      .name h1 {
-        font-size: 2.2rem;
-      }
-      .nav ul {
-        gap: 20px;
-      }
-      .cards-container {
-        padding: 15px;
-      }
-      .footer {
-        padding: 18px 0;
-      }
-      .footer img {
-        width: 55px;
-        height: 55px;
-      }
-      .footer p {
-        font-size: 17px;
-      }
-      .social a {
-        font-size: 22px;
-        margin: 0 8px;
-      }
-    }
-  </style>
-
   <script>
-  // Sidebar toggle
-  const menuBtn = document.getElementById('menu-btn');
-  const sidebar = document.getElementById('sidebar');
-  menuBtn.addEventListener('click', function() {
-    sidebar.classList.toggle('active');
-  });
-  </script>
+    const modal = document.getElementById('loginModal');
+    const errorMsg = document.getElementById('error-msg');
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
 
+    function openLogin() {
+      modal.style.display = 'flex';
+      errorMsg.style.display = 'none';
+      userInput.focus();
+    }
+
+    function closeLogin() {
+      modal.style.display = 'none';
+      userInput.value = '';
+      passInput.value = '';
+      passInput.type = 'password';
+      eyeIcon.className = 'fas fa-eye toggle-password';
+    }
+
+    // وظيفة إظهار/إخفاء الباسورد
+    function togglePassword() {
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            eyeIcon.className = 'fas fa-eye-slash toggle-password';
+        } else {
+            passInput.type = 'password';
+            eyeIcon.className = 'fas fa-eye toggle-password';
+        }
+    }
+
+    function validateLogin() {
+      if (userInput.value === "RUBYRED" && passInput.value === "RUBYRED2006") {
+        window.location.href = "managers.html";
+      } else {
+        errorMsg.style.display = 'block';
+        const content = document.querySelector('.login-content');
+        content.style.animation = 'none';
+        setTimeout(() => { content.style.animation = 'shake 0.4s'; }, 10);
+      }
+    }
+
+    [userInput, passInput].forEach(input => {
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') validateLogin(); });
+    });
+
+    window.onclick = (event) => { if (event.target == modal) closeLogin(); }
+  </script>
 </body>
 </html>
