@@ -14,14 +14,15 @@
 
 /* Base Styles */
 * { box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%; margin:0; font-family: 'Inter', sans-serif; }
 
+/* Color Variables */
 :root{
   --bg-dark: #121217;
   --surface-dark: #181821;
   --muted-dark: #a3a3b3;
   --text-dark: #e0e0e0;
-  --chart-text-dark: #ffffff; /* High contrast WHITE text for charts in dark mode */
+  --chart-text-dark: #ffffff;
   --accent: #7c40fa;
   --secondary-accent: #ff6f00;
 
@@ -29,29 +30,21 @@ html, body { height: 100%; }
   --surface-light: #ffffff;
   --muted-light: #666;
   --text-light: #111827;
-  --chart-text-light: #111827; /* High contrast DARK text for charts in light mode */
+  --chart-text-light: #111827;
 }
 
+/* Body */
 body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-dark);
   transition: background .3s, color .3s;
 }
 
-/* Light mode when .light-mode added to documentElement */
+/* Light Mode */
 .light-mode {
-  --bg: var(--bg-light);
-  --surface: var(--surface-light);
-  --muted: var(--muted-light);
-  --text: var(--text-color);
-
   background-color: var(--bg-light);
   color: var(--text-light);
 }
-
-/* Apply light mode variables */
 .light-mode .sidebar { background-color: var(--surface-light); }
 .light-mode .card,
 .light-mode .chart-card,
@@ -68,11 +61,8 @@ body {
 }
 .light-mode .error { background: var(--surface-light); }
 
-/* Layout */
-.container {
-  display: flex;
-  height: 100vh;
-}
+/* Container Layout */
+.container { display: flex; height: 100vh; }
 
 /* Sidebar */
 .sidebar {
@@ -85,7 +75,6 @@ body {
   transition: all .3s;
 }
 .light-mode .menu li { color: var(--muted-light); }
-
 .sidebar .logo {
   font-size: 28px;
   font-weight: 700;
@@ -93,42 +82,20 @@ body {
   margin-bottom: 40px;
 }
 
-.menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+/* Menu Items */
+.menu { list-style: none; padding: 0; margin: 0; }
+.menu li { margin-bottom: 20px; font-weight: 600; cursor: pointer; color: var(--muted-dark); display: flex; align-items: center; transition: color 0.3s; }
+.menu li.active, .menu li:hover { color: var(--accent); }
+.menu li a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
 
-.menu li {
-  margin-bottom: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--muted-dark);
-  display: flex;
-  align-items: center;
-  transition: color 0.3s;
-}
-
-.menu li.active,
-.menu li:hover {
-  color: var(--accent);
-}
-
-.menu li a {
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+/* Sidebar Footer */
 .sidebar .bottom {
   font-size: 14px;
   color: var(--muted-dark);
   cursor: pointer;
 }
 
-/* Main content */
+/* Main Content */
 .main-content {
   flex-grow: 1;
   display: flex;
@@ -145,16 +112,10 @@ body {
   margin-bottom:30px;
   gap:12px;
 }
-
 .welcome { font-size:24px; font-weight:700; }
+.controls-flex { display:flex; align-items:center; gap:18px; }
 
-.controls-flex {
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-
-/* Utility for Theme and Lang Select */
+/* Control Styles */
 .control-select, .theme-toggle {
   background: var(--surface-dark);
   padding: 8px 12px;
@@ -165,24 +126,15 @@ body {
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
 }
-
 .light-mode .control-select, .light-mode .theme-toggle {
   background: var(--surface-light);
   border: 1px solid #ccc;
   color: var(--text-light);
 }
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-}
+.theme-toggle { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; }
 .theme-toggle i { font-size: 18px; }
 
-/* Totals Section Styling */
+/* Totals Section */
 .totals-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -190,7 +142,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Cards */
+/* Cards Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr); 
@@ -198,6 +150,7 @@ body {
   margin-bottom: 40px;
 }
 
+/* Card Styles */
 .card {
   background: var(--surface-dark);
   border-radius: 16px;
@@ -210,34 +163,24 @@ body {
   text-align: left;
   transition: background .25s, color .25s, box-shadow .25s;
 }
-
 .card .icon-circle {
   width: 40px; height: 40px; border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), #a560ff);
   display:flex; align-items:center; justify-content:center;
   margin-bottom: 10px;
 }
-
 .card .icon-circle i { color: white; font-size: 18px; }
-
 .card h3 { font-size:14px; font-weight:600; margin:0 0 5px 0; color: var(--muted-dark); }
 .light-mode .card h3 { color: var(--muted-light); }
-
-.card .value { 
-  font-size:28px; 
-  font-weight:700; 
-  color: var(--accent); 
-}
+.card .value { font-size:28px; font-weight:700; color: var(--accent); }
 
 /* Charts Section */
 .charts-section {
-  /* Only one column now, taking full width */
   display: grid;
   grid-template-columns: 1fr; 
   gap: 25px;
   margin-bottom: 40px;
 }
-
 .chart-card {
   background: var(--surface-dark);
   border-radius: 16px;
@@ -245,14 +188,9 @@ body {
   box-shadow: 0 4px 12px rgba(124,64,250,0.08);
   transition: background .25s, color .25s;
 }
-
 .chart-card h3 { font-size:18px; font-weight:700; margin-bottom:15px; color: var(--text-dark); }
 .light-mode .chart-card h3 { color: var(--text-light); }
-
-.chart-container { 
-  position: relative;
-  height: 400px; /* Increased height for better single chart visibility */
-}
+.chart-container { position: relative; height: 400px; }
 
 /* Total Metrics Card */
 .total-metric-card {
@@ -264,26 +202,10 @@ body {
   align-items: flex-start;
   transition: background .25s, color .25s;
 }
-
 .light-mode .total-metric-card { background: var(--surface-light); }
-
-.total-metric-card h3 { 
-    margin: 0 0 5px 0; 
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--muted-dark);
-}
-
-.total-metric-card .value { 
-    font-size:48px; 
-    font-weight:700; 
-    color: var(--secondary-accent);
-}
-.total-metric-card .subtitle {
-    font-size: 14px;
-    color: var(--muted-dark);
-    margin-top: 5px;
-}
+.total-metric-card h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; color: var(--muted-dark); }
+.total-metric-card .value { font-size:48px; font-weight:700; color: var(--secondary-accent); }
+.total-metric-card .subtitle { font-size: 14px; color: var(--muted-dark); margin-top: 5px; }
 .light-mode .total-metric-card .subtitle { color: var(--muted-light); }
 
 /* Calendar / Weather Box */
@@ -296,12 +218,7 @@ body {
   border-radius: 8px;
   color: var(--text-dark);
 }
-
-.light-mode .calendar-weather-box {
-  background-color: var(--surface-light);
-  color: var(--text-light);
-  border: 1px solid #ccc;
-}
+.light-mode .calendar-weather-box { background-color: var(--surface-light); color: var(--text-light); border: 1px solid #ccc; }
 
 /* HR Button */
 button.hr-button {
@@ -318,26 +235,11 @@ button.hr-button {
   width: 90%;
   align-self: center;
 }
-button.hr-button:hover {
-  background-color: #5a2edc;
-  transform: translateY(-2px);
-}
-button.hr-button a {
-  color: inherit;
-  text-decoration: none;
-}
+button.hr-button:hover { background-color: #5a2edc; transform: translateY(-2px); }
+button.hr-button a { color: inherit; text-decoration: none; }
 
 /* Hamburger Button */
-.hamburger {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--text-dark);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
+.hamburger { display: none; background: none; border: none; color: var(--text-dark); cursor: pointer; padding: 8px; border-radius: 4px; transition: background 0.3s; }
 .light-mode .hamburger { color: var(--text-light); }
 
 /* Error Message */
@@ -351,534 +253,421 @@ button.hr-button a {
   .chart-container { height: 350px; }
 }
 
-@media (max-width: 768px) {
-  .hamburger { display: block; }
-  .container { flex-direction: column; }
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -260px;
-    height: 100vh;
-    width: 260px;
-    z-index: 1000;
-    transition: left 0.3s ease;
-  }
-  .sidebar.open { left: 0; }
-  .main-content { padding: 12px; }
-  .dashboard-grid, .totals-row { grid-template-columns: 1fr; }
-  .charts-section { grid-template-columns: 1fr; }
-  .header { flex-direction: column; align-items: flex-start; }
-  .controls-flex { margin-top: 10px; }
-}
-
-/* RTL support when dir="rtl" on <html> */
-[dir="rtl"] .main-content { direction: rtl; }
-[dir="rtl"] .sidebar { 
-    left: auto; 
-    right: -260px; 
-    transition: right 0.3s ease;
-}
-[dir="rtl"] .sidebar.open { right: 0; left: auto; }
-[dir="rtl"] .menu li a { flex-direction: row-reverse; }
-[dir="rtl"] .menu li a i { margin-left: 12px; margin-right: 0; }
-[dir="rtl"] .card { text-align: right; align-items: flex-end; }
-[dir="rtl"] .total-metric-card { align-items: flex-end; }
-
-.back-button {
-  position: fixed;
-  top: 200px;
-  inset-inline-start: 10px;
-  width: 180px;
-  background: var(--surface-dark);
-  color: inherit;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: background 0.3s;
-  z-index: 1000;
-  font-size: 18px;
-  font-weight: bold;
-}
-  
 </style>
 </head>
 <body class="dark-mode">
+
 <a href="index.html"><button class="back-button">Back</button></a>
-<div class="container">
-  <nav class="sidebar" id="sidebar">
-    <div style="display:flex; flex-direction:column; flex-grow:1;">
-      <div class="logo" id="logoText">RUBYRED</div>
-      <ul class="menu" id="sidebarMenu">
-        <li class="active"><a href="managers.html" data-i18="OVERTIME DASHBOARD"></i>OVERTIME DASHBOARD</a></li>
-        <li><a href="recruitment.html" data-i18="RECRUITMENT><i class="fa-solid fa-industry"></i>RECRUITMENT</a></li>
-      </ul>
-    
+
+<div class="container">  
+<nav class="sidebar" id="sidebar">
+<div style="display:flex; flex-direction:column; flex-grow:1;">
+  <div class="logo" id="logoText">RUBYRED</div>
+  <ul class="menu" id="sidebarMenu">
+    <li class="active"><a href="managers.html" data-i18="OVERTIME_DASHBOARD"></i>OVERTIME DASHBOARD</a></li>
+    <li><a href="recruitment.html" data-i18="RECRUITMENT"><i class="fa-solid fa-industry"></i>RECRUITMENT</a></li>
+  </ul>
+</div>
+<div class="bottom" id="footerText">© RUBYRED</div>
+</nav>
+
+<main class="main-content">
+<header class="header">
+<div style="display:flex;align-items:center;gap:12px;">
+  <button class="hamburger" aria-label="Toggle menu" id="hamburgerBtn">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <div class="welcome" id="welcomeText" data-i18="welcome">Welcome Back!</div>
+</div>
+<div class="controls-flex">
+  <div class="calendar-weather-box">
+    <div class="date-info">
+      <div id="dayName">Monday</div>
+      <div id="fullDate">Nov 26, 2025</div>
     </div>
-    <div class="bottom" id="footerText">© RUBYRED</div>
-  </nav>
+    <div class="weather-info">
+      <span id="weatherIcon">☀️</span>
+      <span id="temperature">25°C</span>
+    </div>
+  </div>
+  <select id="langSelect" class="control-select">
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+    <option value="tr">Türkçe</option>
+  </select>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle light and dark theme">
+      <i class="fa-solid fa-moon"></i>
+  </button>
+</div>
+</header>
 
-  <main class="main-content">
-    <header class="header">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button class="hamburger" aria-label="Toggle menu" id="hamburgerBtn">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="welcome" id="welcomeText" data-i18="welcome">Welcome Back!</div>
-      </div>
+<section class="totals-row">
+<div class="total-metric-card">
+  <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
+  <div class="value" id="TOTAL_OVERTIME">0</div>
+  <div class="subtitle">Hours accrued this week</div>
+</div>
+<div class="total-metric-card">
+  <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
+  <div class="value" id="TOTAL_OVERNIGHT">0</div>
+  <div class="subtitle">Total overnight attendance</div>
+</div>
+</section>
 
-      <div class="controls-flex">
-        
-        <div class="calendar-weather-box">
-          <div class="date-info">
-            <div id="dayName">Monday</div>
-            <div id="fullDate">Nov 26, 2025</div>
-          </div>
-          <div class="weather-info">
-            <span id="weatherIcon">☀️</span>
-            <span id="temperature">25°C</span>
-          </div>
-        </div> 
+<section class="dashboard-grid">
+<div class="card">
+  <div class="icon-circle"><i class="fa-solid fa-industry"></i></div>
+  <h3 data-i18="PRODUCTION">PRODUCTION</h3>
+  <div class="value" id="PRODUCTION">0</div>
+</div>
 
-        <select id="langSelect" class="control-select">
-          <option value="en">English</option>
-          <option value="ar">العربية</option>
-          <option value="tr">Türkçe</option>
-        </select>
+<div class="card">
+  <div class="icon-circle" style="background: linear-gradient(135deg,#ed64a6,#da22ff);"><i class="fa-solid fa-check-double"></i></div>
+  <h3 data-i18="QA">QA</h3>
+  <div class="value" id="QA">0</div>
+</div>
 
-        <button id="themeToggle" class="theme-toggle" aria-label="Toggle light and dark theme">
-            <i class="fa-solid fa-moon"></i>
-        </button>
+<div class="card">
+  <div class="icon-circle" style="background: linear-gradient(135deg,#4f46e5,#9f7aea);"><i class="fa-solid fa-scissors"></i></div>
+  <h3 data-i18="CUTTING">CUTTING</h3>
+  <div class="value" id="CUTTING">0</div>
+</div>
+<div class="card">
+  <div class="icon-circle" style="background: linear-gradient(135deg,#f97316,#fb923c);"><i class="fa-solid fa-truck"></i></div>
+  <h3 data-i18="LOGISTICS">LOGISTICS</h3>
+  <div class="value" id="LOGISTICS">0</div>
+</div>
 
-      </div>
-    </header>
+<div class="card">
+  <div class="icon-circle" style="background: linear-gradient(135deg,#10b981,#34d399);"><i class="fa-solid fa-users"></i></div>
+  <h3 data-i18="HR">HR</h3>
+  <div class="value" id="HR">0</div>
+</div>
+</section>
 
-    <section class="totals-row">
-      <div class="total-metric-card">
-        <h3 data-i18="TOTAL_OVERTIME">TOTAL OVERTIME (Hours)</h3>
-        <div class="value" id="TOTAL_OVERTIME">0</div>
-        <div class="subtitle">Hours accrued this week</div>
-      </div>
-      <div class="total-metric-card">
-        <h3 data-i18="TOTAL_OVERNIGHT">TOTAL OVERNIGHT SHIFTS</h3>
-        <div class="value" id="TOTAL_OVERNIGHT">0</div>
-        <div class="subtitle">Total overnight attendance</div>
-      </div>
-    </section>
+<section class="charts-section">
+<div class="chart-card">
+  <h3 data-i18="OVERTIME_BY_DEPARTMENT">OVERTIME BY DEPARTMENT</h3>
+  <canvas id="overtimeChart" class="chart-container"></canvas>
+</div>
 
-    <section class="dashboard-grid">
-      <div class="card">
-        <div class="icon-circle"><i class="fa-solid fa-industry"></i></div>
-        <h3 data-i18="PRODUCTION">PRODUCTION</h3>
-        <div class="value" id="PRODUCTION">0</div>
-      </div>
+<div class="chart-card">
+  <h3 data-i18="ATTENDANCE_TRENDS">ATTENDANCE TRENDS</h3>
+  <canvas id="attendanceChart" class="chart-container"></canvas>
+</div>
+</section>
 
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#ed64a6,#da22ff);"><i class="fa-solid fa-check-double"></i></div>
-        <h3 data-i18="QA">QA</h3>
-        <div class="value" id="QA">0</div>
-      </div>
+<button class="hr-button"><a href="hr-dashboard.html" data-i18="GO_TO_HR">Go to HR Dashboard</a></button>
 
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#4f46e5,#9f7aea);"><i class="fa-solid fa-scissors"></i></div>
-        <h3 data-i18="CUTTING">CUTTING</h3>
-        <div class="value" id="CUTTING">0</div>
-      </div>
-
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#f59e0b,#d97706);"><i class="fa-solid fa-print"></i></div>
-        <h3 data-i18="PRINTING">PRINTING</h3>
-        <div class="value" id="PRINTING">0</div>
-      </div>
-
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#10b981,#059669);"><i class="fa-solid fa-hand-holding-box"></i></div>
-        <h3 data-i18="EMBROIDERY">EMBROIDERY</h3>
-        <div class="value" id="EMBROIDERY">0</div>
-      </div>
-
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#ef4444,#dc2626);"><i class="fa-solid fa-warehouse"></i></div>
-        <h3 data-i18="WAREHOUSE">WAREHOUSE</h3>
-        <div class="value" id="WAREHOUSE">0</div>
-      </div>
-
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#3b82f6,#60a5fa);"><i class="fa-solid fa-tshirt"></i></div>
-        <h3 data-i18="MODELING">MODELING</h3>
-        <div class="value" id="MODELING">0</div>
-      </div>
-
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#a855f7,#c084fc);"><i class="fa-solid fa-gem"></i></div>
-        <h3 data-i18="ACCESSORIES">ACCESSORIES</h3>
-        <div class="value" id="ACCESSORIES">0</div>
-      </div>
-      
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#65a30d,#84cc16);"><i class="fa-solid fa-user-tie"></i></div>
-        <h3 data-i18="ADMINISTRATION">ADMINISTRATION</h3>
-        <div class="value" id="ADMINISTRATION">0</div>
-      </div>
-      
-      <div class="card">
-        <div class="icon-circle" style="background: linear-gradient(135deg,#eab308,#facc15);"><i class="fa-solid fa-box-open"></i></div>
-        <h3 data-i18="FABRIC_STORE">FABRIC STORE</h3>
-        <div class="value" id="FABRIC_STORE">0</div>
-      </div>
-
-    </section>
-
-    <section class="charts-section">
-      <div class="chart-card">
-        <h3 data-i18="department_performance">Department Staff Count Overview</h3>
-        <div class="chart-container">
-          <canvas id="barChart"></canvas>
-        </div>
-      </div>
-      </section>
-
-    <div class="error" id="error-message"></div>
-  </main>
+<div id="errorMessage" class="error" style="display:none;" data-i18="NO_DATA">No data available</div>
+</main>
 </div>
 
 <script>
-  // ** IMPORTANT: The API Key and Sheet ID are exposed here. In a real-world application, 
-  // you must use a secure backend proxy to fetch data and never expose API keys publicly. **
-
-  const SHEET_ID = '1aPFd7hzDjneSwDeuZ96TD-a0THkhugCdlHu-2ekYf1Y';
-  const API_KEY = 'AIzaSyB_dCi6NlG_jUCUY955eynfN0gF7KobQ4A';
-  const RANGE = 'OT_DASHBOARD!A2:L2'; // A2 to L2 for 12 values
-  
-  // Chart Instances
-  let barChart = null;
-  // Removed workloadChart variable
-  
-  // Department Mapping
-  const DEPARTMENTS = [
-    'PRODUCTION', 'QA', 'CUTTING', 'PRINTING', 'EMBROIDERY', 'WAREHOUSE',
-    'MODELING', 'ACCESSORIES', 'ADMINISTRATION', 'FABRIC_STORE'
-  ];
-
-  // Internationalization (i18n) Dictionary
-  const translations = {
-      en: {
-          welcome: "Welcome Back!",
-          menu_dashboard: "DASHBOARD",
-          PRODUCTION: "PRODUCTION",
-          QA: "QA",
-          CUTTING: "CUTTING",
-          PRINTING: "PRINTING",
-          EMBROIDERY: "EMBROIDERY",
-          WAREHOUSE: "WAREHOUSE",
-          MODELING: "MODELING",
-          ACCESSORIES: "ACCESSORIES",
-          ADMINISTRATION: "ADMINISTRATION",
-          FABRIC_STORE: "FABRIC STORE",
-          TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)",
-          TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS",
-          department_performance: "Department Staff Count Overview",
-          headcount_distribution: "Staff Headcount Distribution", // Key left for completeness, but not used in HTML
-          HR_portal: "HR PORTAL"
-      },
-      ar: {
-          welcome: "أهلا بك مجدداً!",
-          menu_dashboard: "لوحة القيادة",
-          PRODUCTION: "الإنتاج",
-          QA: "مراقبة الجودة",
-          CUTTING: "القص",
-          PRINTING: "الطباعة",
-          EMBROIDERY: "التطريز",
-          WAREHOUSE: "المستودع",
-          MODELING: "النمذجة",
-          ACCESSORIES: "الإكسسوارات",
-          ADMINISTRATION: "الإدارة",
-          FABRIC_STORE: "مخزن الأقمشة",
-          TOTAL_OVERTIME: "إجمالي العمل الإضافي (ساعات)",
-          TOTAL_OVERNIGHT: "إجمالي المناوبات الليلية",
-          department_performance: "نظرة عامة على أعداد موظفي الأقسام",
-          headcount_distribution: "توزيع أعداد الموظفين",
-          HR_portal: "بوابة الموارد البشرية",
-          RECRUITMENT: "التوظيف",
-          OVERTIME_DASHBOARD : "لوحة عمل إضافي"
-      },
-      tr: {
-          welcome: "Tekrar Hoş Geldiniz!",
-          menu_dashboard: "PANO",
-          PRODUCTION: "ÜRETİM",
-          QA: "KALİTE GÜVENCE",
-          CUTTING: "KESİM",
-          PRINTING: "BASKI",
-          EMBROIDERY: "NAKIŞ",
-          WAREHOUSE: "DEPO",
-          MODELING: "MODELLEME",
-          ACCESSORIES: "AKSESUARLAR",
-          ADMINISTRATION: "YÖNETİM",
-          FABRIC_STORE: "KUMAŞ DEPOSU",
-          TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ (Saat)",
-          TOTAL_OVERNIGHT: "TOPLAM GECE VARDİYALARI",
-          department_performance: "Departman Personel Sayısı Genel Bakışı",
-          headcount_distribution: "Personel Sayısı Dağılımı",
-          HR_portal: "İK PORTALI",
-          RECRUITMENT: "İŞE ALIM",
-          OVERTIME_DASHBOARD : "FAZLA MESAİ PANOSU"
-      }
-  };
-
-  /**
-   * Applies the selected language to all elements with a data-i18 attribute.
-   * Also sets the document direction (RTL/LTR).
-   * @param {string} lang - The language code ('en', 'ar', 'tr').
-   */
-  function setLanguage(lang) {
-      const texts = translations[lang] || translations['en'];
-      
-      // 1. Update text content
-      const elements = document.querySelectorAll('[data-i18]');
-      elements.forEach(el => {
-          const key = el.getAttribute('data-i18');
-          if (texts[key]) {
-              el.textContent = texts[key];
-          }
-      });
-      
-      // 2. Set direction (RTL/LTR)
-      const htmlEl = document.documentElement;
-      if (lang === 'ar') {
-          htmlEl.setAttribute('dir', 'rtl');
-      } else {
-          htmlEl.setAttribute('dir', 'ltr');
-      }
-      
-      // 3. Save preference
-      localStorage.setItem('dashboard_language', lang);
-
-      // 4. Re-render charts with new localized labels
-      if (barChart) {
-          reRenderCharts();
-      }
+// Language translations
+const translations = {
+  en: {
+    welcome: "Welcome Back!",
+    OVERTIME_DASHBOARD: "OVERTIME DASHBOARD",
+    RECRUITMENT: "RECRUITMENT",
+    TOTAL_OVERTIME: "TOTAL OVERTIME (Hours)",
+    TOTAL_OVERNIGHT: "TOTAL OVERNIGHT SHIFTS",
+    PRODUCTION: "PRODUCTION",
+    QA: "QA",
+    CUTTING: "CUTTING",
+    LOGISTICS: "LOGISTICS",
+    HR: "HR",
+    OVERTIME_BY_DEPARTMENT: "OVERTIME BY DEPARTMENT",
+    ATTENDANCE_TRENDS: "ATTENDANCE TRENDS",
+    GO_TO_HR: "Go to HR Dashboard",
+    NO_DATA: "No data available"
+  },
+  ar: {
+    welcome: "مرحبا بعودتك!",
+    OVERTIME_DASHBOARD: "لوحة ساعات العمل الإضافية",
+    RECRUITMENT: "التوظيف",
+    TOTAL_OVERTIME: "إجمالي ساعات العمل الإضافية",
+    TOTAL_OVERNIGHT: "إجمالي نوبات الليل",
+    PRODUCTION: "الإنتاج",
+    QA: "مراقبة الجودة",
+    CUTTING: "القص",
+    LOGISTICS: "اللوجستيات",
+    HR: "الموارد البشرية",
+    OVERTIME_BY_DEPARTMENT: "العمل الإضافي حسب القسم",
+    ATTENDANCE_TRENDS: "اتجاهات الحضور",
+    GO_TO_HR: "اذهب إلى لوحة الموارد البشرية",
+    NO_DATA: "لا توجد بيانات"
+  },
+  tr: {
+    welcome: "Tekrar Hoşgeldiniz!",
+    OVERTIME_DASHBOARD: "FAZLA MESAI PANELI",
+    RECRUITMENT: "İŞE ALIM",
+    TOTAL_OVERTIME: "TOPLAM FAZLA MESAİ (Saat)",
+    TOTAL_OVERNIGHT: "TOPLAM GECE NÖBETİ",
+    PRODUCTION: "ÜRETİM",
+    QA: "KALİTE KONTROL",
+    CUTTING: "KESİM",
+    LOGISTICS: "LOJİSTİK",
+    HR: "İK",
+    OVERTIME_BY_DEPARTMENT: "DEPARTMANA GÖRE FAZLA MESAİ",
+    ATTENDANCE_TRENDS: "KATILIM TRENDLERİ",
+    GO_TO_HR: "İK Paneline Git",
+    NO_DATA: "Veri yok"
   }
+};
 
-  /**
-   * Toggles the light/dark mode theme.
-   */
-  function toggleTheme() {
-      const body = document.body;
-      const themeToggle = document.getElementById('themeToggle');
-
-      body.classList.toggle('light-mode');
-      
-      const isLightMode = body.classList.contains('light-mode');
-
-      // Update theme button icon
-      themeToggle.querySelector('i').className = isLightMode
-          ? 'fa-solid fa-sun' 
-          : 'fa-solid fa-moon';
-
-      // Save preference
-      localStorage.setItem('dashboard_theme', isLightMode ? 'light' : 'dark');
-
-      // Re-render charts to pick up theme colors
-      if (barChart) {
-          reRenderCharts();
-      }
-  }
-
-  /**
-   * Retrieves the current chart data and triggers a full chart re-render.
-   */
-  function reRenderCharts() {
-      const lang = document.getElementById('langSelect').value;
-      
-      // Get the translated labels
-      const chartLabels = DEPARTMENTS.map(id => translations[lang][id]);
-      
-      // Get the current data values from the elements (assuming they were updated by fetchDashboardData)
-      const chartData = DEPARTMENTS.map(id => 
-          Number(document.getElementById(id).textContent.replace(/,/g, '')) || 0
-      );
-
-      updateBarChart(chartLabels, chartData);
-      // Removed call to updateWorkloadChart
-  }
-
-  /**
-   * Sets the current date and time in the header.
-   */
-  function updateDateTime() {
-      const now = new Date();
-      const dayName = now.toLocaleString('en-US', { weekday: 'long' });
-      const fullDate = now.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-      document.getElementById('dayName').textContent = dayName;
-      document.getElementById('fullDate').textContent = fullDate;
-
-      // Simple static weather info (for demonstration, would need API integration for real data)
-      document.getElementById('weatherIcon').textContent = '🌤️'; 
-      document.getElementById('temperature').textContent = '22°C'; 
-  }
-
-  /**
-   * Initializes or updates the Vertical Bar (Column) Chart.
-   * @param {Array<string>} labels - Department names (translated).
-   * @param {Array<number>} data - Department values.
-   */
-  function updateBarChart(labels, data) {
-      const ctxBar = document.getElementById('barChart').getContext('2d');
-      const isLightMode = document.body.classList.contains('light-mode');
-      
-      // Use high-contrast color for clarity
-      const chartTextColor = isLightMode ? getComputedStyle(document.documentElement).getPropertyValue('--chart-text-light').trim() : getComputedStyle(document.documentElement).getPropertyValue('--chart-text-dark').trim();
-      const gridColor = isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-      const tickColor = chartTextColor;
-
-      const barData = {
-          labels: labels,
-          datasets: [{
-              label: translations[document.getElementById('langSelect').value].department_performance,
-              data: data,
-              backgroundColor: [
-                  '#7c40fa', '#ed64a6', '#4f46e5', '#f59e0b', '#10b981',
-                  '#ef4444', '#3b82f6', '#a855f7', '#65a30d', '#eab308'
-              ],
-              borderColor: isLightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
-              borderWidth: 1,
-              borderRadius: 5
-          }]
-      };
-
-      const barOptions = {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: 'x', 
-          plugins: {
-              legend: { display: false },
-              datalabels: {
-                  anchor: 'center', 
-                  align: 'center',
-                  color: chartTextColor, 
-                  font: { weight: 'bold', size: 12 }
-              },
-          },
-          scales: {
-              x: {
-                  grid: { color: gridColor },
-                  ticks: { color: tickColor, autoSkip: false, maxRotation: 45, minRotation: 45 } 
-              },
-              y: {
-                  beginAtZero: true,
-                  grid: { color: gridColor },
-                  ticks: { color: tickColor }
-              }
-          }
-      };
-
-      // Destroy existing chart if it exists
-      if (barChart) barChart.destroy();
-
-      // Create new chart
-      barChart = new Chart(ctxBar, {
-          type: 'bar',
-          data: barData,
-          options: barOptions,
-          plugins: [ChartDataLabels]
-      });
-  }
-
-  // Removed updateWorkloadChart function
-
-  /**
-   * Fetches data from Google Sheets and updates the dashboard.
-   */
-  async function fetchDashboardData() {
-    document.getElementById('error-message').textContent = '';
-
-    try {
-      // 1. Fetch Data
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`HTTP error! Status: ${resp.status}`);
-      const data = await resp.json();
-
-      if (!data.values || !data.values[0] || data.values[0].length < 12) {
-          throw new Error('Data format error. Expected 12 values from A2 to L2.');
-      }
-
-      const numbers = data.values[0]; 
-
-      // 2. Update card values (Department counts + OT/ON totals)
-      const ids = DEPARTMENTS.concat(['TOTAL_OVERTIME', 'TOTAL_OVERNIGHT']);
-
-      ids.forEach((id, index) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = numbers[index] ? Number(numbers[index]).toLocaleString() : '0';
-      });
-
-      // 3. Render charts with initial data
-      reRenderCharts();
-      
-    } catch (err) {
-      console.error('Failed to fetch dashboard data:', err);
-      document.getElementById('error-message').textContent = `Error: Failed to load data. Please check connection and configuration. (${err.message})`;
-    }
-  }
-
-  // --- Event Listeners and Initial Setup ---
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1. Apply saved preferences
-    const savedTheme = localStorage.getItem('dashboard_theme');
-    const savedLang = localStorage.getItem('dashboard_language');
-    const body = document.body;
-
-    // Apply Theme
-    if (savedTheme === 'light') {
-        body.classList.add('light-mode');
-        document.getElementById('themeToggle').querySelector('i').className = 'fa-solid fa-sun';
-    } else {
-        body.classList.remove('light-mode');
-        document.getElementById('themeToggle').querySelector('i').className = 'fa-solid fa-moon';
-    }
-
-    // Apply Language
-    if (savedLang && translations[savedLang]) {
-        document.getElementById('langSelect').value = savedLang;
-    }
-    setLanguage(document.getElementById('langSelect').value);
-    
-
-    // 2. Update Date/Time
-    updateDateTime();
-    
-    // 3. Fetch Data (also renders charts)
-    fetchDashboardData();
-
-    // 4. Set Event Listeners
-    
-    // Language Change Listener
-    const langSelect = document.getElementById('langSelect');
-    langSelect.addEventListener('change', (e) => {
-        setLanguage(e.target.value);
-    });
-
-    // Theme Toggle Listener
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-
-    // Hamburger Menu Toggle
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    hamburgerBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-    });
+// Apply language
+const langSelect = document.getElementById('langSelect');
+function setLanguage(lang) {
+  document.querySelectorAll('[data-i18]').forEach(el => {
+    const key = el.getAttribute('data-i18');
+    if(translations[lang][key]) el.innerText = translations[lang][key];
   });
+}
+langSelect.addEventListener('change', e => setLanguage(e.target.value));
+setLanguage('en');
+
+// Sidebar hamburger toggle
+const hamburger = document.getElementById('hamburgerBtn');
+const sidebar = document.getElementById('sidebar');
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+});
+
+// Dark / Light Mode Toggle
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  const icon = themeToggle.querySelector('i');
+  if(document.body.classList.contains('light-mode')) icon.classList.replace('fa-moon','fa-sun');
+  else icon.classList.replace('fa-sun','fa-moon');
+});
+
+// Dummy Data
+const dummyData = {
+  TOTAL_OVERTIME: 120,
+  TOTAL_OVERNIGHT: 15,
+  PRODUCTION: 560,
+  QA: 120,
+  CUTTING: 250,
+  LOGISTICS: 90,
+  HR: 50,
+  overtimeByDept: {
+    labels: ["Production", "QA", "Cutting", "Logistics", "HR"],
+    values: [560,120,250,90,50]
+  },
+  attendanceTrend: {
+    labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    values: [450, 500, 480, 470, 490, 300, 0]
+  }
+};
+
+// Populate Values
+document.getElementById('TOTAL_OVERTIME').innerText = dummyData.TOTAL_OVERTIME;
+document.getElementById('TOTAL_OVERNIGHT').innerText = dummyData.TOTAL_OVERNIGHT;
+document.getElementById('PRODUCTION').innerText = dummyData.PRODUCTION;
+document.getElementById('QA').innerText = dummyData.QA;
+document.getElementById('CUTTING').innerText = dummyData.CUTTING;
+document.getElementById('LOGISTICS').innerText = dummyData.LOGISTICS;
+document.getElementById('HR').innerText = dummyData.HR;
+
+// Charts
+const overtimeCtx = document.getElementById('overtimeChart').getContext('2d');
+const overtimeChart = new Chart(overtimeCtx, {
+    type: 'bar',
+    data: {
+        labels: dummyData.overtimeByDept.labels,
+        datasets: [{
+            label: 'Hours',
+            data: dummyData.overtimeByDept.values,
+            backgroundColor: ['#7c40fa','#ed64a6','#4f46e5','#f97316','#10b981']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: false },
+            datalabels: { color: '#fff', anchor: 'end', align: 'top' }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero:true }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+const attendanceChart = new Chart(attendanceCtx, {
+    type: 'line',
+    data: {
+        labels: dummyData.attendanceTrend.labels,
+        datasets: [{
+            label: 'Employees',
+            data: dummyData.attendanceTrend.values,
+            fill: true,
+            backgroundColor: 'rgba(124,64,250,0.2)',
+            borderColor: '#7c40fa',
+            tension: 0.4,
+            pointRadius: 6,
+            pointBackgroundColor: '#7c40fa'
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero:true } }
+    }
+});
 </script>
+
+<script>
+// Date & Weather
+const dayNameEl = document.getElementById('dayName');
+const fullDateEl = document.getElementById('fullDate');
+const temperatureEl = document.getElementById('temperature');
+const weatherIconEl = document.getElementById('weatherIcon');
+const date = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+dayNameEl.innerText = days[date.getDay()];
+fullDateEl.innerText = date.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
+temperatureEl.innerText = '25°C'; // dummy
+weatherIconEl.innerText = '☀️';
+</script>
+
+<script>
+// Responsive Sidebar for Mobile
+function handleResize() {
+  if(window.innerWidth <= 768) sidebar.classList.add('collapsed');
+  else sidebar.classList.remove('collapsed');
+}
+window.addEventListener('resize', handleResize);
+handleResize();
+</script>
+
+<style>
+/* Additional styles for responsive sidebar */
+@media (max-width: 768px) {
+  #sidebar { 
+    width: 0;
+    overflow-x: hidden;
+  }
+  #sidebar.collapsed { width: 250px; }
+  main { margin-left: 0; transition: margin 0.3s; }
+}
+@media (min-width: 769px) {
+  #sidebar { width: 250px; }
+  #sidebar.collapsed { width: 80px; }
+  main { margin-left: 250px; transition: margin 0.3s; }
+}
+
+/* Hamburger */
+#hamburgerBtn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 999;
+}
+@media (max-width: 768px) { #hamburgerBtn { display: block; } }
+
+/* Sidebar items animation */
+.sidebar ul li {
+  transition: all 0.3s ease;
+}
+.sidebar.collapsed ul li span { display: none; }
+.sidebar.collapsed ul li { text-align: center; }
+
+/* Language selector */
+#langSelect { margin: 10px; padding: 5px; }
+
+/* Dark/Light Mode */
+body.light-mode { background-color: #f3f4f6; color: #111827; }
+body.light-mode .sidebar { background-color: #fff; }
+body.light-mode .card { background-color: #fff; color: #111827; }
+
+/* Cards hover */
+.card { transition: transform 0.2s; }
+.card:hover { transform: translateY(-5px); }
+
+/* Chart container height */
+.chart-container { height: 250px; }
+
+/* HR Button style */
+.hr-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #7c40fa;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+.hr-button:hover { background-color: #5b2adf; }
+.hr-button a { color: inherit; text-decoration: none; }
+
+/* Error message */
+.error { color: red; font-weight: bold; margin-top: 15px; }
+
+/* Icon circles */
+.icon-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; margin-bottom: 10px; }
+</style>
+
+<script>
+// Optional: Update weather dynamically (dummy API simulation)
+function updateWeather() {
+  const temp = 22 + Math.floor(Math.random()*8);
+  const icons = ['☀️','🌤','⛅','🌧','🌩','❄️'];
+  temperatureEl.innerText = `${temp}°C`;
+  weatherIconEl.innerText = icons[Math.floor(Math.random()*icons.length)];
+}
+setInterval(updateWeather, 60000); // every 60 sec
+updateWeather();
+
+// Optional: Animate cards values (count-up effect)
+function animateValue(id, start, end, duration) {
+  let range = end - start;
+  let current = start;
+  let increment = end > start ? 1 : -1;
+  let stepTime = Math.abs(Math.floor(duration / range));
+  let obj = document.getElementById(id);
+  let timer = setInterval(() => {
+    current += increment;
+    obj.innerText = current;
+    if (current == end) clearInterval(timer);
+  }, stepTime);
+}
+
+// Animate dashboard cards
+animateValue('TOTAL_OVERTIME', 0, dummyData.TOTAL_OVERTIME, 1000);
+animateValue('TOTAL_OVERNIGHT', 0, dummyData.TOTAL_OVERNIGHT, 1000);
+animateValue('PRODUCTION', 0, dummyData.PRODUCTION, 1000);
+animateValue('QA', 0, dummyData.QA, 1000);
+animateValue('CUTTING', 0, dummyData.CUTTING, 1000);
+animateValue('LOGISTICS', 0, dummyData.LOGISTICS, 1000);
+animateValue('HR', 0, dummyData.HR, 1000);
+
+// Optional: Sidebar tooltip for collapsed mode
+document.querySelectorAll('.sidebar ul li').forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    if(sidebar.classList.contains('collapsed')) {
+      let tooltip = document.createElement('span');
+      tooltip.classList.add('tooltip');
+      tooltip.innerText = item.querySelector('span')?.innerText || '';
+      item.appendChild(tooltip);
+    }
+  });
+  item.addEventListener('mouseleave', () => {
+    let tooltip = item.querySelector('.tooltip');
+    if(tooltip) tooltip.remove();
+  });
+});
+</script>
+
+<!-- End of Dashboard HTML -->
 </body>
 </html>
-
-
-
-
-
-
-
