@@ -14,6 +14,7 @@
       background: #1a1a1a;
       min-height: 100vh;
       color: #fff;
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
 
     .top-section {
@@ -27,6 +28,7 @@
       align-items: center;
       margin-bottom: 50px;
       text-align: center;
+      padding: 0 20px;
     }
 
     .name h1 { font-size: 3.5rem; margin: 0; letter-spacing: 3px; text-shadow: 3px 3px 15px rgba(0,0,0,1); }
@@ -51,10 +53,15 @@
     .nav a:hover { color: #da3535; }
 
     /* الكروت */
-    .managers-row { display: flex; justify-content: center; margin-bottom: 60px; padding: 0 20px; }
+    .managers-row { display: flex; justify-content: center; margin-bottom: 30px; padding: 0 20px; }
+    
     .cards-container {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
-      max-width: 1200px; margin: 0 auto 80px; padding: 0 20px;
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 30px;
+      max-width: 1200px; 
+      margin: 0 auto 80px; 
+      padding: 0 20px;
     }
 
     .card {
@@ -69,9 +76,9 @@
       cursor: pointer;
       display: flex; flex-direction: column; justify-content: center;
     }
-    .card:hover { transform: translateY(-15px); border-color: #da3535; box-shadow: 0 15px 40px rgba(218, 53, 53, 0.2); }
-    .card h3 { color: #da3535; font-size: 28px; margin-bottom: 15px; text-transform: uppercase; }
-    .card p { color: #aaa; line-height: 1.6; }
+    .card:hover { transform: translateY(-5px); border-color: #da3535; box-shadow: 0 15px 40px rgba(218, 53, 53, 0.2); }
+    .card h3 { color: #da3535; font-size: 24px; margin-bottom: 15px; text-transform: uppercase; }
+    .card p { color: #aaa; line-height: 1.6; margin: 0;}
 
     /* نافذة تسجيل الدخول */
     .login-modal {
@@ -81,40 +88,65 @@
     }
 
     .login-content {
-      background: #222; padding: 50px; border-radius: 30px; width: 90%; max-width: 400px;
+      background: #222; padding: 40px 30px; border-radius: 30px; width: 85%; max-width: 400px;
       border: 1px solid #da3535; text-align: center; position: relative;
-      animation: modalFade 0.4s ease-out;
     }
 
-    @keyframes modalFade { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-    .login-content h2 { margin-bottom: 35px; font-size: 24px; letter-spacing: 1px; }
-    .login-content h2 span { color: #da3535; }
-
-    .input-group { position: relative; margin-bottom: 25px; }
+    .input-group { position: relative; margin-bottom: 20px; }
     .input-group .main-icon { position: absolute; left: 15px; top: 18px; color: #da3535; }
-    
     .input-group input {
-      width: 100%; padding: 15px 45px 15px 45px; background: #111; border: 1px solid #333;
-      border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s;
+      width: 100%; padding: 15px 45px; background: #111; border: 1px solid #333;
+      border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none;
     }
-    .input-group input:focus { border-color: #da3535; background: #000; }
-
-    /* أيقونة العين */
-    .toggle-password {
-      position: absolute; right: 15px; top: 18px; color: #555; cursor: pointer; transition: 0.3s;
-    }
-    .toggle-password:hover { color: #da3535; }
 
     .login-btn {
       width: 100%; padding: 15px; background: #da3535; border: none; border-radius: 12px;
-      color: #fff; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s;
+      color: #fff; font-weight: bold; text-transform: uppercase; cursor: pointer;
     }
-    .login-btn:hover { background: #b32a2a; transform: translateY(-2px); }
 
     .close-modal { position: absolute; top: 20px; right: 20px; color: #555; cursor: pointer; font-size: 22px; }
-    #error-msg { color: #ff4d4d; margin-top: 15px; font-size: 14px; display: none; font-weight: bold; }
 
+    /* ========================================= */
+    /* RESPONSIVE MEDIA QUERIES            */
+    /* ========================================= */
+
+    /* For Tablets (Max width 992px) */
+    @media (max-width: 992px) {
+      .cards-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns instead of 3 */
+      }
+    }
+
+    /* For Mobile Phones (Max width 600px) */
+    @media (max-width: 600px) {
+      .name h1 { font-size: 2.2rem; } /* Shrink title */
+      
+      .nav ul { 
+        gap: 20px; /* Reduce space between menu items */
+      }
+      
+      .nav a { font-size: 0.9rem; }
+
+      .cards-container {
+        grid-template-columns: 1fr; /* 1 column (Stack cards) */
+        gap: 20px;
+      }
+
+      .top-section {
+        height: 45vh; /* Slightly shorter header on mobile */
+      }
+
+      .card {
+        padding: 30px 20px;
+      }
+
+      .login-content {
+        padding: 30px 20px;
+      }
+    }
+    
+    /* Animation for Login Modal */
+    @keyframes modalFade { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
     </style>
 </head>
@@ -134,7 +166,7 @@
   </section>
 
   <div class="managers-row">
-    <div class="card" style="max-width: 500px;" onclick="openLogin()">
+    <div class="card" style="width: 100%; max-width: 500px;" onclick="openLogin()">
       <h3>Managers</h3>
       <p>Strategic Analysis & Executive Reports<br><i class="fas fa-lock" style="margin-top:10px;"></i> Restricted Access</p>
     </div>
@@ -164,7 +196,7 @@
       </div>
 
       <button class="login-btn" onclick="validateLogin()">Login Access</button>
-      <div id="error-msg">Invalid Credentials. Access Denied!</div>
+      <div id="error-msg" style="color: #ff4d4d; margin-top: 15px; font-size: 14px; display: none; font-weight: bold;">Invalid Credentials. Access Denied!</div>
     </div>
   </div>
 
@@ -189,7 +221,6 @@
       eyeIcon.className = 'fas fa-eye toggle-password';
     }
 
-    // وظيفة إظهار/إخفاء الباسورد
     function togglePassword() {
         if (passInput.type === 'password') {
             passInput.type = 'text';
