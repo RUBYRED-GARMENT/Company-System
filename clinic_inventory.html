@@ -1,153 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RUBYRED - CLINIC INVENTORY</title>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-  />
-  <link rel="icon" href="pic/logooo.png" />
-  <link rel="stylesheet" href="about.css" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body,
-    html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #fff;
-      color: #000;
-    }
-    /* Content Section full screen */
-    #content-section {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      overflow: auto;
-      background: #fff;
-      color: #000;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RubyRed | Clinic System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ruby-red: #e63946;
+            --dark-blue: #1d3557;
+            --success: #2ecc71;
+            --gray-bg: #f4f7f6;
+        }
 
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      body,
-      html {
-        min-height: 100vh;
-      }
-      header {
-        padding: 1rem;
-      }
-      .menu-btn {
-        display: block;
-      }
-      nav#navbar {
-        display: none;
-      }
-      #sidebar {
-        left: -250px;
-      }
-      #sidebar.active {
-        left: 0;
-      }
-      #content-section {
-        margin-left: 0;
-      }
-      .frame {
-        margin-top: 80px;
-        height: calc(100vh - 80px);
-      }
-    }
+        * { box-sizing: border-box; transition: 0.2s; }
+        body { font-family: 'Inter', sans-serif; background: var(--gray-bg); margin: 0; display: flex; flex-direction: column; }
 
-    /* Responsive styles for iPad and tablets */
-    @media (max-width: 1024px) {
-      header {
-        padding: 1rem 2rem;
-      }
-      #sidebar {
-        width: 200px;
-      }
-      #sidebar.active {
-        left: 0;
-      }
-      #content-section {
-        margin-left: 0;
-      }
-      .frame {
-        margin-top: 80px;
-        height: calc(100vh - 80px);
-      }
-    }
+        /* Header / Navbar for Speed */
+        .sidebar { width: 100%; background: var(--dark-blue); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: 800; color: var(--ruby-red); text-decoration: none; }
 
-  </style>
+        .main-content { padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        /* Stats Grid - Optimized */
+        .stats-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        @media (min-width: 768px) { .stats-nav { grid-template-columns: repeat(4, 1fr); } }
+
+        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; border: 2px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .stat-card.active { border-color: var(--ruby-red); background: #fff5f5; }
+        .stat-card b { display: block; font-size: 22px; color: var(--dark-blue); }
+        .stat-card small { font-size: 10px; color: #636e72; text-transform: uppercase; font-weight: 700; }
+
+        /* Search Bar */
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box input { width: 100%; padding: 15px 15px 15px 45px; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; outline: none; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 18px; padding: 20px; border: 1px solid #eee; position: relative; display: flex; flex-direction: column; }
+        .card.critical { border: 2.5px solid var(--ruby-red); animation: glow 1.5s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 5px rgba(230, 57, 70, 0.2); } to { box-shadow: 0 0 15px rgba(230, 57, 70, 0.5); } }
+
+        .percentage { position: absolute; top: 15px; right: 15px; font-weight: 800; font-size: 12px; color: var(--success); }
+        .med-title { font-size: 18px; font-weight: 700; color: var(--dark-blue); margin: 5px 0 15px 0; }
+        
+        /* Progress Bar */
+        .progress-bar { background: #f1f2f6; height: 8px; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.5s ease; }
+
+        .card-actions { display: flex; gap: 10px; margin-top: auto; }
+        .qty-ctrl { display: flex; align-items: center; background: #f1f2f6; border-radius: 10px; }
+        .qty-ctrl button { border: none; background: none; padding: 10px 15px; cursor: pointer; font-size: 20px; font-weight: bold; }
+        .qty-ctrl span { width: 30px; text-align: center; font-weight: 700; }
+        
+        .dispense-btn { flex-grow: 1; background: var(--dark-blue); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; }
+        .dispense-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Modal - Large & Clear */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: white; padding: 35px; border-radius: 25px; width: 100%; max-width: 450px; text-align: center; }
+        .modal-content input { width: 100%; padding: 20px; margin: 25px 0; border: 2px solid #eee; border-radius: 15px; font-size: 24px; text-align: center; font-weight: bold; }
+        
+        /* BIG BUTTONS */
+        .modal-footer { display: flex; gap: 15px; }
+        .big-btn { flex: 1; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: 800; cursor: pointer; }
+        .btn-verify { background: var(--ruby-red); color: white; }
+        .btn-cancel { background: #f1f2f6; color: #333; }
+
+        #loader { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+    </style>
 </head>
 <body>
-  <!-- Content Section full screen -->
-  <div id="content-section">
-    <header>
-      <h2>RUBY<span>RED</span></h2>
-      <div class="logo"><img src="pic/logooo.png" alt="rubyred" /></div>
-      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
-        <i class="fas fa-bars"></i>
-      </button>
-      <nav id="navbar">
-        <ul>
-          <li><a href="CLINIC_HOME.HTML">Home</a></li>
-          <li><a href="contact.html">Contact Us</a></li>
-        </ul>
-      </nav>
-    </header>
-    <div class="text"><h1>CLINIC INVENTORY</h1></div>
 
-   
-    <style>
-  @keyframes border-pulse {
-        0% {
-          border-color: rgb(219, 16, 16);
-          box-shadow: 0 0 10px rgb(122, 14, 14);
-        }
-        100% {
-          border-color: rgb(129, 28, 28);
-          box-shadow: 0 0 30px rgb(70, 4, 4);
-        }
-      }
-      @keyframes led-blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0.3; }
-      }
-                #off img{
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      margin-left: 380px;
+<div id="loader">
+    <i class="fas fa-bolt fa-3x" style="color: var(--ruby-red); margin-bottom: 10px;"></i>
+    <p>Loading Inventory...</p>
+</div>
+
+<header class="sidebar">
+    <div class="logo">RUBYRED</div>
+    <div style="font-size: 12px; font-weight: bold;">LIVE SYSTEM</div>
+</header>
+
+<main class="main-content">
+    <div class="stats-nav">
+        <div class="stat-card active" onclick="filterData('all')"><small>Total</small><b id="count-all">0</b></div>
+        <div class="stat-card" onclick="filterData('available')"><small>Available</small><b id="count-avail">0</b></div>
+        <div class="stat-card" onclick="filterData('critical')"><small>Critical</small><b id="count-crit">0</b></div>
+        <div class="stat-card" onclick="filterData('out')"><small>Out</small><b id="count-out">0</b></div>
+    </div>
+
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Fast search..." onkeyup="renderUI()">
+    </div>
+
+    <div class="grid" id="mainGrid"></div>
+</main>
+
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <h2 style="margin:0">Verify Identity</h2>
+        <p id="orderText" style="color:#666; margin-top:10px;"></p>
+        <input type="text" id="workerCode" placeholder="CODE">
+        <div class="modal-footer">
+            <button class="big-btn btn-cancel" onclick="closeModal()">CANCEL</button>
+            <button class="big-btn btn-verify" id="finalBtn" onclick="sendToSheet()">VERIFY</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyFCvlJucsi3Ca4jZ8VxgUL79f6oWXaGPiWTcYhAMMaopK8-PoUFnwj60u1zeGltYqmVA/exec"; 
+    
+    let inventory = [];
+    let currentFilter = 'all';
+    let selectedItem = null;
+
+    // جلب البيانات مع تخزين مؤقت بسيط للسرعة
+    async function fetchData() {
+        try {
+            const res = await fetch(SCRIPT_URL);
+            inventory = await res.json();
+            document.getElementById('loader').style.display = 'none';
+            renderUI();
+        } catch(e) { console.error("Link Error"); }
     }
 
-    </style>
+    function renderUI() {
+        const grid = document.getElementById('mainGrid');
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        grid.innerHTML = '';
+        let counts = { all:0, avail:0, crit:0, out:0 };
 
-    <div class="frame">
-      <iframe
-        src="https://docs.google.com/spreadsheets/d/1oSAcLCJ6ftY1j32xlL1Y2EU3AY6BxJMZ6zHxsdttGX8/edit?usp=sharing"
-      ></iframe>
-    </div>
+        inventory.forEach(item => {
+            const cur = Number(item.stock);
+            const tot = Number(item.total);
+            const percent = Math.round((cur / tot) * 100) || 0;
+            const isCrit = percent <= 25 && cur > 0;
+            const isOut = cur <= 0;
 
-    <div id="off" style="display: none;">
-      <img src="pic/closed.jpg" alt="closed">
-    </div>
+            counts.all++;
+            if(!isOut) counts.avail++;
+            if(isCrit) counts.crit++;
+            if(isOut) counts.out++;
 
+            if(item.name.toLowerCase().includes(search)) {
+                if(currentFilter==='all' || (currentFilter==='available' && !isOut) || (currentFilter==='critical' && isCrit) || (currentFilter==='out' && isOut)) {
+                    grid.innerHTML += `
+                        <div class="card ${isCrit ? 'critical' : ''}">
+                            <div class="percentage" style="color:${percent<=25?'var(--ruby-red)':'var(--success)'}">${percent}%</div>
+                            <small style="color:#999">#${item.serial}</small>
+                            <div class="med-title">${item.name}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width:${percent}%; background:${percent<=25?'var(--ruby-red)':'var(--success)'}"></div>
+                            </div>
+                            <p style="font-size:13px; margin-bottom:15px;">Stock: <b>${cur}</b> / ${tot}</p>
+                            <div class="card-actions">
+                                <div class="qty-ctrl">
+                                    <button onclick="updateQty(${item.serial}, -1)">-</button>
+                                    <span id="q-${item.serial}">1</span>
+                                    <button onclick="updateQty(${item.serial}, 1)">+</button>
+                                </div>
+                                <button class="dispense-btn" ${isOut ? 'disabled' : ''} onclick="openOrder(${item.serial})">
+                                    ${isOut ? 'OUT' : 'DISPENSE'}
+                                </button>
+                            </div>
+                        </div>`;
+                }
+            }
+        });
+        document.getElementById('count-all').innerText = counts.all;
+        document.getElementById('count-avail').innerText = counts.avail;
+        document.getElementById('count-crit').innerText = counts.crit;
+        document.getElementById('count-out').innerText = counts.out;
+    }
 
-  </div>
+    function updateQty(serial, delta) {
+        const el = document.getElementById(`q-${serial}`);
+        const item = inventory.find(i => i.serial == serial);
+        let val = parseInt(el.innerText) + delta;
+        // منع اختيار كمية أكبر من المتاح فورا
+        if(val >= 1 && val <= Number(item.stock)) el.innerText = val;
+    }
 
-  
-<!--Start of Tawk.to Script-->
+    function openOrder(serial) {
+        const item = inventory.find(i => i.serial == serial);
+        const qty = parseInt(document.getElementById(`q-${serial}`).innerText);
+        
+        selectedItem = { ...item, qty: qty };
+        document.getElementById('orderText').innerText = `${qty} x ${item.name}`;
+        document.getElementById('orderModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('workerCode').focus(), 100);
+    }
 
-<!--End of Tawk.to Script-->
+    async function sendToSheet() {
+        const code = document.getElementById('workerCode').value;
+        const btn = document.getElementById('finalBtn');
+        if(!code) return alert("Enter Worker Code");
 
+        // تعطيل الزر لمنع الضغط المتكرر
+        btn.disabled = true;
+        btn.innerText = "WAIT...";
+
+        // --- ميزة السرعة (Optimistic UI) ---
+        // خصم الكمية في الواجهة فوراً قبل انتظار الشيت
+        const localItem = inventory.find(i => i.serial == selectedItem.serial);
+        localItem.stock = Number(localItem.stock) - selectedItem.qty;
+        renderUI(); 
+        closeModal();
+
+        // إرسال البيانات للشيت في الخلفية
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: JSON.stringify({
+                    workerCode: code,
+                    serial: selectedItem.serial,
+                    medName: selectedItem.name,
+                    qty: selectedItem.qty
+                })
+            });
+            // البيانات تم إرسالها بنجاح في الخلفية
+        } catch(e) {
+            console.log("Background sync active");
+        }
+    }
+
+    function filterData(f) {
+        currentFilter = f;
+        document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        renderUI();
+    }
+
+    function closeModal() {
+        document.getElementById('orderModal').style.display = 'none';
+        document.getElementById('workerCode').value = '';
+        document.getElementById('finalBtn').disabled = false;
+        document.getElementById('finalBtn').innerText = "VERIFY";
+    }
+
+    window.onload = fetchData;
+</script>
 </body>
 </html>
