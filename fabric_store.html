@@ -344,7 +344,7 @@ function extractLiteralTime(raw) {
     if (str.includes('T')) {
         let tp=str.split('T')[1].replace('Z',''), pts=tp.split(':');
         let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0, s=parseInt(pts[2])||0;
-        let utc=h*3600+m*60+s, off=new Date().getTimezoneOffset()*-60+360;
+        let utc=h*3600+m*60+s, off=new Date().getTimezoneOffset()*-60;
         let tot=((utc+off)%86400+86400)%86400;
         return String(Math.floor(tot/3600)).padStart(2,'0')+':'+String(Math.floor((tot%3600)/60)).padStart(2,'0');
     }
