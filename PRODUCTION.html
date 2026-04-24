@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FABRIC STORE - Overtime Management</title>
+    <title>PRODUCTION - Overtime Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --accent: #2e7d32; --accent2: #43a047; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
@@ -110,7 +110,7 @@
 <div id="loginOverlay">
     <div id="loginBox">
         <div class="lock-icon">🔐</div>
-        <h2>FABRIC STORE</h2>
+        <h2>PRODUCTION STORE</h2>
         <div class="brand-sub">OVERTIME ACCESS</div>
         <div class="field-group">
             <label>Username</label>
@@ -134,10 +134,10 @@
     </div>
     <div class="dashboard">
         <div class="stat-box">المسجلين اليوم: <span id="countDash">0</span></div>
-        <div class="stat-box">FABRIC STORE <span>SYSTEM</span></div>
+        <div class="stat-box">PRODUCTION STORE <span>SYSTEM</span></div>
     </div>
-    <h2>FABRIC STORE</h2>
-    <div class="brand-sub">FABRIC STORE OVERTIME</div>
+    <h2>PRODUCTION STORE</h2>
+    <div class="brand-sub">PRODUCTION STORE OVERTIME</div>
     <div class="tab-bar">
         <button class="tab-btn active" id="tabSingle" onclick="switchTab('single')">تسجيل فردي</button>
         <button class="tab-btn"        id="tabBulk"   onclick="switchTab('bulk')">رفع Excel جماعي</button>
@@ -250,8 +250,8 @@ setInterval(checkTimeGate, 1000);
 checkTimeGate();
 
 // ===== LOGIN =====
-const VALID_USER = "FABRIC";
-const VALID_PASS = "FAB112233";
+const VALID_USER = "PRODUCTION";
+const VALID_PASS = "PRO112233";
 
 function doLogin() {
     const user  = document.getElementById('loginUser').value.trim();
@@ -274,7 +274,7 @@ function doLogin() {
 }
 
 // ===== API =====
-const API_URL = "https://script.google.com/macros/s/AKfycbxoLOymj6C8s7QQP7heLjFpyP5JBVSqd4GSqElQbuBVhqzS7U9R5qJlqhg0K8aCyiaq/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx9V7P_8eYHrCOd1h_iHK5qsRXkKmEQVSqGgGtWqWYLRcuVuKBXQaoXmctggS0cHfnh/exec";
 
 let employeeCache = {}, cacheLoaded = false;
 
@@ -448,7 +448,7 @@ function downloadBulkExcel() {
     if (!lastBulkResults.length) return;
     const d = new Date().toISOString().split('T')[0];
     let html = xlsHeader() + `<table>
-  <tr><td colspan="4" class="title">FABRIC STORE - OVERTIME REPORT</td></tr>
+  <tr><td colspan="4" class="title">PRODUCTION STORE - OVERTIME REPORT</td></tr>
   <tr><td colspan="2" class="meta">Date</td><td colspan="2" class="meta">${d}</td></tr>
   <tr><td colspan="4" style="border:none;height:6px;"></td></tr>
   <tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Overtime Hours</th><th class="hdr">Status</th></tr>`;
@@ -462,7 +462,7 @@ function downloadBulkExcel() {
         html+=`<tr><td>${r.code}</td><td>${r.name}</td><td class="${hcls}">${r.displayTime}</td><td class="${scls}">${stxt}</td></tr>`;
     });
     html+=`</table></body></html>`;
-    triggerXls(html,`FABRIC_STORE_Overtime_BulkResult_${d}.xls`);
+    triggerXls(html,`PRODUCTION_STORE_Overtime_BulkResult_${d}.xls`);
 }
 
 async function downloadHistoryExcel() {
@@ -472,7 +472,7 @@ async function downloadHistoryExcel() {
         if (data.status==="success") {
             const d=new Date().toISOString().split('T')[0];
             let html=xlsHeader()+`<table>
-  <tr><td colspan="6" class="title">FABRIC STORE - DAILY OVERTIME REPORT</td></tr>
+  <tr><td colspan="6" class="title">PRODUCTION STORE - DAILY OVERTIME REPORT</td></tr>
   <tr><td colspan="3" class="meta">Date</td><td colspan="3" class="meta">${d}</td></tr>
   <tr><td colspan="3" class="meta">Total Registered</td><td colspan="3" class="meta num">${data.list.length}</td></tr>
   <tr><td colspan="6" style="border:none;height:6px;"></td></tr>
@@ -481,7 +481,7 @@ async function downloadHistoryExcel() {
                 html+=`<tr><td class="num">${i+1}</td><td>${r.code}</td><td>${r.name}</td><td>${r.dept}</td><td class="h-ok">${extractLiteralTime(r.hours)}</td><td>${formatRegTime(r.time)}</td></tr>`;
             });
             html+=`</table></body></html>`;
-            triggerXls(html,`FABRIC_STORE_Overtime_${d}.xls`);
+            triggerXls(html,`PRODUCTION_STORE_Overtime_${d}.xls`);
             hideMessage();
         }
     } catch(e){ showMessage("فشل التحميل","error"); }
