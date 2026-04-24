@@ -110,7 +110,7 @@
 <div id="loginOverlay">
     <div id="loginBox">
         <div class="lock-icon">🔐</div>
-        <h2>PRODUCTION STORE</h2>
+        <h2>PRODUCTION  </h2>
         <div class="brand-sub">OVERTIME ACCESS</div>
         <div class="field-group">
             <label>Username</label>
@@ -134,10 +134,10 @@
     </div>
     <div class="dashboard">
         <div class="stat-box">المسجلين اليوم: <span id="countDash">0</span></div>
-        <div class="stat-box">PRODUCTION STORE <span>SYSTEM</span></div>
+        <div class="stat-box">PRODUCTION   <span>SYSTEM</span></div>
     </div>
-    <h2>PRODUCTION STORE</h2>
-    <div class="brand-sub">PRODUCTION STORE OVERTIME</div>
+    <h2>PRODUCTION  </h2>
+    <div class="brand-sub">PRODUCTION   OVERTIME</div>
     <div class="tab-bar">
         <button class="tab-btn active" id="tabSingle" onclick="switchTab('single')">تسجيل فردي</button>
         <button class="tab-btn"        id="tabBulk"   onclick="switchTab('bulk')">رفع Excel جماعي</button>
@@ -448,7 +448,7 @@ function downloadBulkExcel() {
     if (!lastBulkResults.length) return;
     const d = new Date().toISOString().split('T')[0];
     let html = xlsHeader() + `<table>
-  <tr><td colspan="4" class="title">PRODUCTION STORE - OVERTIME REPORT</td></tr>
+  <tr><td colspan="4" class="title">PRODUCTION   - OVERTIME REPORT</td></tr>
   <tr><td colspan="2" class="meta">Date</td><td colspan="2" class="meta">${d}</td></tr>
   <tr><td colspan="4" style="border:none;height:6px;"></td></tr>
   <tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Overtime Hours</th><th class="hdr">Status</th></tr>`;
@@ -462,7 +462,7 @@ function downloadBulkExcel() {
         html+=`<tr><td>${r.code}</td><td>${r.name}</td><td class="${hcls}">${r.displayTime}</td><td class="${scls}">${stxt}</td></tr>`;
     });
     html+=`</table></body></html>`;
-    triggerXls(html,`PRODUCTION_STORE_Overtime_BulkResult_${d}.xls`);
+    triggerXls(html,`PRODUCTION_ _Overtime_BulkResult_${d}.xls`);
 }
 
 async function downloadHistoryExcel() {
@@ -472,7 +472,7 @@ async function downloadHistoryExcel() {
         if (data.status==="success") {
             const d=new Date().toISOString().split('T')[0];
             let html=xlsHeader()+`<table>
-  <tr><td colspan="6" class="title">PRODUCTION STORE - DAILY OVERTIME REPORT</td></tr>
+  <tr><td colspan="6" class="title">PRODUCTION   - DAILY OVERTIME REPORT</td></tr>
   <tr><td colspan="3" class="meta">Date</td><td colspan="3" class="meta">${d}</td></tr>
   <tr><td colspan="3" class="meta">Total Registered</td><td colspan="3" class="meta num">${data.list.length}</td></tr>
   <tr><td colspan="6" style="border:none;height:6px;"></td></tr>
@@ -481,7 +481,7 @@ async function downloadHistoryExcel() {
                 html+=`<tr><td class="num">${i+1}</td><td>${r.code}</td><td>${r.name}</td><td>${r.dept}</td><td class="h-ok">${extractLiteralTime(r.hours)}</td><td>${formatRegTime(r.time)}</td></tr>`;
             });
             html+=`</table></body></html>`;
-            triggerXls(html,`PRODUCTION_STORE_Overtime_${d}.xls`);
+            triggerXls(html,`PRODUCTION_ _Overtime_${d}.xls`);
             hideMessage();
         }
     } catch(e){ showMessage("فشل التحميل","error"); }
