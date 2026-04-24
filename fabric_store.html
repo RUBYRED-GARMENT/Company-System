@@ -341,13 +341,12 @@ function extractLiteralTime(raw) {
     if (raw===null||raw===undefined||raw==="") return "00:00";
     let str = String(raw).trim();
     if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) { let pts=str.split(':'); return pts[0].padStart(2,'0')+":"+pts[1].padStart(2,'0'); }
+    
     if (str.includes('T')) {
-        let tp=str.split('T')[1].replace('Z',''), pts=tp.split(':');
-        let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0, s=parseInt(pts[2])||0;
-        let utc=h*3600+m*60+s, off=new Date().getTimezoneOffset()*-60;
-        let tot=((utc+off)%86400+86400)%86400;
-        return String(Math.floor(tot/3600)).padStart(2,'0')+':'+String(Math.floor((tot%3600)/60)).padStart(2,'0');
-    }
+    let tp = str.split('T')[1].replace('Z','');
+    let pts = tp.split(':');
+    return pts[0].padStart(2,'0') + ':' + pts[1].padStart(2,'0');
+}
     let num=parseFloat(str);
     if (!isNaN(num)&&num>0&&num<=1){ let tm=Math.round(num*24*60); return String(Math.floor(tm/60)).padStart(2,'0')+":"+String(tm%60).padStart(2,'0'); }
     if (!isNaN(num)&&num>1){ let h=Math.floor(num),m=Math.round((num-h)*60); return String(h).padStart(2,'0')+":"+String(m).padStart(2,'0'); }
