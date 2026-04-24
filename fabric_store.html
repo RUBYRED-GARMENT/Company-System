@@ -301,51 +301,30 @@ function switchTab(tab) {
 }
 
 // ===== HELPERS =====
-
-// تطرح عدد دقائق من وقت بصيغة "HH:MM" وترجع "HH:MM"
-function subtractMinutes(timeStr, minsToSub) {
-    let parts = timeStr.split(':');
-    let total = parseInt(parts[0])*60 + parseInt(parts[1]) - minsToSub;
-    if (total < 0) total = 0;
-    return String(Math.floor(total/60)).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
-}
-
 function extractLiteralTime(raw) {
     if (raw===null||raw===undefined||raw==="") return "00:00";
     let str = String(raw).trim();
-    let result;
-    // صيغة HH:MM أو HH:MM:SS — خذها مباشرة
     if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) {
-        let pts = str.split(':');
-        result = pts[0].padStart(2,'0') + ":" + pts[1].padStart(2,'0');
+        let pts=str.split(':');
+        let total = parseInt(pts[0])*60 + parseInt(pts[1]) - 60;
+        if (total < 0) total = 0;
+        return String(Math.floor(total/60)).padStart(2,'0')+":"+String(total%60).padStart(2,'0');
     }
-    // صيغة ISO تحتوي T
-    else if (str.includes('T')) {
-        let tp  = str.split('T')[1].replace('Z','');
-        let pts = tp.split(':');
-        result = pts[0].padStart(2,'0') + ':' + pts[1].padStart(2,'0');
+    if (str.includes('T')) {
+        let tp=str.split('T')[1].replace('Z',''), pts=tp.split(':');
+        let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0, s=parseInt(pts[2])||0;
+        let utc=h*3600+m*60+s, off=new Date().getTimezoneOffset()*-60+360;
+        let tot=((utc+off)%86400+86400)%86400;
+        // طرح ساعة واحدة (3600 ثانية)
+        tot = Math.max(0, tot - 3600);
+        return String(Math.floor(tot/3600)).padStart(2,'0')+':'+String(Math.floor((tot%3600)/60)).padStart(2,'0');
     }
-    else {
-        // رقم عشري (Excel serial time)
-        let num = parseFloat(str);
-        if (!isNaN(num) && num > 0 && num <= 1) {
-            let tm = Math.round(num * 24 * 60);
-            result = String(Math.floor(tm/60)).padStart(2,'0') + ":" + String(tm%60).padStart(2,'0');
-        } else if (!isNaN(num) && num > 1) {
-            let h = Math.floor(num), m = Math.round((num-h)*60);
-            result = String(h).padStart(2,'0') + ":" + String(m).padStart(2,'0');
-        } else {
-            return str;
-        }
-    }
-    // *** طرح 54 دقيقة لتصحيح فارق التوقيت ***
-    return subtractMinutes(result, 54);
+    let num=parseFloat(str);
+    if (!isNaN(num)&&num>0&&num<=1){ let tm=Math.round(num*24*60)-60; if(tm<0)tm=0; return String(Math.floor(tm/60)).padStart(2,'0')+":"+String(tm%60).padStart(2,'0'); }
+    if (!isNaN(num)&&num>1){ let h=Math.floor(num),m=Math.round((num-h)*60); let total=h*60+m-60; if(total<0)total=0; return String(Math.floor(total/60)).padStart(2,'0')+":"+String(total%60).padStart(2,'0'); }
+    return str;
 }
-
-function isEligible(t) {
-    let h=parseInt(t.split(':')[0])||0, m=parseInt(t.split(':')[1])||0;
-    return !(h>10||(h===10&&m>30));
-}
+function isEligible(t){ let h=parseInt(t.split(':')[0])||0, m=parseInt(t.split(':')[1])||0; return !(h>10||(h===10&&m>30)); }
 
 async function fetchEmployee(code) {
     if (cacheLoaded && employeeCache[code]) return { found:true, data:employeeCache[code] };
@@ -567,16 +546,9 @@ async function updateDashboard() {
 
 function formatRegTime(raw) {
     if (!raw) return "";
-    let str = String(raw).trim();
-    // صيغة ISO — خذ الوقت مباشرة بدون offset
-    if (str.includes('T')) {
-        let tp  = str.split('T')[1].replace('Z','');
-        let pts = tp.split(':');
-        return pts[0].padStart(2,'0') + ':' + pts[1].padStart(2,'0');
-    }
-    let match = str.match(/^(\d{1,2}):(\d{2})/);
-    if (match) return match[1].padStart(2,'0') + ':' + match[2];
-    return str;
+    let str=String(raw).trim();
+    if (str.includes('T')){ let tp=str.split('T')[1].replace('Z',''), pts=tp.split(':'); let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0; let off=new Date().getTimezoneOffset()*-1+6, tot=((h*60+m+off)%1440+1440)%1440; return String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); }
+    let match=str.match(/^(\d{1,2}):(\d{2})/); if(match) return match[1].padStart(2,'0')+':'+match[2]; return str;
 }
 
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
