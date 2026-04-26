@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -30,8 +31,9 @@
         .field-group { margin-bottom: 15px; text-align: right; }
         label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--accent); font-weight: bold; }
         input { width: 100%; padding: 12px; background: #262626; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 18px; outline: none; text-align: center; }
-        #nameInp { font-size: 13px; text-align: left; direction: ltr; }
-        #deptInp { font-size: 13px; text-align: center; }
+        #nameInp    { font-size: 13px; text-align: left; direction: ltr; }
+        #deptInp    { font-size: 13px; text-align: center; }
+        #addressInp { font-size: 13px; text-align: right; direction: rtl; }
         .safe-hours   { color: #00ff88 !important; font-weight: bold; }
         .danger-hours { color: #ff3333 !important; font-weight: bold; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; }
@@ -143,66 +145,71 @@
         <button class="tab-btn"        id="tabBulk"   onclick="switchTab('bulk')">رفع Excel جماعي</button>
     </div>
 
-    <div id="singleSection">
-        <div id="searchSection">
-            <div class="field-group">
-                <label>كود العامل:</label>
-                <input type="text" id="codeInp" placeholder="أدخل الكود..." autofocus
-                       oninput="this.value=this.value.trim()"
-                       onkeydown="if(event.key==='Enter') lookupEmployee()">
-            </div>
-            <button class="btn" id="checkBtn" onclick="lookupEmployee()">فحص (Check)</button>
+```
+<div id="singleSection">
+    <div id="searchSection">
+        <div class="field-group">
+            <label>كود العامل:</label>
+            <input type="text" id="codeInp" placeholder="أدخل الكود..." autofocus
+                   oninput="this.value=this.value.trim()"
+                   onkeydown="if(event.key==='Enter') lookupEmployee()">
         </div>
-        <div id="detailsSection" style="display:none;">
-            <div class="field-group"><label>الاسم:</label><input type="text" id="nameInp" disabled></div>
-            <div class="field-group"><label>القسم:</label><input type="text" id="deptInp" disabled></div>
-            <div class="field-group">
-                <label>إجمالي الساعات:</label>
-                <input type="text" id="hoursInp" disabled style="background:transparent;border:1px solid #444;">
-            </div>
-            <button class="btn" id="submitBtn" onclick="submitData()">تأكيد وإرسال (Submit)</button>
-            <button class="btn" id="backBtn"   onclick="resetUI()">رجوع (Back)</button>
-        </div>
-        <div id="msg"></div>
+        <button class="btn" id="checkBtn" onclick="lookupEmployee()">فحص (Check)</button>
     </div>
-
-    <div id="bulkSection">
-        <div class="upload-zone" id="uploadZone"
-             ondragover="event.preventDefault();this.classList.add('drag-over')"
-             ondragleave="this.classList.remove('drag-over')"
-             ondrop="handleDrop(event)">
-            <input type="file" accept=".xlsx,.xls,.csv" onchange="handleFileInput(this)">
-            <div class="upload-icon">📊</div>
-            <div class="upload-label"><strong>اختر ملف Excel</strong> أو اسحبه هنا</div>
-            <div class="upload-hint">xlsx / xls / csv — العمود الأول يحتوي أكواد الموظفين</div>
+    <div id="detailsSection" style="display:none;">
+        <div class="field-group"><label>الاسم:</label><input type="text" id="nameInp" disabled></div>
+        <div class="field-group"><label>القسم:</label><input type="text" id="deptInp" disabled></div>
+        <!-- [ADDED] Address field -->
+        <div class="field-group"><label>العنوان:</label><input type="text" id="addressInp" disabled></div>
+        <div class="field-group">
+            <label>إجمالي الساعات:</label>
+            <input type="text" id="hoursInp" disabled style="background:transparent;border:1px solid #444;">
         </div>
-        <div id="bulkProgress">
-            <div class="progress-text" id="progressText">جاري المعالجة...</div>
-            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
-        </div>
-        <div id="bulkResultsWrap">
-            <div class="bulk-stats">
-                <div class="bulk-stat eligible"><span class="stat-val" id="statEligible">0</span>مسموح لهم</div>
-                <div class="bulk-stat blocked" ><span class="stat-val" id="statBlocked">0</span>تجاوزوا الحد</div>
-                <div class="bulk-stat unknown" ><span class="stat-val" id="statUnknown">0</span>غير موجود</div>
-            </div>
-            <div class="results-table-wrap">
-                <table class="bulk-table">
-                    <thead><tr><th>الكود</th><th>الاسم</th><th>الساعات</th><th>الحالة</th></tr></thead>
-                    <tbody id="bulkTableBody"></tbody>
-                </table>
-            </div>
-            <button class="btn" id="submitAllBtn" onclick="submitAllEligible()">
-                <span id="submitAllLabel">تسجيل الكل المسموح لهم</span>
-                <span class="btn-spinner" id="submitAllSpinner"></span>
-            </button>
-            <button class="btn" id="downloadXlsBtn" onclick="downloadBulkExcel()">تحميل النتائج Excel</button>
-            <button class="btn" id="bulkResetBtn"   onclick="resetBulk()">رفع ملف جديد</button>
-            <div id="bulkMsg"></div>
-        </div>
+        <button class="btn" id="submitBtn" onclick="submitData()">تأكيد وإرسال (Submit)</button>
+        <button class="btn" id="backBtn"   onclick="resetUI()">رجوع (Back)</button>
     </div>
+    <div id="msg"></div>
+</div>
 
-    <button class="btn" style="background:transparent;border:1px solid #333;color:#aaa;font-size:11px;margin-top:20px;" onclick="downloadHistoryExcel()">تحميل سجل اليوم Excel</button>
+<div id="bulkSection">
+    <div class="upload-zone" id="uploadZone"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="handleDrop(event)">
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="handleFileInput(this)">
+        <div class="upload-icon">📊</div>
+        <div class="upload-label"><strong>اختر ملف Excel</strong> أو اسحبه هنا</div>
+        <div class="upload-hint">xlsx / xls / csv — العمود الأول يحتوي أكواد الموظفين</div>
+    </div>
+    <div id="bulkProgress">
+        <div class="progress-text" id="progressText">جاري المعالجة...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+    <div id="bulkResultsWrap">
+        <div class="bulk-stats">
+            <div class="bulk-stat eligible"><span class="stat-val" id="statEligible">0</span>مسموح لهم</div>
+            <div class="bulk-stat blocked" ><span class="stat-val" id="statBlocked">0</span>تجاوزوا الحد</div>
+            <div class="bulk-stat unknown" ><span class="stat-val" id="statUnknown">0</span>غير موجود</div>
+        </div>
+        <div class="results-table-wrap">
+            <table class="bulk-table">
+                <thead><tr><th>الكود</th><th>الاسم</th><th>الساعات</th><th>الحالة</th></tr></thead>
+                <tbody id="bulkTableBody"></tbody>
+            </table>
+        </div>
+        <button class="btn" id="submitAllBtn" onclick="submitAllEligible()">
+            <span id="submitAllLabel">تسجيل الكل المسموح لهم</span>
+            <span class="btn-spinner" id="submitAllSpinner"></span>
+        </button>
+        <button class="btn" id="downloadXlsBtn" onclick="downloadBulkExcel()">تحميل النتائج Excel</button>
+        <button class="btn" id="bulkResetBtn"   onclick="resetBulk()">رفع ملف جديد</button>
+        <div id="bulkMsg"></div>
+    </div>
+</div>
+
+<button class="btn" style="background:transparent;border:1px solid #333;color:#aaa;font-size:11px;margin-top:20px;" onclick="downloadHistoryExcel()">تحميل سجل اليوم Excel</button>
+```
+
 </div>
 
 <script>
@@ -274,7 +281,7 @@ function doLogin() {
 }
 
 // ===== API =====
-const API_URL = "https://script.google.com/macros/s/AKfycbwnGVtWaPSC0SV-kUZ0VDPa0Z1wHnp6_wEh1XBYbjyH-5mhfnbmEWH0Gj552lZXxtPTHA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby9ActP7Mbuyy3unMOckVfXe5D-GCOK_j_A-etypT7mZJqYEVFzuVmV0No8kMlgPqWflw/exec";
 
 let employeeCache = {}, cacheLoaded = false;
 
@@ -286,6 +293,7 @@ async function preloadEmployees() {
         clearTimeout(timer);
         const data  = await res.json();
         if (data.status === "success" && data.employees) {
+            // [UNCHANGED] stores full employee object — address included automatically if API returns it
             data.employees.forEach(e => { employeeCache[String(e.code).trim()] = e; });
             cacheLoaded = true;
         }
@@ -315,7 +323,6 @@ function extractLiteralTime(raw) {
         let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0, s=parseInt(pts[2])||0;
         let utc=h*3600+m*60+s, off=new Date().getTimezoneOffset()*-60+360;
         let tot=((utc+off)%86400+86400)%86400;
-        // طرح ساعة واحدة (3600 ثانية)
         tot = Math.max(0, tot - 3600);
         return String(Math.floor(tot/3600)).padStart(2,'0')+':'+String(Math.floor((tot%3600)/60)).padStart(2,'0');
     }
@@ -333,7 +340,12 @@ async function fetchEmployee(code) {
         const res=await fetch(`${API_URL}?code=${encodeURIComponent(code)}`,{signal:ctrl.signal});
         clearTimeout(timer);
         const d=await res.json();
-        if (d.status==="success"){ const emp={name:d.name,dept:d.dept,hours:d.hours}; employeeCache[code]=emp; return {found:true,data:emp}; }
+        if (d.status==="success"){
+            // [MODIFIED] added address field
+            const emp={name:d.name, dept:d.dept, hours:d.hours, address:d.address||''};
+            employeeCache[code]=emp;
+            return {found:true, data:emp};
+        }
         if (d.status==="already_registered") return {found:true,alreadyRegistered:true,data:null};
     } catch(e) {}
     return {found:false};
@@ -374,9 +386,15 @@ async function lookupBulkCodes(codes) {
         prog.textContent=`جاري البحث... ${i+1} / ${total}  (${code})`;
         fill.style.width=((i/total)*100)+'%';
         const r=await fetchEmployee(code);
-        if (!r.found) results.push({code,status:'unknown',name:'—',dept:'—',displayTime:'—',eligible:false});
-        else if (r.alreadyRegistered) results.push({code,status:'registered',name:'—',dept:'—',displayTime:'—',eligible:false});
-        else { const t=extractLiteralTime(r.data.hours), el=isEligible(t); results.push({code,status:el?'ok':'blocked',name:r.data.name,dept:r.data.dept,displayTime:t,eligible:el}); }
+        if (!r.found)
+            results.push({code, status:'unknown', name:'—', dept:'—', address:'—', displayTime:'—', eligible:false});
+        else if (r.alreadyRegistered)
+            results.push({code, status:'registered', name:'—', dept:'—', address:'—', displayTime:'—', eligible:false});
+        else {
+            // [MODIFIED] added address
+            const t=extractLiteralTime(r.data.hours), el=isEligible(t);
+            results.push({code, status:el?'ok':'blocked', name:r.data.name, dept:r.data.dept, address:r.data.address||'', displayTime:t, eligible:el});
+        }
         await sleep(80);
     }
     fill.style.width='100%'; prog.textContent='اكتملت المعالجة'; await sleep(400);
@@ -416,8 +434,13 @@ async function submitAllEligible() {
     btn.disabled=true; spinner.style.display='inline-block';
     let sent=0, failed=0;
     for (const emp of eligibleList) {
-        try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({code:emp.code,name:emp.name,dept:emp.dept,hours:emp.displayTime})}); sent++; }
-        catch(e){ failed++; }
+        try {
+            // [MODIFIED] added address in payload
+            await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({
+                code:emp.code, name:emp.name, dept:emp.dept, hours:emp.displayTime, address:emp.address||''
+            })});
+            sent++;
+        } catch(e){ failed++; }
         label.textContent=`جاري الإرسال... ${sent+failed} / ${eligibleList.length}`;
         await sleep(150);
     }
@@ -442,16 +465,19 @@ function xlsHeader() {
   .h-bad { color:#B00020; }
   .num   { color:#2e7d32; }
 </style></head><body>`;
+
 }
 
 function downloadBulkExcel() {
-    if (!lastBulkResults.length) return;
-    const d = new Date().toISOString().split('T')[0];
-    let html = xlsHeader() + `<table>
-  <tr><td colspan="4" class="title"> ADMINISTRATION   - OVERTIME REPORT</td></tr>
-  <tr><td colspan="2" class="meta">Date</td><td colspan="2" class="meta">${d}</td></tr>
-  <tr><td colspan="4" style="border:none;height:6px;"></td></tr>
-  <tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Overtime Hours</th><th class="hdr">Status</th></tr>`;
+if (!lastBulkResults.length) return;
+const d = new Date().toISOString().split(‘T’)[0];
+// [MODIFIED] added Address column
+let html = xlsHeader() + `<table>
+
+  <tr><td colspan="5" class="title"> ADMINISTRATION   - OVERTIME REPORT</td></tr>
+  <tr><td colspan="2" class="meta">Date</td><td colspan="3" class="meta">${d}</td></tr>
+  <tr><td colspan="5" style="border:none;height:6px;"></td></tr>
+  <tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th><th class="hdr">Status</th></tr>`;
     lastBulkResults.forEach(r=>{
         let stxt='', scls='';
         if      (r.status==='ok')         {stxt='Eligible';     scls='ok';}
@@ -459,26 +485,28 @@ function downloadBulkExcel() {
         else if (r.status==='registered') {stxt='Already Reg.'; scls='block';}
         else                              {stxt='Not Found';    scls='unk';}
         const hcls = r.status==='ok'?'h-ok':r.status==='blocked'?'h-bad':'';
-        html+=`<tr><td>${r.code}</td><td>${r.name}</td><td class="${hcls}">${r.displayTime}</td><td class="${scls}">${stxt}</td></tr>`;
+        html+=`<tr><td>${r.code}</td><td>${r.name}</td><td>${r.address||'—'}</td><td class="${hcls}">${r.displayTime}</td><td class="${scls}">${stxt}</td></tr>`;
     });
     html+=`</table></body></html>`;
     triggerXls(html,` ADMINISTRATION_ _Overtime_BulkResult_${d}.xls`);
 }
 
 async function downloadHistoryExcel() {
-    showMessage("جاري التحميل...","info");
-    try {
-        const res=await fetch(`${API_URL}?action=getFullTodayData`), data=await res.json();
-        if (data.status==="success") {
-            const d=new Date().toISOString().split('T')[0];
-            let html=xlsHeader()+`<table>
-  <tr><td colspan="6" class="title"> ADMINISTRATION   - DAILY OVERTIME REPORT</td></tr>
-  <tr><td colspan="3" class="meta">Date</td><td colspan="3" class="meta">${d}</td></tr>
-  <tr><td colspan="3" class="meta">Total Registered</td><td colspan="3" class="meta num">${data.list.length}</td></tr>
-  <tr><td colspan="6" style="border:none;height:6px;"></td></tr>
-  <tr><th class="hdr">#</th><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Department</th><th class="hdr">Overtime Hours</th><th class="hdr">Reg. Time</th></tr>`;
+showMessage(“جاري التحميل…”,“info”);
+try {
+const res=await fetch(`${API_URL}?action=getFullTodayData`), data=await res.json();
+if (data.status===“success”) {
+const d=new Date().toISOString().split(‘T’)[0];
+// [MODIFIED] added Address column
+let html=xlsHeader()+`<table>
+
+  <tr><td colspan="7" class="title"> ADMINISTRATION   - DAILY OVERTIME REPORT</td></tr>
+  <tr><td colspan="3" class="meta">Date</td><td colspan="4" class="meta">${d}</td></tr>
+  <tr><td colspan="3" class="meta">Total Registered</td><td colspan="4" class="meta num">${data.list.length}</td></tr>
+  <tr><td colspan="7" style="border:none;height:6px;"></td></tr>
+  <tr><th class="hdr">#</th><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Department</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th><th class="hdr">Reg. Time</th></tr>`;
             data.list.forEach((r,i)=>{
-                html+=`<tr><td class="num">${i+1}</td><td>${r.code}</td><td>${r.name}</td><td>${r.dept}</td><td class="h-ok">${extractLiteralTime(r.hours)}</td><td>${formatRegTime(r.time)}</td></tr>`;
+                html+=`<tr><td class="num">${i+1}</td><td>${r.code}</td><td>${r.name}</td><td>${r.dept}</td><td>${r.address||'—'}</td><td class="h-ok">${extractLiteralTime(r.hours)}</td><td>${formatRegTime(r.time)}</td></tr>`;
             });
             html+=`</table></body></html>`;
             triggerXls(html,` ADMINISTRATION_ _Overtime_${d}.xls`);
@@ -488,74 +516,84 @@ async function downloadHistoryExcel() {
 }
 
 function triggerXls(html, filename) {
-    const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+const blob=new Blob([html],{type:‘application/vnd.ms-excel;charset=utf-8’});
+const a=document.createElement(‘a’); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
 }
 
 function resetBulk() {
-    document.getElementById('uploadZone').style.display='block';
-    document.getElementById('bulkProgress').style.display='none';
-    document.getElementById('bulkResultsWrap').style.display='none';
-    ['submitAllBtn','bulkResetBtn','downloadXlsBtn'].forEach(id=>document.getElementById(id).style.display='none');
-    document.getElementById('bulkTableBody').innerHTML='';
-    document.getElementById('progressFill').style.width='0%';
-    hideBulkMsg(); eligibleList=[]; lastBulkResults=[];
-    document.getElementById('uploadZone').querySelector('input[type=file]').value='';
+document.getElementById(‘uploadZone’).style.display=‘block’;
+document.getElementById(‘bulkProgress’).style.display=‘none’;
+document.getElementById(‘bulkResultsWrap’).style.display=‘none’;
+[‘submitAllBtn’,‘bulkResetBtn’,‘downloadXlsBtn’].forEach(id=>document.getElementById(id).style.display=‘none’);
+document.getElementById(‘bulkTableBody’).innerHTML=’’;
+document.getElementById(‘progressFill’).style.width=‘0%’;
+hideBulkMsg(); eligibleList=[]; lastBulkResults=[];
+document.getElementById(‘uploadZone’).querySelector(‘input[type=file]’).value=’’;
 }
 
 // ===== SINGLE =====
 async function lookupEmployee() {
-    const code=String(document.getElementById('codeInp').value).trim();
-    if (!code) return showMessage("يرجى إدخال الكود","error");
-    if (cacheLoaded&&employeeCache[code]){ const e=employeeCache[code]; displayEmployee({status:"success",name:e.name,dept:e.dept,hours:e.hours}); return; }
-    showMessage("جاري البحث...","info");
-    try {
-        const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),15000);
-        const res=await fetch(`${API_URL}?code=${code}`,{signal:ctrl.signal}); clearTimeout(timer);
-        const data=await res.json();
-        if (data.status==="already_registered") return showMessage("الموظف مسجل بالفعل!","error");
-        if (data.status==="success"){ displayEmployee(data); employeeCache[code]={name:data.name,dept:data.dept,hours:data.hours}; }
-        else showMessage("الكود غير موجود","error");
-    } catch(e){ showMessage(e.name==='AbortError'?"انتهت المهلة، حاول مرة أخرى":"خطأ في الاتصال","error"); }
+const code=String(document.getElementById(‘codeInp’).value).trim();
+if (!code) return showMessage(“يرجى إدخال الكود”,“error”);
+if (cacheLoaded&&employeeCache[code]){ const e=employeeCache[code]; displayEmployee({status:“success”,name:e.name,dept:e.dept,hours:e.hours,address:e.address||’’}); return; }
+showMessage(“جاري البحث…”,“info”);
+try {
+const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),15000);
+const res=await fetch(`${API_URL}?code=${code}`,{signal:ctrl.signal}); clearTimeout(timer);
+const data=await res.json();
+if (data.status===“already_registered”) return showMessage(“الموظف مسجل بالفعل!”,“error”);
+if (data.status===“success”){ displayEmployee(data); employeeCache[code]={name:data.name,dept:data.dept,hours:data.hours,address:data.address||’’}; }
+else showMessage(“الكود غير موجود”,“error”);
+} catch(e){ showMessage(e.name===‘AbortError’?“انتهت المهلة، حاول مرة أخرى”:“خطأ في الاتصال”,“error”); }
 }
 
 function displayEmployee(data) {
-    document.getElementById('nameInp').value=data.name;
-    document.getElementById('deptInp').value=data.dept;
-    const t=extractLiteralTime(data.hours), hInp=document.getElementById('hoursInp');
-    hInp.value=t; hInp.className='';
-    const h=parseInt(t.split(':')[0])||0, m=parseInt(t.split(':')[1])||0;
-    if (h>10||(h===10&&m>30)){ hInp.classList.add('danger-hours'); document.getElementById('submitBtn').style.display='none'; showMessage("مرفوض: تخطى الحد الأقصى (10:30)","error"); }
-    else { hInp.classList.add('safe-hours'); document.getElementById('submitBtn').style.display='block'; hideMessage(); }
-    document.getElementById('searchSection').style.display='none';
-    document.getElementById('detailsSection').style.display='block';
-    document.getElementById('backBtn').style.display='block';
+document.getElementById(‘nameInp’).value    = data.name;
+document.getElementById(‘deptInp’).value    = data.dept;
+// [MODIFIED] set address value
+document.getElementById(‘addressInp’).value = data.address || ‘’;
+const t=extractLiteralTime(data.hours), hInp=document.getElementById(‘hoursInp’);
+hInp.value=t; hInp.className=’’;
+const h=parseInt(t.split(’:’)[0])||0, m=parseInt(t.split(’:’)[1])||0;
+if (h>10||(h===10&&m>30)){ hInp.classList.add(‘danger-hours’); document.getElementById(‘submitBtn’).style.display=‘none’; showMessage(“مرفوض: تخطى الحد الأقصى (10:30)”,“error”); }
+else { hInp.classList.add(‘safe-hours’); document.getElementById(‘submitBtn’).style.display=‘block’; hideMessage(); }
+document.getElementById(‘searchSection’).style.display=‘none’;
+document.getElementById(‘detailsSection’).style.display=‘block’;
+document.getElementById(‘backBtn’).style.display=‘block’;
 }
 
 async function submitData() {
-    const payload={code:document.getElementById('codeInp').value,name:document.getElementById('nameInp').value,dept:document.getElementById('deptInp').value,hours:document.getElementById('hoursInp').value};
-    try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}); showMessage("تم التسجيل بنجاح!","success"); updateDashboard(); setTimeout(resetUI,1500); }
-    catch(e){ showMessage("فشل الحفظ","error"); }
+// [MODIFIED] added address in payload
+const payload={
+code:    document.getElementById(‘codeInp’).value,
+name:    document.getElementById(‘nameInp’).value,
+dept:    document.getElementById(‘deptInp’).value,
+address: document.getElementById(‘addressInp’).value || ‘’,
+hours:   document.getElementById(‘hoursInp’).value
+};
+try { await fetch(API_URL,{method:‘POST’,mode:‘no-cors’,body:JSON.stringify(payload)}); showMessage(“تم التسجيل بنجاح!”,“success”); updateDashboard(); setTimeout(resetUI,1500); }
+catch(e){ showMessage(“فشل الحفظ”,“error”); }
 }
 
-function resetUI(){ document.getElementById('codeInp').value=''; document.getElementById('searchSection').style.display='block'; document.getElementById('detailsSection').style.display='none'; document.getElementById('codeInp').focus(); hideMessage(); }
+function resetUI(){ document.getElementById(‘codeInp’).value=’’; document.getElementById(‘searchSection’).style.display=‘block’; document.getElementById(‘detailsSection’).style.display=‘none’; document.getElementById(‘codeInp’).focus(); hideMessage(); }
 
 async function updateDashboard() {
-    try { const ctrl=new AbortController(); setTimeout(()=>ctrl.abort(),10000); const res=await fetch(`${API_URL}?action=getFullTodayData`,{signal:ctrl.signal}), data=await res.json(); if(data.status==="success") document.getElementById('countDash').innerText=data.totalEmployees; } catch(e) {}
+try { const ctrl=new AbortController(); setTimeout(()=>ctrl.abort(),10000); const res=await fetch(`${API_URL}?action=getFullTodayData`,{signal:ctrl.signal}), data=await res.json(); if(data.status===“success”) document.getElementById(‘countDash’).innerText=data.totalEmployees; } catch(e) {}
 }
 
 function formatRegTime(raw) {
-    if (!raw) return "";
-    let str=String(raw).trim();
-    if (str.includes('T')){ let tp=str.split('T')[1].replace('Z',''), pts=tp.split(':'); let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0; let off=new Date().getTimezoneOffset()*-1+6, tot=((h*60+m+off)%1440+1440)%1440; return String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); }
-    let match=str.match(/^(\d{1,2}):(\d{2})/); if(match) return match[1].padStart(2,'0')+':'+match[2]; return str;
+if (!raw) return “”;
+let str=String(raw).trim();
+if (str.includes(‘T’)){ let tp=str.split(‘T’)[1].replace(‘Z’,’’), pts=tp.split(’:’); let h=parseInt(pts[0])||0, m=parseInt(pts[1])||0; let off=new Date().getTimezoneOffset()*-1+6, tot=((h*60+m+off)%1440+1440)%1440; return String(Math.floor(tot/60)).padStart(2,‘0’)+’:’+String(tot%60).padStart(2,‘0’); }
+let match=str.match(/^(\d{1,2}):(\d{2})/); if(match) return match[1].padStart(2,‘0’)+’:’+match[2]; return str;
 }
 
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function showMessage(t,c){ const m=document.getElementById('msg'); m.innerText=t; m.className=c; m.style.display='block'; }
-function hideMessage(){ document.getElementById('msg').style.display='none'; }
-function showBulkMsg(t,c){ const m=document.getElementById('bulkMsg'); m.innerText=t; m.className=c; m.style.display='block'; }
-function hideBulkMsg(){ document.getElementById('bulkMsg').style.display='none'; }
+function showMessage(t,c){ const m=document.getElementById(‘msg’); m.innerText=t; m.className=c; m.style.display=‘block’; }
+function hideMessage(){ document.getElementById(‘msg’).style.display=‘none’; }
+function showBulkMsg(t,c){ const m=document.getElementById(‘bulkMsg’); m.innerText=t; m.className=c; m.style.display=‘block’; }
+function hideBulkMsg(){ document.getElementById(‘bulkMsg’).style.display=‘none’; }
 </script>
+
 </body>
 </html>
