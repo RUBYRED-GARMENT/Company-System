@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RUBYRED – بوابة الموظفين</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ════════════════════════════════════════
+       VARIABLES & RESET
+    ════════════════════════════════════════ */
+    :root {
+      --ruby:        #C0002A;
+      --ruby-deep:   #8A0020;
+      --ruby-glow:   #FF1744;
+      --gold:        #C9A84C;
+      --gold-light:  #F0D080;
+      --bg:          #0A0608;
+      --bg2:         #120A0D;
+      --surface:     #1C0F14;
+      --surface2:    #261520;
+      --border:      rgba(192,0,42,0.25);
+      --text:        #F5EEE8;
+      --muted:       #9E8A80;
+      --white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ════ BACKGROUND TEXTURE ════ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(192,0,42,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 90% 90%, rgba(138,0,32,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 30% at 10% 80%, rgba(201,168,76,0.06) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C0002A' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.5;
+    }
+
+    /* ════ LAYOUT ════ */
+    .app { position: relative; z-index: 1; min-height: 100vh; }
+
+    /* ════ HEADER ════ */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(10,6,8,0.7);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .logo-gem {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--ruby) 0%, var(--ruby-deep) 60%, var(--gold) 100%);
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      box-shadow: 0 0 24px rgba(192,0,42,0.5);
+      flex-shrink: 0;
+      animation: gemPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gemPulse {
+      0%, 100% { box-shadow: 0 0 24px rgba(192,0,42,0.5); }
+      50%       { box-shadow: 0 0 40px rgba(192,0,42,0.8), 0 0 60px rgba(192,0,42,0.3); }
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 900;
+      letter-spacing: 0.12em;
+      background: linear-gradient(90deg, var(--white) 0%, var(--gold-light) 50%, var(--ruby-glow) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted);
+      text-transform: uppercase; margin-top: 2px;
+    }
+
+    .header-badge {
+      font-size: 0.72rem; letter-spacing: 0.2em; color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 6px 14px; border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ════ MAIN CONTAINER ════ */
+    .main {
+      display: flex; align-items: center; justify-content: center;
+      min-height: calc(100vh - 89px);
+      padding: 40px 20px;
+    }
+
+    /* ════ AUTH CARD ════ */
+    .auth-card {
+      width: 100%; max-width: 440px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow:
+        0 0 0 1px rgba(192,0,42,0.08),
+        0 32px 64px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      padding: 48px 44px;
+      position: relative;
+      animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* top corner accent */
+    .auth-card::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle at top right, rgba(192,0,42,0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 80px; height: 80px;
+      background: radial-gradient(circle at bottom left, rgba(201,168,76,0.08), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── TAB SWITCHER ── */
+    .tabs {
+      display: flex; gap: 0;
+      border: 1px solid var(--border);
+      margin-bottom: 36px;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      flex: 1; padding: 12px;
+      background: transparent;
+      border: none; cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      background: var(--ruby);
+      color: var(--white);
+    }
+
+    .tab-btn:not(.active):hover { background: rgba(192,0,42,0.12); color: var(--text); }
+
+    /* ── FORM ── */
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--white); margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      font-size: 0.8rem; color: var(--muted);
+      margin-bottom: 28px; line-height: 1.5;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%; padding: 14px 16px;
+      background: var(--bg2);
+      border: 1px solid rgba(192,0,42,0.2);
+      color: var(--text);
+      font-family: 'Cairo', sans-serif; font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      border-radius: 0;
+    }
+
+    .field input:focus {
+      border-color: var(--ruby);
+      box-shadow: 0 0 0 3px rgba(192,0,42,0.15), inset 0 0 16px rgba(192,0,42,0.05);
+    }
+
+    .field input::placeholder { color: rgba(158,138,128,0.5); }
+
+    /* ── SUBMIT BTN ── */
+    .btn-primary {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--ruby) 0%, var(--ruby-deep) 100%);
+      color: var(--white);
+      border: none; cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(192,0,42,0.4); }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── ALERT ── */
+    .alert {
+      padding: 12px 16px; margin-bottom: 20px;
+      font-size: 0.83rem; line-height: 1.5;
+      border-right: 3px solid;
+      display: none;
+    }
+    .alert.show { display: block; animation: alertIn 0.3s ease; }
+    @keyframes alertIn { from { opacity:0; transform:translateX(8px); } to { opacity:1; transform:translateX(0); } }
+    .alert.error   { background: rgba(192,0,42,0.1); border-color: var(--ruby);   color: #FF8A9A; }
+    .alert.success { background: rgba(0,180,80,0.1);  border-color: #00B450;       color: #6EFFA0; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: var(--muted); font-size: 0.75rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ════════════════════════════════════════
+       DASHBOARD
+    ════════════════════════════════════════ */
+    .dashboard { display: none; padding: 40px 48px; max-width: 1000px; margin: 0 auto; }
+    .dashboard.show { display: block; animation: fadeUp 0.5s ease; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .dash-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 40px; flex-wrap: wrap; gap: 20px;
+    }
+
+    .welcome-block h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700; color: var(--white);
+    }
+
+    .welcome-block p { color: var(--muted); margin-top: 4px; font-size: 0.85rem; }
+
+    .btn-logout {
+      padding: 10px 22px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif; font-size: 0.8rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      transition: all 0.3s;
+    }
+    .btn-logout:hover { border-color: var(--ruby); color: var(--ruby-glow); }
+
+    /* ── EMPLOYEE ID BANNER ── */
+    .emp-banner {
+      background: linear-gradient(135deg, var(--surface2) 0%, rgba(192,0,42,0.12) 100%);
+      border: 1px solid var(--border);
+      padding: 20px 28px; margin-bottom: 36px;
+      display: flex; align-items: center; gap: 20px;
+    }
+
+    .emp-banner-gem {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--ruby), var(--gold));
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      flex-shrink: 0;
+    }
+
+    .emp-banner-info strong {
+      font-size: 1.1rem; color: var(--white); font-weight: 700;
+    }
+    .emp-banner-info span {
+      display: block; font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px;
+    }
+
+    /* ── CARDS GRID ── */
+    .cards-section h3 {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .cards-section h3::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .data-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      animation: cardSlideIn 0.4s ease both;
+    }
+
+    @keyframes cardSlideIn {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .data-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(192,0,42,0.15);
+      border-color: rgba(192,0,42,0.45);
+    }
+
+    .data-card::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--ruby), transparent);
+    }
+
+    .card-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 1.05rem; font-weight: 600; color: var(--white);
+      word-break: break-word; line-height: 1.4;
+    }
+
+    .card-index {
+      position: absolute; top: 16px; left: 18px;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem; font-weight: 900;
+      color: rgba(192,0,42,0.06);
+      line-height: 1;
+    }
+
+    /* ── LOADING ── */
+    .loader {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 40px; color: var(--muted); font-size: 0.85rem;
+    }
+
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2px solid rgba(192,0,42,0.2);
+      border-top-color: var(--ruby);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 16px 20px; }
+      .auth-card { padding: 32px 24px; }
+      .dashboard { padding: 28px 20px; }
+      .logo-text { font-size: 1.35rem; }
+    }
+  </style>
+
+</head>
+
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="logo">
+      <div class="logo-gem"></div>
+      <div>
+        <div class="logo-text">RUBYRED</div>
+        <div class="logo-sub">بوابة الموظفين</div>
+      </div>
+    </div>
+    <div class="header-badge">Employee Portal</div>
+  </header>
+
+  <!-- AUTH SECTION -->
+
+  <div class="main" id="authSection">
+    <div class="auth-card">
+
+```
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
+    <button class="tab-btn" onclick="switchTab('register')">إنشاء حساب</button>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert" id="authAlert"></div>
+
+  <!-- LOGIN FORM -->
+  <div id="loginForm">
+    <div class="form-title">مرحباً بعودتك</div>
+    <div class="form-subtitle">أدخل بيانات حسابك للمتابعة</div>
+
+    <div class="field">
+      <label>كود العامل</label>
+      <input type="text" id="loginCode" placeholder="مثال: 13600" />
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input type="password" id="loginPass" placeholder="••••••••" />
+    </div>
+    <button class="btn-primary" onclick="handleLogin()">دخول</button>
+  </div>
+
+  <!-- REGISTER FORM -->
+  <div id="registerForm" style="display:none;">
+    <div class="form-title">إنشاء حساب</div>
+    <div class="form-subtitle">أدخل كود العامل الخاص بك وضع كلمة مرور جديدة</div>
+
+    <div class="field">
+      <label>كود العامل</label>
+      <input type="text" id="regCode" placeholder="مثال: 13600" />
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input type="password" id="regPass" placeholder="اختر كلمة مرور قوية" />
+    </div>
+    <div class="field">
+      <label>تأكيد كلمة المرور</label>
+      <input type="password" id="regPassConfirm" placeholder="أعد كتابة كلمة المرور" />
+    </div>
+    <button class="btn-primary" onclick="handleRegister()">إنشاء الحساب</button>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- DASHBOARD SECTION -->
+
+  <div class="dashboard" id="dashSection">
+    <div class="dash-header">
+      <div class="welcome-block">
+        <h2>لوحة بياناتك</h2>
+        <p id="dashDate"></p>
+      </div>
+      <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+    </div>
+
+```
+<!-- EMP BANNER -->
+<div class="emp-banner">
+  <div class="emp-banner-gem"></div>
+  <div class="emp-banner-info">
+    <strong id="bannerCode">——</strong>
+    <span>كود الموظف · RUBYRED</span>
+  </div>
+</div>
+
+<!-- CARDS -->
+<div class="cards-section">
+  <h3>بيانات الموظف</h3>
+  <div class="cards-grid" id="cardsGrid">
+    <div class="loader"><div class="spinner"></div> جاري تحميل البيانات...</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <footer>© 2025 RUBYRED · جميع الحقوق محفوظة</footer>
+</div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+
+<script>
+  // ──────────────────────────────────────────
+  //  ⚠️  ضع رابط الـ Web App الخاص بك هنا
+  // ──────────────────────────────────────────
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEVK1TeZPygn1iFPBvsB6Fbc4XXrHgr9jLaEARaGo4u4TlPXJopO7RP9mjW9z6SK3MLg/exec";
+
+  // ══ STATE ══
+  let currentCode = null;
+
+  // ══ INIT ══
+  window.onload = () => {
+    const saved = sessionStorage.getItem("rr_code");
+    if (saved) { currentCode = saved; showDashboard(); }
+    updateDate();
+  };
+
+  function updateDate() {
+    const now = new Date();
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById("dashDate").textContent = now.toLocaleDateString("ar-EG", opts);
+  }
+
+  // ══ TAB SWITCHER ══
+  function switchTab(tab) {
+    const isLogin = tab === "login";
+    document.getElementById("loginForm").style.display    = isLogin ? "block" : "none";
+    document.getElementById("registerForm").style.display = isLogin ? "none"  : "block";
+    document.querySelectorAll(".tab-btn").forEach((b, i) => {
+      b.classList.toggle("active", (i === 0) === isLogin);
+    });
+    hideAlert();
+  }
+
+  // ══ ALERT ══
+  function showAlert(msg, type = "error") {
+    const el = document.getElementById("authAlert");
+    el.textContent = msg;
+    el.className = `alert ${type} show`;
+  }
+  function hideAlert() {
+    document.getElementById("authAlert").className = "alert";
+  }
+
+  // ══ API CALL ══
+  async function api(params) {
+    const url = new URL(APPS_SCRIPT_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    const res = await fetch(url.toString());
+    return res.json();
+  }
+
+  // ══ REGISTER ══
+  async function handleRegister() {
+    const code    = document.getElementById("regCode").value.trim();
+    const pass    = document.getElementById("regPass").value;
+    const confirm = document.getElementById("regPassConfirm").value;
+
+    if (!code || !pass) return showAlert("يرجى ملء جميع الحقول");
+    if (pass !== confirm) return showAlert("كلمتا المرور غير متطابقتين");
+    if (pass.length < 6)  return showAlert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+
+    const btn = document.querySelector("#registerForm .btn-primary");
+    btn.disabled = true; btn.textContent = "جاري التحقق...";
+
+    try {
+      const res = await api({ action: "register", code, password: pass });
+      if (res.success) {
+        showAlert("تم إنشاء حسابك بنجاح! يمكنك الدخول الآن", "success");
+        setTimeout(() => switchTab("login"), 1500);
+      } else {
+        showAlert(res.message);
+      }
+    } catch (e) {
+      showAlert("خطأ في الاتصال، تأكد من الرابط وحاول مجدداً");
+    } finally {
+      btn.disabled = false; btn.textContent = "إنشاء الحساب";
+    }
+  }
+
+  // ══ LOGIN ══
+  async function handleLogin() {
+    const code = document.getElementById("loginCode").value.trim();
+    const pass = document.getElementById("loginPass").value;
+
+    if (!code || !pass) return showAlert("يرجى إدخال الكود وكلمة المرور");
+
+    const btn = document.querySelector("#loginForm .btn-primary");
+    btn.disabled = true; btn.textContent = "جاري التحقق...";
+
+    try {
+      const res = await api({ action: "login", code, password: pass });
+      if (res.success) {
+        currentCode = code;
+        sessionStorage.setItem("rr_code", code);
+        showDashboard();
+      } else {
+        showAlert(res.message);
+      }
+    } catch (e) {
+      showAlert("خطأ في الاتصال، تأكد من الرابط وحاول مجدداً");
+    } finally {
+      btn.disabled = false; btn.textContent = "دخول";
+    }
+  }
+
+  // ══ LOGOUT ══
+  function logout() {
+    sessionStorage.removeItem("rr_code");
+    currentCode = null;
+    document.getElementById("authSection").style.display = "flex";
+    document.getElementById("dashSection").classList.remove("show");
+    document.getElementById("loginCode").value = "";
+    document.getElementById("loginPass").value = "";
+    hideAlert();
+  }
+
+  // ══ DASHBOARD ══
+  function showDashboard() {
+    document.getElementById("authSection").style.display = "none";
+    const dash = document.getElementById("dashSection");
+    dash.classList.add("show");
+    document.getElementById("bannerCode").textContent = currentCode;
+    loadEmployeeData();
+  }
+
+  // ══ LOAD DYNAMIC DATA ══
+  async function loadEmployeeData() {
+    const grid = document.getElementById("cardsGrid");
+    grid.innerHTML = `<div class="loader"><div class="spinner"></div> جاري تحميل البيانات...</div>`;
+
+    try {
+      const res = await api({ action: "getEmployeeData", code: currentCode });
+
+      if (!res.success) {
+        grid.innerHTML = `<div class="loader" style="color:#FF8A9A">⚠️ ${res.message}</div>`;
+        return;
+      }
+
+      const data = res.data;
+      const SKIP = ["كود العامل", "employee code", "code", "الكود"]; // أعمدة لا تظهر كبطاقات
+
+      const entries = Object.entries(data).filter(([k]) =>
+        !SKIP.some(s => k.toLowerCase() === s.toLowerCase())
+      );
+
+      if (entries.length === 0) {
+        grid.innerHTML = `<div class="loader">لا توجد بيانات إضافية لعرضها</div>`;
+        return;
+      }
+
+      grid.innerHTML = "";
+      entries.forEach(([key, val], i) => {
+        const card = document.createElement("div");
+        card.className = "data-card";
+        card.style.animationDelay = `${i * 60}ms`;
+        card.innerHTML = `
+          <div class="card-index">${i + 1}</div>
+          <div class="card-label">${key}</div>
+          <div class="card-value">${val !== "" && val !== undefined ? val : "—"}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+    } catch (e) {
+      grid.innerHTML = `<div class="loader" style="color:#FF8A9A">⚠️ تعذّر الاتصال بالخادم</div>`;
+    }
+  }
+
+  // ══ ENTER KEY SUPPORT ══
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    const lf = document.getElementById("loginForm");
+    const rf = document.getElementById("registerForm");
+    if (lf.style.display !== "none") handleLogin();
+    else if (rf.style.display !== "none") handleRegister();
+  });
+</script>
+
+</body>
+</html>
