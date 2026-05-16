@@ -133,13 +133,40 @@
     }
 
     /* ======================================================= */
-    /* التحكم في حجم وتمركز ولون الكلام بالكامل */
+    /* التحكم في منطقة عرض المستند وتثبيت اللوجو والهيدر */
     /* ======================================================= */
     .document-container {
       max-width: 1000px;
       margin: 50px auto;
       padding: 0 25px;
       box-sizing: border-box;
+    }
+
+    /* هيدر اللوجو الثابت فوق النص */
+    .doc-fixed-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .doc-fixed-header .company-logo {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%; /* جعل اللوجو دائرياً */
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .doc-fixed-header h2 {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .doc-fixed-header h2 span {
+      color: #ff3333; /* لون كلمة RED الأحمر الناصع المخصص للوجو */
     }
 
     .doc-clean-view {
@@ -161,7 +188,7 @@
       line-height: 1.8 !important;
     }
 
-    /* ستايل خاص بالعناوين */
+    /* ستايل خاص بالعناوين الداخلية للمستند إن وجدت */
     .doc-clean-view h1, .doc-clean-view h2, .doc-clean-view h3 {
       color: #ff6b6b !important;
       font-size: 2rem !important;
@@ -170,18 +197,7 @@
       text-align: center !important;
     }
 
-    /* جعل الصور متجاوبة ومتمركزة */
-    .doc-clean-view img {
-      max-width: 100% !important;
-      height: auto !important;
-      border-radius: 6px;
-      margin: 20px auto;
-      display: block;
-    }
-
-    /* ======================================================= */
-    /* الكود السحري لحظر وإخفاء تذييل جوجل (الإبلاغ / إساءة الاستخدام) نهائياً */
-    /* ======================================================= */
+    /* حظر وإخفاء تذييل جوجل السفلي نهائياً */
     #footer, [id*="footer"], .google-src-footer, [class*="footer"] {
       display: none !important;
       opacity: 0 !important;
@@ -190,13 +206,13 @@
       padding: 0 !important;
     }
 
-    /* الفوتر الخاص بموقعك أنت (تم تمييزه بـ class واضح حتى لا يختفي) */
+    /* الفوتر الخاص بموقعك */
     .my-custom-footer {
       background: #111;
       text-align: center;
       padding: 30px 20px;
       margin-top: 60px;
-      display: block !important; /* لضمان ظهوره وعدم تداخله مع كود الحجب */
+      display: block !important;
     }
     
     .my-custom-footer p {
@@ -236,6 +252,13 @@
       .menu-btn {
         display: inline-block;
       }
+      .doc-fixed-header .company-logo {
+        width: 80px;
+        height: 80px;
+      }
+      .doc-fixed-header h2 {
+        font-size: 1.7rem;
+      }
       .doc-clean-view *, .doc-clean-view span, .doc-clean-view p {
         font-size: 1.2rem !important; 
       }
@@ -244,7 +267,6 @@
 </head>
 <body>
 
-  <!-- السيكشن العلوي -->
   <section class="top-section">
     <div class="header">
       <div class="name"><h1>RUBY<span>RED</span> DECISION</h1></div>
@@ -263,7 +285,6 @@
     </div>
   </section>
 
-  <!-- القائمة الجانبية للموبايل -->
   <div id="sidebar">
     <button class="close-btn" id="close-btn"><i class="fas fa-times"></i></button>
     <ul>
@@ -273,14 +294,18 @@
     </ul>
   </div>
 
-  <!-- حاوية النص النظيف -->
   <main class="document-container">
+    
+    <div class="doc-fixed-header">
+      <img src="pic/logo.png" alt="RubyRed Logo" class="company-logo">
+      <h2>RUBY<span>RED</span> GARMENT</h2>
+    </div>
+
     <div id="google-doc-content" class="doc-clean-view">
       <p style="text-align: center; color: #aaa;">Loading content...</p>
     </div>
   </main>
 
-  <!-- الفوتر الخاص بموقعك (تم تعديل الكلاس لـ my-custom-footer لحمايته من الحجب) -->
   <footer class="my-custom-footer">
     <p>RUBYRED GARMENT</p>
     <div class="social">
@@ -291,7 +316,7 @@
   </footer>
 
   <script>
-    // 1. تشغيل الـ Sidebar
+    // 1. تشغيل وإغلاق الـ Sidebar للموبايل
     const menuBtn = document.getElementById('menu-btn');
     const closeBtn = document.getElementById('close-btn');
     const sidebar = document.getElementById('sidebar');
@@ -310,20 +335,23 @@
       }
     });
 
-    // 2. جلب النص والمسح البرمجي الصارم لجزء جوجل السفلي
+    // 2. جلب وتطهير محتوى جوجل بالكامل وتحويل الروابط النصية لصور (إن وجدت)
     const docUrl = "https://docs.google.com/document/d/e/2PACX-1vQ3b9ukPWFL6-RbMzyLk4sgF-D4Udzvsy5w-OmZDpg769J_w0eOD7ocNpbc6fc1n7ceSaK16jwMgnAr/pub";
 
     fetch(docUrl)
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.text();
+      })
       .then(html => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
-        // مسح أي عنصر يحمل كلمة footer داخل محتوى جوجل
+        // مسح عناصر الـ footer المضمنة في كود جوجل
         const googleFooters = doc.querySelectorAll('footer, #footer, [id*="footer"], [class*="footer"]');
         googleFooters.forEach(f => f.remove());
         
-        // فلترة الكلمات المفتاحية (تم النشر / إساءة الاستخدام / جوجل) وحذف عناصرها تماماً
+        // فلترة وحذف الكلمات الافتتاحية المزعجة (تم النشر، إساءة الاستخدام، إلخ)
         const allElements = doc.querySelectorAll('body *');
         allElements.forEach(el => {
           const text = el.textContent;
@@ -340,13 +368,17 @@
           }
         });
 
-        // إزالة ستايلات وسكربتات جوجل الافتراضية
+        // إزالة ستايلات وسكربتات جوجل الافتراضية المزعجة
         const scripts = doc.querySelectorAll('script, style');
         scripts.forEach(s => s.remove());
 
-        const bodyContent = doc.querySelector('body').innerHTML;
+        // الحصول على كود المحتوى الصافي والفلترة الذكية لروابط الصور النصية بالـ Regex
+        let bodyContent = doc.querySelector('body').innerHTML;
         
-        // حقن النص النهائي النظيف 100%
+        const imageRegex = /(https?:\/\/[^\s<]+?\.(?:png|jpg|jpeg|gif|webp|svg))/gi;
+        bodyContent = bodyContent.replace(imageRegex, '<img src="$1" alt="Decision Image" style="max-width:100%; height:auto; border-radius:8px; margin:20px auto; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.4);">');
+
+        // حقن المحتوى النهائي النظيف
         document.getElementById('google-doc-content').innerHTML = bodyContent;
       })
       .catch(error => {
