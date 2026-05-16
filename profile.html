@@ -288,6 +288,13 @@
       font-size: 2rem; font-weight: 700; color: var(--white);
     }
 
+    /* ── تمييز اسم العامل باللون الذهبي ── */
+    .welcome-block h2 .emp-name {
+      background: linear-gradient(90deg, var(--gold-light), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
     .welcome-block p { color: var(--muted); margin-top: 4px; font-size: 0.85rem; }
 
     .btn-logout {
@@ -497,7 +504,8 @@
   <div class="dashboard" id="dashSection">
     <div class="dash-header">
       <div class="welcome-block">
-        <h2>لوحة بياناتك</h2>
+        <!-- ✅ التعديل: h2 يحتوي اسم العامل بعد التحميل -->
+        <h2 id="welcomeTitle">لوحة بياناتك</h2>
         <p id="dashDate"></p>
       </div>
       <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
@@ -644,6 +652,8 @@
     document.getElementById("dashSection").classList.remove("show");
     document.getElementById("loginCode").value = "";
     document.getElementById("loginPass").value = "";
+    // إعادة العنوان الافتراضي
+    document.getElementById("welcomeTitle").innerHTML = "لوحة بياناتك";
     hideAlert();
   }
 
@@ -653,6 +663,8 @@
     const dash = document.getElementById("dashSection");
     dash.classList.add("show");
     document.getElementById("bannerCode").textContent = currentCode;
+    // عنوان مؤقت ريثما تُحمَّل البيانات
+    document.getElementById("welcomeTitle").innerHTML = "مرحباً...";
     loadEmployeeData();
   }
 
@@ -670,6 +682,17 @@
       }
 
       const data = res.data;
+
+      // ✅ جلب اسم العامل من العمود الثاني (second value in the object)
+      const allValues = Object.values(data);
+      const empName = allValues.length >= 2 ? allValues[1] : "";
+      if (empName) {
+        document.getElementById("welcomeTitle").innerHTML =
+          `مرحباً، <span class="emp-name">${empName}</span>`;
+      } else {
+        document.getElementById("welcomeTitle").innerHTML = "لوحة بياناتك";
+      }
+
       const SKIP = ["كود العامل", "employee code", "code", "الكود"]; // أعمدة لا تظهر كبطاقات
 
       const entries = Object.entries(data).filter(([k]) =>
