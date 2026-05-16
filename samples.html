@@ -8,28 +8,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" href="pic/logooo.png">
     <style>
+    /* التنسيقات الأساسية العامة */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #222;
       min-height: 100vh;
       padding: 0;
+      overflow-x: hidden; /* لمنع ظهور شريط التمرير الأفقي بسبب السايد بار */
     }
 
     .top-section {
       background-image: url('pic/sewing.jpg');
       background-size: cover;
       background-position: center;
-      height: 70vh;
+      height: 60vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      width: 100%;
+      max-width: 1200px;
     }
 
     .name h1 {
@@ -64,33 +69,35 @@
       color: #ff6b6b;
     }
 
-    /* Menu button styles */
+    /* زر القائمة للشاشات الصغيرة */
     .menu-btn {
       display: none;
       background: none;
       border: none;
       color: #fff;
-      font-size: 1.5rem;
+      font-size: 2rem;
       cursor: pointer;
-      margin: 10px 0;
+      margin-top: 15px;
+      transition: color 0.3s;
+    }
+    .menu-btn:hover {
+      color: #ff6b6b;
     }
 
-
-    
-
-    /* Sidebar styles */
+    /* القائمة الجانبية الموبايل */
     #sidebar {
       position: fixed;
-      top: 200px;
-      right: -250px;
-      width: 250px;
-      height: calc(100vh - 100px);
-      background: rgb(90, 90, 90);
-      opacity: 90%;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.7);
+      top: 0;
+      right: -280px;
+      width: 280px;
+      height: 100vh;
+      background: rgba(40, 40, 40, 0.95);
+      backdrop-filter: blur(5px);
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
       transition: right 0.3s ease;
       z-index: 1050;
-      padding-top: 1rem;
+      padding-top: 60px;
+      box-sizing: border-box;
     }
     #sidebar.active {
       right: 0;
@@ -101,69 +108,51 @@
       margin: 0;
     }
     #sidebar ul li {
-      padding: 1rem 1.5rem;
+      padding: 1rem 2rem;
     }
     #sidebar ul li a {
       color: #e0e0e0;
       text-decoration: none;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.2rem;
       display: block;
       transition: color 0.3s ease;
     }
     #sidebar ul li a:hover {
       color: #ff6b6b;
     }
-
-    /* Responsive styles for mobile */
-    @media (max-width: 768px) {
-      .menu-btn {
-        display: block;
-      }
-      .nav {
-        display: none;
-      }
-      #sidebar {
-        right: -250px;
-      }
-      #sidebar.active {
-        right: 0;
-      }
+    
+    /* زر إغلاق داخل السايد بار */
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
     }
 
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
-    }
-
+    /* منطقة الكروت المتجاوبة */
     .cards-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      /* توزيع تلقائي ذكي يحول عدد الأعمدة بناءً على مساحة الشاشة */
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
-      justify-items: center;
+      padding: 40px 20px;
     }
 
     .card {
       width: 100%;
-      height: 200px;
+      height: 180px;
       perspective: 1000px;
       cursor: pointer;
-      outline: none;
+      text-decoration: none;
       position: relative;
+      display: block;
     }
 
     .card-inner {
@@ -171,64 +160,123 @@
       width: 100%;
       height: 100%;
       border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-      transition: transform 1s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: transform 0.8s;
       transform-style: preserve-3d;
       will-change: transform;
-      position: relative;
+      border: 1px solid #333;
     }
 
-    .card:hover .card-inner {
-      transform: rotateY(360deg);
+    .card:hover .card-inner,
+    .card:focus .card-inner {
+      transform: rotateY(180deg);
     }
 
-    /* Text container absolutely centered and above the card */
     .card-text {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       color: #fff;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
       user-select: none;
       pointer-events: none;
-      white-space: nowrap;
       z-index: 10;
+      text-align: center;
+      width: 90%;
+      letter-spacing: 1px;
     }
 
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
-      }
+    /* الفوتر وتنسيقاته */
+    .footer {
+      background: #111;
+      padding: 30px 20px;
+      text-align: center;
+      color: #fff;
+      margin-top: 40px;
+      border-top: 3px solid #ff6b6b;
+    }
+    .footer img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+    .footer p {
+      margin: 5px 0 15px 0;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    .social {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .social a {
+      color: #fff;
+      font-size: 1.4rem;
+      transition: color 0.3s, transform 0.3s;
+    }
+    .social a:hover {
+      color: #ff6b6b;
+      transform: translateY(-3px);
+    }
+
+    /* شاشات التابلت والأجهزة المتوسطة (Max-width: 992px) */
+    @media (max-width: 992px) {
       .name h1 {
         font-size: 2.2rem;
       }
-      .nav ul {
-        gap: 20px;
-      }
       .cards-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        padding: 15px;
-      }
-      .card-text {
-        font-size: 1.3rem;
+        gap: 20px;
+        padding: 30px 15px;
       }
     }
-    
+
+    /* شاشات الموبايل (Max-width: 768px) */
+    @media (max-width: 768px) {
+      .top-section {
+        height: 50vh;
+      }
+      .name h1 {
+        font-size: 1.8rem;
+      }
+      .nav {
+        display: none; /* إخفاء القائمة الأفقية العادية */
+      }
+      .menu-btn {
+        display: inline-block; /* إظهار زر الهامبرغر */
+      }
+      .cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+      }
+      .card {
+        height: 150px;
+      }
+      .card-text {
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- السكشن العلوي -->
   <section class="top-section">
     <div class="header">
       <div class="logo">
         <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
       </div>
       <div class="name"><h1>RUBY<span>RED</span> SAMPLES</h1></div>
+      
+      <!-- زر فتح القائمة -->
       <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
         <i class="fas fa-bars"></i>
       </button>
+      
+      <!-- نافبار الشاشات الكبيرة -->
       <div class="nav" id="navbar">
         <ul>
           <li><a href="index.html">Home</a></li>
@@ -238,7 +286,10 @@
       </div>
     </div>
   </section>
+
+  <!-- القائمة الجانبية للموبايل -->
   <div id="sidebar">
+    <button class="close-btn" id="close-btn" aria-label="Close navigation"><i class="fas fa-times"></i></button>
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="HR.html">HR</a></li>
@@ -246,11 +297,10 @@
     </ul>
   </div>
  
-  <!-- Free space with gray background for wallpaper -->
-  <div class="free-space" style="background: #222; padding: 20px; color: #fff;">
+  <!-- مساحة فارغة في حال احتجتها مستقبلاً -->
+  <div class="free-space" style="background: #222; color: #fff;"></div>
 
-
-  </div>
+  <!-- حاوية الكروت المتجاوبة -->
   <div class="cards-container">
     <a href="handbook.html" class="card" role="link" tabindex="0" aria-label="hand book">
       <div class="card-inner"></div>
@@ -274,7 +324,7 @@
 
     <a href="#" class="card" role="link" tabindex="0" aria-label="Embroidery Department">
       <div class="card-inner"></div>
-      <div class="card-text">COMPETANCE</div>
+      <div class="card-text">COMPETENCE</div>
     </a>
 
     <a href="#" class="card" role="link" tabindex="0" aria-label="Warehouse Department">
@@ -282,8 +332,10 @@
       <div class="card-text">ACADEMIA</div>
     </a>
   </div>
+
+  <!-- الفوتر الموحد -->
   <div class="footer">
-    <img src="pic/logooo.png" alt="">
+    <img src="pic/logooo.png" alt="Rubyred Logo">
     <p>RUBYRED GARMENT</p>
     <div class="social">
       <a href="https://www.facebook.com/RUBYREDGARMENTSAE/" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -292,91 +344,29 @@
     </div>
   </div>
 
-  <style>
-    /* Responsive styles for decision.html */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
-      .free-space {
-        min-height: 40vh;
-        padding: 20px;
-      }
-      .cards-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        padding: 10px;
-      }
-      .card-text {
-        font-size: 1.2rem;
-      }
-      .footer {
-        padding: 15px 0;
-      }
-      .footer img {
-        width: 50px;
-        height: 50px;
-      }
-      .footer p {
-        font-size: 16px;
-      }
-      .social a {
-        font-size: 20px;
-        margin: 0 6px;
-      }
-    }
+  <!-- كود الجافا سكريبت لتشغيل الـ Sidebar في الموبايل -->
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const closeBtn = document.getElementById('close-btn');
+    const sidebar = document.getElementById('sidebar');
 
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
-      }
-      .name h1 {
-        font-size: 2.2rem;
-      }
-      .nav ul {
-        gap: 20px;
-      }
-      .free-space {
-        min-height: 45vh;
-      }
-      .cards-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        padding: 15px;
-      }
-      .managers-container .card {
-        width: 100%;
-        max-width: 395px;
-      }
-      .card-text {
-        font-size: 1.3rem;
-      }
-      .footer {
-        padding: 18px 0;
-      }
-      .footer img {
-        width: 55px;
-        height: 55px;
-      }
-      .footer p {
-        font-size: 17px;
-      }
-      .social a {
-        font-size: 22px;
-        margin: 0 8px;
-      }
-    }
-  </style>
+    // فتح القائمة الجانبية
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.add('active');
+    });
 
+    // إغلاق القائمة الجانبية عند الضغط على زر X
+    closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+    });
+
+    // إغلاق القائمة عند الضغط في أي مكان خارجها
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('active');
+      }
+    });
+  </script>
 
 </body>
 </html>
