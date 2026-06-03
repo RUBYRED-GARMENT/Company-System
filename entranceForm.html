@@ -112,6 +112,32 @@
       color: #ff6b6b;
     }
 
+    /* ===== IMAGE SECTION ===== */
+    .free-space {
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .frame {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .decision-img {
+      width: 100%;
+      height: auto;           /* يحافظ على نسبة الصورة الأصلية */
+      max-height: 100vh;      /* على الديسكتوب ما تتعدى الشاشة */
+      object-fit: contain;    /* يظهر الصورة كاملة من غير قص */
+      display: block;
+      margin-top: 5px;
+      border-radius: 1%;
+    }
+
     /* Responsive styles for mobile */
     @media (max-width: 768px) {
       .menu-btn {
@@ -126,10 +152,7 @@
       #sidebar.active {
         right: 0;
       }
-    }
 
-    /* Responsive styles */
-    @media (max-width: 768px) {
       .top-section {
         height: 60vh;
         padding: 20px;
@@ -142,85 +165,20 @@
         gap: 15px;
         margin-top: 20px;
       }
-    }
 
-    @media (max-width: 1024px) {
-      .top-section {
-        height: 65vh;
+      /* الصورة على الموبايل */
+      .decision-img {
+        width: 100%;
+        height: auto;         /* ارتفاع تلقائي حسب نسبة الصورة */
+        max-height: none;     /* بدون حد للارتفاع على الموبايل */
+        object-fit: contain;
       }
-      .name h1 {
-        font-size: 2.2rem;
-      }
-      .nav ul {
-        gap: 20px;
-      }
-    }
- 
-  </style>
-</head>
-<body>
-  <section class="top-section">
-    <div class="header">
-      <div class="logo">
-        <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
-      </div>
-      <div class="name"><h1>RUBY<span>RED</span> EVALUATION</h1></div>
-      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="nav" id="navbar">
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="HR.html">HR</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-  </section>
-  <div id="sidebar">
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="HR.html">HR</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </div>
 
-  <!-- Free space with gray background for wallpaper -->
-  <div class="free-space" style="background: #222; min-height: 50vh; display: flex; justify-content: center; align-items: center; color: #fff;">
-    <div class="frame" style="width: 100vw; display: flex; justify-content: center; align-items: center;">
-      <img src="pic/65E9E374-ED48-4310-9379-D304E7281196.jpeg" alt="decision" style="width: 100%; height: 100vh;margin-top: 5px;border-radius: 1%;"></IMg>
-    </div>
-  </div>
-
-  <div class="footer">
-    <img src="pic/logooo.png" alt="">
-    <p>RUBYRED GARMENT</p>
-    <div class="social">
-      <a href="https://www.facebook.com/RUBYREDGARMENTSAE/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://www.linkedin.com/company/rubyred-garment-manufacturing-s-a-e/posts/?feedView=all" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-      <a href="mailto:hr@rubyredgarment.com"><i class="fas fa-envelope"></i></a>
-    </div>
-  </div>
-
-  <style>
-    /* Responsive styles for decision.html */
-    @media (max-width: 768px) {
-      .top-section {
-        height: 60vh;
-        padding: 20px;
-      }
-      .name h1 {
-        font-size: 2rem;
-      }
-      .nav ul {
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 20px;
-      }
       .free-space {
-        min-height: 40vh;
-        padding: 20px;
+        padding: 10px 0;
+        min-height: unset;
       }
+
       .footer {
         padding: 15px 0;
       }
@@ -247,9 +205,6 @@
       .nav ul {
         gap: 20px;
       }
-      .free-space {
-        min-height: 45vh;
-      }
       .footer {
         padding: 18px 0;
       }
@@ -266,9 +221,67 @@
       }
     }
   </style>
+</head>
+<body>
+  <section class="top-section">
+    <div class="header">
+      <div class="logo">
+        <img src="pic/logooo.png" alt="RUBYRED Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; display: none;">
+      </div>
+      <div class="name"><h1>RUBY<span>RED</span> EVALUATION</h1></div>
+      <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="nav" id="navbar">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="HR.html">HR</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
- 
+  <div id="sidebar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="HR.html">HR</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
 
+  <!-- Image section -->
+  <div class="free-space">
+    <div class="frame">
+      <img 
+        src="pic/65E9E374-ED48-4310-9379-D304E7281196.jpeg" 
+        alt="decision" 
+        class="decision-img"
+      >
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="pic/logooo.png" alt="">
+    <p>RUBYRED GARMENT</p>
+    <div class="social">
+      <a href="https://www.facebook.com/RUBYREDGARMENTSAE/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.linkedin.com/company/rubyred-garment-manufacturing-s-a-e/posts/?feedView=all" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <a href="mailto:hr@rubyredgarment.com"><i class="fas fa-envelope"></i></a>
+    </div>
+  </div>
+
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+        sidebar.classList.remove('active');
+      }
+    });
+  </script>
 </body>
 </html>
-
