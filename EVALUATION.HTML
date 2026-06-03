@@ -155,7 +155,42 @@
         gap: 20px;
       }
     }
- 
+
+    /* ===== IMAGE FIX ===== */
+    .free-space {
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .frame {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .decision-img {
+      width: 100%;
+      height: auto;
+      max-height: 100vh;
+      object-fit: contain;
+      display: block;
+      margin-top: 5px;
+      border-radius: 1%;
+    }
+
+    @media (max-width: 768px) {
+      .decision-img {
+        max-height: none;
+      }
+      .free-space {
+        min-height: unset;
+        padding: 10px 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -186,9 +221,9 @@
   </div>
 
   <!-- Free space with gray background for wallpaper -->
-  <div class="free-space" style="background: #222; min-height: 50vh; display: flex; justify-content: center; align-items: center; color: #fff;">
-    <div class="frame" style="width: 100vw; display: flex; justify-content: center; align-items: center;">
-      <img src="pic/EVA.jpeg" alt="decision" style="width: 100%; height: 100vh;margin-top: 5px;border-radius: 1%;"></IMg>
+  <div class="free-space">
+    <div class="frame">
+      <img src="pic/EVA.jpeg" alt="decision" class="decision-img">
     </div>
   </div>
 
@@ -216,10 +251,6 @@
         flex-direction: column;
         gap: 15px;
         margin-top: 20px;
-      }
-      .free-space {
-        min-height: 40vh;
-        padding: 20px;
       }
       .footer {
         padding: 15px 0;
@@ -267,9 +298,17 @@
     }
   </style>
 
- 
-
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+        sidebar.classList.remove('active');
+      }
+    });
+  </script>
 </body>
 </html>
-
-
