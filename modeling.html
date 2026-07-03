@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA - Overtime Management</title>
+    <title>MODELING - Overtime Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --accent: #2e7d32; --accent2: #43a047; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
@@ -112,7 +112,7 @@
 <div id="loginOverlay">
     <div id="loginBox">
         <div class="lock-icon">&#128272;</div>
-        <h2>QA</h2>
+        <h2>MODELING</h2>
         <div class="brand-sub">OVERTIME ACCESS</div>
         <div class="field-group">
             <label>Username</label>
@@ -136,10 +136,10 @@
     </div>
     <div class="dashboard">
         <div class="stat-box">&#1575;&#1604;&#1605;&#1587;&#1580;&#1604;&#1610;&#1606; &#1575;&#1604;&#1610;&#1608;&#1605;: <span id="countDash">0</span></div>
-        <div class="stat-box">QA <span>SYSTEM</span></div>
+        <div class="stat-box">MODELING <span>SYSTEM</span></div>
     </div>
-    <h2>QA</h2>
-    <div class="brand-sub" id="brandSub">QA OVERTIME</div>
+    <h2>MODELING</h2>
+    <div class="brand-sub" id="brandSub">MODELING OVERTIME</div>
     <div class="tab-bar" id="modeBar" style="margin-bottom:10px;">
         <button class="tab-btn mode-btn active" id="modeNormalBtn"   onclick="switchMode('normal')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1593;&#1575;&#1583;&#1610;</button>
         <button class="tab-btn mode-btn"        id="modeSaturdayBtn" onclick="switchMode('saturday')">Saturday Overtime</button>
@@ -258,8 +258,8 @@ setInterval(checkTimeGate, 1000);
 checkTimeGate();
 
 // ===== LOGIN =====
-var VALID_USER = "QA";
-var VALID_PASS = "QA112233";
+var VALID_USER = "MODELING";
+var VALID_PASS = "MOD112233";
 
 function doLogin() {
     var user  = document.getElementById('loginUser').value.trim();
@@ -285,7 +285,7 @@ function doLogin() {
 
 // ===== API =====
 // رابط سكريبت التسجيل العادي (Overtime عادي)
-var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbyoCf2jQAO4tJnocQuTJe3d32-SnfS3I-wqLmTOgMXZZG6qb_U2FGYekc3hm4TSPud2/exec";
+var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbyoCf2jMODELINGO4tJnocQuTJe3d32-SnfS3I-wqLmTOgMXZZG6qb_U2FGYekc3hm4TSPud2/exec";
 // ضع هنا رابط سكريبت شيت "Saturday Overtime" لما تبعته
 var API_URL_SATURDAY = "https://script.google.com/macros/s/AKfycbyXWapC5Zedp6c0r8EjVFXQxpXZZbTE4L9jrT-7EC-OmUaTNuGyOLQEfWRA_2vWHKg/exec";
 // ضع هنا رابط سكريبت شيت "Holiday Overtime" لما تبعته
@@ -295,7 +295,7 @@ var API_URL_HOLIDAY  = "https://script.google.com/macros/s/AKfycbz_vfWQdeaLPYRrO
 var currentMode = 'normal';
 
 var MODE_COLORS = { normal: '#2e7d32', saturday: '#1565c0', holiday: '#6a1b9a' };
-var MODE_LABELS = { normal: 'QA OVERTIME', saturday: 'SATURDAY OVERTIME', holiday: 'HOLIDAY OVERTIME' };
+var MODE_LABELS = { normal: 'MODELING OVERTIME', saturday: 'SATURDAY OVERTIME', holiday: 'HOLIDAY OVERTIME' };
 
 function getApiUrl(mode) {
     if (mode === 'saturday') return API_URL_SATURDAY;
@@ -521,7 +521,7 @@ function downloadBulkExcel() {
     if (!eligibleOnly.length) { showBulkMsg("\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0641\u0648\u0646 \u0645\u0633\u0645\u0648\u062D \u0644\u0647\u0645 \u0644\u062A\u062D\u0645\u064A\u0644\u0647\u0645","warn"); return; }
     var d = new Date().toISOString().split('T')[0];
     var html = xlsHeader() + '<table>'
-        + '<tr><td colspan="4" class="title">QA - OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
+        + '<tr><td colspan="4" class="title">MODELING - OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
         + '<tr><td colspan="2" class="meta">Date</td><td colspan="2" class="meta">'+d+'</td></tr>'
         + '<tr><td colspan="4" style="border:none;height:6px;"></td></tr>'
         + '<tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th></tr>';
@@ -529,7 +529,7 @@ function downloadBulkExcel() {
         html+='<tr><td>'+r.code+'</td><td>'+r.name+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+r.displayTime+'</td></tr>';
     });
     html+='</table></body></html>';
-    triggerXls(html,'QA_Overtime_BulkResult_'+d+'.xls');
+    triggerXls(html,'MODELING_Overtime_BulkResult_'+d+'.xls');
 }
 
 async function downloadHistoryExcel() {
@@ -539,7 +539,7 @@ async function downloadHistoryExcel() {
         if (data.status==="success") {
             var d=new Date().toISOString().split('T')[0];
             var html=xlsHeader()+'<table>'
-                +'<tr><td colspan="7" class="title">QA - DAILY OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
+                +'<tr><td colspan="7" class="title">MODELING - DAILY OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
                 +'<tr><td colspan="3" class="meta">Date</td><td colspan="4" class="meta">'+d+'</td></tr>'
                 +'<tr><td colspan="3" class="meta">Total Registered</td><td colspan="4" class="meta num">'+data.list.length+'</td></tr>'
                 +'<tr><td colspan="7" style="border:none;height:6px;"></td></tr>'
@@ -548,7 +548,7 @@ async function downloadHistoryExcel() {
                 html+='<tr><td class="num">'+(i+1)+'</td><td>'+r.code+'</td><td>'+r.name+'</td><td>'+r.dept+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+extractLiteralTime(r.hours)+'</td><td>'+formatRegTime(r.time)+'</td></tr>';
             });
             html+='</table></body></html>';
-            triggerXls(html,'QA_Overtime_'+d+'.xls');
+            triggerXls(html,'MODELING_Overtime_'+d+'.xls');
             hideMessage();
         }
     } catch(e){ showMessage("\u0641\u0634\u0644 \u0627\u0644\u062A\u062D\u0645\u064A\u0644","error"); }
