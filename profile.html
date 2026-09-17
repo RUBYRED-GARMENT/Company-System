@@ -620,6 +620,25 @@
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
       outline: 2px solid var(--gold); outline-offset: 2px;
     }
+
+    /* ════ APPROVAL STEPPER (NEW) ════ */
+    .stage-stepper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .stage-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    .stage-pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .stage-pill.wait    { background: rgba(156,138,133,0.10); border-color: rgba(156,138,133,0.3); color: var(--muted); }
+    .stage-pill.wait .dot { background: var(--muted); }
+    .stage-pill.pending  { background: rgba(230,181,40,0.12); border-color: rgba(230,181,40,0.4); color: var(--amber-light); }
+    .stage-pill.pending .dot { background: var(--amber-light); box-shadow: 0 0 8px rgba(243,208,107,0.7); animation: dotPulse 1.6s ease-in-out infinite; }
+    .stage-pill.approved { background: rgba(31,190,114,0.12); border-color: rgba(31,190,114,0.4); color: #6EFFB0; }
+    .stage-pill.approved .dot { background: var(--emerald); box-shadow: 0 0 8px rgba(31,190,114,0.7); }
+    .stage-pill.rejected { background: rgba(192,0,42,0.12); border-color: rgba(192,0,42,0.4); color: #FF8A9A; }
+    .stage-pill.rejected .dot { background: var(--ruby-glow); box-shadow: 0 0 8px rgba(255,44,77,0.7); }
+    .stage-sep { color: var(--muted); font-size: 0.7rem; opacity: 0.6; }
+    @media (max-width: 600px) { .stage-stepper { flex-wrap: wrap; } }
   </style>
 </head>
 
@@ -1010,6 +1029,9 @@
       statusPending: "Pending",
       statusApproved: "Approved",
       statusRejected: "Rejected",
+      stageManager: "Manager",
+      stageHR: "HR",
+      stageWaiting: "Waiting",
       footer: "© 2025 EL-HERAZY · All rights reserved",
       locale: "en-US"
     },
@@ -1082,6 +1104,9 @@
       statusPending: "قيد الانتظار",
       statusApproved: "تمت الموافقة",
       statusRejected: "مرفوضة",
+      stageManager: "المدير",
+      stageHR: "الموارد البشرية",
+      stageWaiting: "بالانتظار",
       footer: "© 2025 الحرازي · جميع الحقوق محفوظة",
       locale: "ar-EG"
     }
@@ -1506,30 +1531,74 @@
 
 
   // ══════════════════════════════════════════════════════════
-  //   LEAVE HISTORY  ·  live status (PENDING / APPROVED / REJECTED)
+  //   LEAVE HISTORY  ·  live status (2-stage: Manager → HR)
   //   Polls the sheet every HISTORY_POLL_MS so a status change
   //   made in the sheet shows up on the site almost instantly.
+  //
+  //   Expected values in the sheet's "status" column (set by the
+  //   Apps Script backend when the manager/HR click Approve/Reject
+  //   in their email):
+  //     "Pending"          → waiting on the manager
+  //     "Manager Approved"  → manager said yes, now waiting on HR
+  //     "Manager Rejected"  → manager said no, request closed
+  //     "HR Approved"       → HR said yes, request closed (final approval)
+  //     "HR Rejected"       → HR said no, request closed
+  //   Any other/unrecognized text is treated as "Pending".
   // ══════════════════════════════════════════════════════════
 
-  // Normalizes whatever the sheet has in the "status" column
-  // (Arabic, English, mixed case...) into one of 3 keys.
-  function statusKey(raw) {
+  // Turns the raw status text from the sheet (Arabic/English/mixed case)
+  // into { manager: 'pending'|'approved'|'rejected', hr: 'wait'|'pending'|'approved'|'rejected' }
+  function parseStageStatus(raw) {
     const s = (raw || "").toString().trim().toLowerCase();
-    if (!s) return "pending";
-    if (s.includes("approve") || s.includes("موافق")) return "approved";
-    if (s.includes("reject")  || s.includes("رفض") || s.includes("مرفوض")) return "rejected";
+
+    const isManagerApprove = s.includes("manager") && (s.includes("approve") || s.includes("موافق"));
+    const isManagerReject  = s.includes("manager") && (s.includes("reject")  || s.includes("رفض") || s.includes("مرفوض"));
+    const isHrApprove      = (s.includes("hr") || s.includes("موارد")) && (s.includes("approve") || s.includes("موافق"));
+    const isHrReject       = (s.includes("hr") || s.includes("موارد")) && (s.includes("reject")  || s.includes("رفض") || s.includes("مرفوض"));
+
+    // Fallback for a flat "approved"/"rejected" with no stage name (older rows) — treat as manager stage
+    const isGenericApprove = !isManagerApprove && !isHrApprove && (s.includes("approve") || s.includes("موافق"));
+    const isGenericReject  = !isManagerReject  && !isHrReject  && (s.includes("reject")  || s.includes("رفض") || s.includes("مرفوض"));
+
+    if (isHrApprove)  return { manager: "approved", hr: "approved" };
+    if (isHrReject)   return { manager: "approved", hr: "rejected" };
+    if (isManagerApprove) return { manager: "approved", hr: "pending" };
+    if (isManagerReject)  return { manager: "rejected", hr: "wait" };
+    if (isGenericApprove) return { manager: "approved", hr: "pending" };
+    if (isGenericReject)  return { manager: "rejected", hr: "wait" };
+
+    return { manager: "pending", hr: "wait" }; // default: freshly submitted
+  }
+
+  function stagePillHtml(key, label) {
+    // key: wait | pending | approved | rejected
+    const icon = key === "approved" ? "✓" : key === "rejected" ? "✕" : "";
+    return `<span class="stage-pill ${key}"><span class="dot"></span>${label}${icon ? " " + icon : ""}</span>`;
+  }
+
+  function renderStageStepper(rawStatus) {
+    const st = parseStageStatus(rawStatus);
+    const managerLabel = `${t("stageManager")}: ${st.manager === "approved" ? t("statusApproved") : st.manager === "rejected" ? t("statusRejected") : t("statusPending")}`;
+    let hrLabel;
+    if (st.hr === "wait")      hrLabel = `${t("stageHR")}: ${t("stageWaiting")}`;
+    else if (st.hr === "pending") hrLabel = `${t("stageHR")}: ${t("statusPending")}`;
+    else if (st.hr === "approved") hrLabel = `${t("stageHR")}: ${t("statusApproved")}`;
+    else hrLabel = `${t("stageHR")}: ${t("statusRejected")}`;
+
+    return `<div class="stage-stepper">
+      ${stagePillHtml(st.manager, managerLabel)}
+      <span class="stage-sep">›</span>
+      ${stagePillHtml(st.hr, hrLabel)}
+    </div>`;
+  }
+
+  // Overall color for the item's left border: green only once HR approved,
+  // red if rejected at either stage, amber while anything is still pending.
+  function overallKey(rawStatus) {
+    const st = parseStageStatus(rawStatus);
+    if (st.manager === "rejected" || st.hr === "rejected") return "rejected";
+    if (st.hr === "approved") return "approved";
     return "pending";
-  }
-
-  function statusLabel(key) {
-    if (key === "approved") return t("statusApproved");
-    if (key === "rejected") return t("statusRejected");
-    return t("statusPending");
-  }
-
-  function renderStatusBadge(rawStatus) {
-    const key = statusKey(rawStatus);
-    return `<span class="status-badge ${key}"><span class="dot"></span>${statusLabel(key)}</span>`;
   }
 
   function escapeHtml(str) {
@@ -1571,7 +1640,7 @@
 
       list.innerHTML = "";
       ordered.forEach((item, i) => {
-        const key = statusKey(item.status);
+        const key = overallKey(item.status);
         const el = document.createElement("div");
         el.className = `history-item status-${key}`;
         el.style.animationDelay = `${Math.min(i, 10) * 45}ms`;
@@ -1581,7 +1650,7 @@
             <div class="history-item-dates">${escapeHtml(item.startDate)} → ${escapeHtml(item.endDate)}</div>
             ${item.reason ? `<div class="history-item-reason">${escapeHtml(item.reason)}</div>` : ""}
           </div>
-          ${renderStatusBadge(item.status)}
+          ${renderStageStepper(item.status)}
         `;
         list.appendChild(el);
       });
