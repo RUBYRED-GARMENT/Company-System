@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rubyred L&D</title>
+<style>
+:root{--bg:#0a0608;--card:#150b0f;--card2:#1d1015;--line:#2e1a21;--red:#a50f26;--red2:#e11d48;--tx:#f4eaec;--mu:#a58f95;--ok:#3ddc97;--warn:#f5b942}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.55 "Segoe UI",system-ui,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(600px 400px at 85% -5%,rgba(165,15,38,.35),transparent),radial-gradient(500px 400px at 0 100%,rgba(165,15,38,.22),transparent);animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-30px,20px) scale(1.06)}}
+aside{position:fixed;inset:0 auto 0 0;width:232px;background:rgba(21,11,15,.92);border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:4px;z-index:5}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:.3px;margin-bottom:22px;padding:0 8px}
+.logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--red2),var(--red));display:grid;place-items:center;font-style:normal;box-shadow:0 0 22px rgba(225,29,72,.55);animation:pulse 3s infinite}
+@keyframes pulse{50%{box-shadow:0 0 6px rgba(225,29,72,.3)}}
+.logo small{display:block;font-weight:400;font-size:11px;color:var(--mu)}
+nav button{all:unset;cursor:pointer;display:flex;gap:11px;align-items:center;padding:10px 12px;border-radius:10px;color:var(--mu);width:calc(100% - 24px);transition:.2s}
+nav button:hover{background:var(--card2);color:var(--tx)}
+nav button.on{background:linear-gradient(90deg,rgba(225,29,72,.28),transparent);color:#fff;box-shadow:inset 3px 0 var(--red2)}
+nav button:focus-visible,.btn:focus-visible{outline:2px solid var(--red2);outline-offset:2px}
+main{margin-left:232px;padding:26px 32px 50px;max-width:1300px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+h1{font-size:26px}h2{font-size:17px;margin-bottom:12px}h3{font-size:15px}
+.sub{color:var(--mu);font-size:13px}
+.view{animation:up .45s ease}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+.grid{display:grid;gap:16px}.g5{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}.g3{grid-template-columns:320px 1fr}
+.card{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:18px;transition:.25s}
+.card:hover{border-color:#5a1b29}
+.kpi b{display:block;font-size:32px;font-weight:700;background:linear-gradient(90deg,#fff,#ff6b86);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kpi span{color:var(--mu);font-size:13px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--card2);color:var(--tx);padding:8px 14px;border-radius:10px;font:inherit;font-size:13px;transition:.2s}
+.btn:hover{border-color:var(--red2);transform:translateY(-1px)}
+.btn.p{background:linear-gradient(135deg,var(--red2),var(--red));border:0;box-shadow:0 6px 20px rgba(165,15,38,.45)}
+input,select{background:#0f080b;border:1px solid var(--line);color:var(--tx);padding:8px 10px;border-radius:9px;font:inherit;font-size:13px}
+input[type=range]{accent-color:var(--red2);padding:0;width:100%}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{color:var(--mu);font-weight:600;text-align:start;padding:9px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid #22131a}
+tr:hover td{background:rgba(225,29,72,.05)}
+.tw{overflow-x:auto}
+.badge{padding:2px 9px;border-radius:20px;font-size:12px;border:1px solid}
+.hi{color:#ff5d7a;border-color:#ff5d7a}.me{color:var(--warn);border-color:var(--warn)}.lo{color:var(--ok);border-color:var(--ok)}
+.bar{height:9px;background:#26141b;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--red),var(--red2));transform-origin:left;animation:grow 1s cubic-bezier(.2,.8,.2,1)}
+@keyframes grow{from{transform:scaleX(0)}}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.list{display:flex;flex-direction:column;gap:6px;max-height:560px;overflow:auto}
+.item{padding:10px 12px;border-radius:11px;cursor:pointer;border:1px solid transparent;background:#12090d;transition:.2s}
+.item:hover{border-color:#5a1b29}.item.on{border-color:var(--red2);background:rgba(225,29,72,.12)}
+.donut{width:150px;height:150px;border-radius:50%;margin:auto;display:grid;place-items:center;animation:spin 1.2s ease}
+.donut div{width:98px;height:98px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:700;font-size:22px}
+@keyframes spin{from{transform:rotate(-120deg);opacity:0}}
+.lang{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lang button{all:unset;cursor:pointer;padding:7px 14px;font-size:13px;color:var(--mu)}
+.lang button.on{background:var(--red);color:#fff}
+.doc h3{margin:16px 0 6px;color:#ff8da1}.doc li{margin-left:20px;margin-bottom:3px}
+.hm td{text-align:center;font-weight:600}
+.lv{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;align-items:center;margin-bottom:12px}
+@media(max-width:860px){aside{position:static;width:auto;flex-direction:row;flex-wrap:wrap;padding:10px}.logo{width:100%;margin:0 0 6px}nav button{width:auto}main{margin:0;padding:18px}.g3{grid-template-columns:1fr}}
+.emp aside,.emp #rst,.emp #syn{display:none}.emp main{margin:0 auto;max-width:900px}
+.pills{display:flex;gap:6px}.pill{position:relative;cursor:pointer}.pill input{position:absolute;opacity:0}
+.pill span{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#12090d;transition:.2s}
+.pill:hover span{border-color:var(--red2)}.pill input:checked+span{background:linear-gradient(135deg,var(--red2),var(--red));border-color:transparent;transform:scale(1.08)}.pill input:focus-visible+span{outline:2px solid var(--red2)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{aside,.top .btn,.noprint{display:none!important}body{background:#fff;color:#000}body:before{display:none}main{margin:0}.card{background:#fff;border:0;color:#000}.doc h3{color:#8a0e22}}
+</style></head><body>
+<aside><div class="logo"><i>R</i><div>Rubyred<small id="sub"></small></div></div><nav id="nav"></nav></aside>
+<main><div class="top"><div><h1 id="ttl"></h1><div class="sub" id="dt"></div></div>
+<div class="row"><button class="btn" onclick="auth()" id="lg"></button><button class="btn" onclick="sync()" id="syn"></button><button class="btn" onclick="resetData()" id="rst"></button><div class="lang"><button id="l-en" onclick="setLang('en')">EN</button><button id="l-tr" onclick="setLang('tr')">TR</button></div></div></div>
+<div id="v"></div></main>
+<script>
+/* PASTE your Google Apps Script Web App URL between the quotes (see the Setup page) */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbygSFuvNjuoCFCPiy_sGb-QWKB1tZXFbG3C4dQHiUsjsMcYIoYhy7DEkmy8AHOUkNYX/exec";
+/* Manager PIN for the dashboard. CHANGE IT. */
+const ADMIN_PIN="000000";
+/* Optional: direct video links. Example: LINKS["Active listening skills"]="https://www.youtube.com/watch?v=XXXX" */
+const LINKS={};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D={app:["Learning & Development System","Öğrenme ve Gelişim Sistemi"],dash:["Dashboard","Panel"],emps:["Employees","Çalışanlar"],tna:["Training Needs Analysis","Eğitim İhtiyaç Analizi"],cat:["Training Catalog","Eğitim Kataloğu"],plan:["Training Plan","Eğitim Planı"],mat:["Materials","Materyaller"],rep:["Reports","Raporlar"],
+kEmp:["Employees","Çalışan"],kReady:["Avg. readiness","Ort. yetkinlik"],kGaps:["Open skill gaps","Açık yetkinlik açığı"],kPlan:["Planned trainings","Planlı eğitim"],kBud:["Budget (USD)","Bütçe (USD)"],
+gapBy:["Average gap by competency","Yetkinliğe göre ortalama açık"],status:["Plan status","Plan durumu"],topPri:["Highest priority employees","Öncelikli çalışanlar"],
+name:["Name","Ad Soyad"],dept:["Department","Departman"],role:["Role","Pozisyon"],add:["Add employee","Çalışan ekle"],readiness:["Readiness","Yetkinlik"],cur:["Current","Mevcut"],req:["Required","Gerekli"],gap:["Gap","Açık"],
+rec:["Recommended training","Önerilen eğitimler"],addPlan:["Add to plan","Plana ekle"],autoPlan:["Auto-generate plan for all","Tüm çalışanlar için otomatik plan"],planned:["Planned","Planlandı"],progress:["In progress","Devam ediyor"],done:["Completed","Tamamlandı"],
+hours:["Hours","Saat"],cost:["Cost","Maliyet"],comp:["Competency","Yetkinlik"],course:["Training","Eğitim"],quarter:["Quarter","Çeyrek"],export:["Export CSV","CSV indir"],print:["Print / PDF","Yazdır / PDF"],reset:["Clear all data","Tüm verileri sil"],
+pick:["Select an employee","Bir çalışan seçin"],high:["High","Yüksek"],med:["Medium","Orta"],noGap:["No gaps. Fully ready.","Açık yok. Tamamen hazır."],obj:["Learning objectives","Öğrenme hedefleri"],agenda:["Agenda","Gündem"],methods:["Delivery methods","Eğitim yöntemleri"],
+activ:["Activities","Uygulamalar"],assess:["Assessment","Ölçme"],eval:["Evaluation (Kirkpatrick)","Değerlendirme (Kirkpatrick)"],heat:["Gap heatmap by department","Departmana göre açık haritası"],del:["Delete","Sil"],priority:["Priority","Öncelik"],total:["Total","Toplam"],
+audience:["Target audience","Hedef kitle"],empty:["Nothing planned yet. Open the TNA page or auto-generate a plan.","Henüz plan yok. TNA sayfasını açın veya otomatik plan oluşturun."],sure:["Delete ALL data stored in this browser?","Bu tarayıcıdaki TÜM veriler silinsin mi?"],save:["Saved automatically in this browser.","Veriler bu tarayıcıda otomatik kaydedilir."],learners:["employees with this gap","bu açığı olan çalışan"],
+asmt:["Self-Assessment","Öz Değerlendirme"],hub:["Learning Hub","Öğrenme Merkezi"],setup:["Google Sheet Setup","Google Sheet Kurulumu"],code:["Employee code","Sicil kodu"],title:["Job title","Unvan"],submit:["Submit assessment","Değerlendirmeyi gönder"],sync:["Sync from Google Sheet","Google Sheet'ten senkronize et"],kRes:["Assessments submitted","Gönderilen değerlendirme"],recent:["Latest assessments","Son değerlendirmeler"],
+fill:["Please enter your code, name and job title.","Lütfen sicil kodu, ad soyad ve unvanınızı girin."],fillq:["Please answer all questions.","Lütfen tüm soruları yanıtlayın."],nourl:["Add your Google Apps Script URL to SHEET_URL first (see Setup).","Önce SHEET_URL alanına Apps Script bağlantısını ekleyin (Kurulum)."],
+intro:["Rate each statement from 1 (strongly disagree) to 5 (strongly agree). Answer honestly: your results create your personal learning plan.","Her ifadeyi 1 (kesinlikle katılmıyorum) ile 5 (kesinlikle katılıyorum) arasında puanlayın. Dürüst olun: sonuçlarınız kişisel gelişim planınızı oluşturur."],
+yourRes:["Your results","Sonuçlarınız"],strong:["Strong","Güçlü"],devel:["Developing","Gelişiyor"],need:["Needs development","Gelişim alanı"],watch:["Watch on YouTube","YouTube'da izle"],newA:["New assessment","Yeni değerlendirme"],learnFor:["Recommended learning for you","Sizin için önerilen içerikler"],copy:["Copy code","Kodu kopyala"],copied:["Copied","Kopyalandı"],thanks:["Thank you! Your answers were submitted.","Teşekkürler! Yanıtlarınız gönderildi."],prog2:["answered","yanıtlandı"],login:["Manager login","Yönetici girişi"],logout:["Logout","Çıkış"],pin:["Enter manager PIN","Yönetici PIN'ini girin"],badpin:["Wrong PIN","Hatalı PIN"],noEmp:["No employees yet. They appear after they submit the self-assessment, or add one in Employees.","Henüz çalışan yok. Öz değerlendirmeyi gönderince görünürler veya Çalışanlar sayfasından ekleyin."],noSheet:["Google Sheet is not connected yet. Employee answers stay on their own device until you add SHEET_URL (see Setup).","Google Sheet henüz bağlı değil. SHEET_URL ekleyene kadar yanıtlar çalışanın kendi cihazında kalır (Kurulum)."],
+hubNote:["Links open YouTube searches. For a specific video, add its URL to the LINKS object in the code.","Bağlantılar YouTube aramasını açar. Belirli bir video için URL'yi koddaki LINKS nesnesine ekleyin."],empty2:["No assessments yet. Share the website link with employees, or add SHEET_URL and sync.","Henüz değerlendirme yok. Web sitesi bağlantısını çalışanlarla paylaşın veya SHEET_URL ekleyip senkronize edin."]};
+const C=[["com","Communication","İletişim"],["lead","Leadership","Liderlik"],["team","Teamwork","Takım Çalışması"],["time","Time Management","Zaman Yönetimi"],["cust","Customer Service","Müşteri Hizmetleri"],["dig","Digital & Excel Skills","Dijital ve Excel Becerileri"],["neg","Negotiation","Müzakere"],["prob","Problem Solving","Problem Çözme"]];
+const K=[
+["com",8,120,["Active listening and feedback","Clear business writing","Handling difficult conversations"],["Aktif dinleme ve geri bildirim","Net iş yazımı","Zor konuşmaları yönetme"]],
+["lead",16,350,["Situational leadership","Coaching your team","Delegation and accountability"],["Duruma göre liderlik","Ekibe koçluk","Yetki devri ve sorumluluk"]],
+["team",8,100,["Team roles and trust","Conflict resolution","Shared goals and rituals"],["Takım rolleri ve güven","Çatışma çözümü","Ortak hedefler"]],
+["time",6,80,["Prioritization matrix","Planning your week","Managing interruptions"],["Önceliklendirme matrisi","Haftalık planlama","Kesintileri yönetme"]],
+["cust",8,110,["Service standards in retail","Complaint handling","Upselling with empathy"],["Perakende hizmet standartları","Şikayet yönetimi","Empatiyle ek satış"]],
+["dig",12,150,["Excel formulas and pivot tables","Dashboards","Data accuracy habits"],["Excel formülleri ve pivot tablolar","Panolar","Veri doğruluğu alışkanlıkları"]],
+["neg",10,200,["Preparing a negotiation","Anchoring and concessions","Win-win closing"],["Müzakere hazırlığı","Çıpalama ve tavizler","Kazan-kazan kapanış"]],
+["prob",8,130,["Root cause analysis (5 Whys)","Decision frameworks","Creative solutions"],["Kök neden analizi (5 Neden)","Karar çerçeveleri","Yaratıcı çözümler"]]
+].map(a=>({id:a[0],c:a[0],h:a[1],cost:a[2],tp:[a[3],a[4]]}));
+const TN={com:["Effective Communication Skills","Etkili İletişim Becerileri"],lead:["Leadership Essentials","Liderliğin Temelleri"],team:["High-Performance Teamwork","Yüksek Performanslı Takım Çalışması"],time:["Time and Priority Management","Zaman ve Öncelik Yönetimi"],cust:["Customer Experience Excellence","Müşteri Deneyimi Mükemmelliği"],dig:["Excel for Business","İş için Excel"],neg:["Negotiation Skills","Müzakere Becerileri"],prob:["Problem Solving and Decisions","Problem Çözme ve Karar Verme"]};
+const Q={
+com:[["I explain my ideas clearly so others understand me the first time.","Fikirlerimi net anlatırım, karşım ilk seferde anlar."],["I listen fully before I respond.","Cevap vermeden önce tamamen dinlerim."],["I give and receive feedback calmly.","Geri bildirimi sakin şekilde veririm ve alırım."]],
+lead:[["I set clear goals and expectations for others.","Başkaları için net hedef ve beklenti belirlerim."],["I motivate people even when work is hard.","İş zorlaşsa da insanları motive ederim."],["I delegate tasks and follow up on results.","Görev devreder ve sonuçları takip ederim."]],
+team:[["I share information with colleagues without being asked.","Bilgiyi meslektaşlarımla istenmeden paylaşırım."],["I help resolve disagreements in my team.","Ekibimdeki anlaşmazlıkların çözümüne yardım ederim."],["I put team goals before personal credit.","Ekip hedefini kişisel başarının önüne koyarım."]],
+time:[["I finish tasks by their deadlines.","İşleri son tarihe kadar bitiririm."],["I plan my day and know my top priorities.","Günümü planlar, önceliklerimi bilirim."],["I handle interruptions without losing focus.","Kesintilerde odağımı kaybetmem."]],
+cust:[["I stay calm and helpful with upset customers.","Öfkeli müşterilerle sakin ve yardımsever kalırım."],["I find out what the customer really needs.","Müşterinin gerçek ihtiyacını anlarım."],["I follow through until the customer is satisfied.","Müşteri memnun olana kadar takip ederim."]],
+dig:[["I use Excel formulas like VLOOKUP or IF with confidence.","VLOOKUP veya EĞER gibi Excel formüllerini rahat kullanırım."],["I can build pivot tables and charts.","Pivot tablo ve grafik hazırlayabilirim."],["I learn new digital tools quickly.","Yeni dijital araçları hızlı öğrenirim."]],
+neg:[["I prepare my goals and limits before a negotiation.","Müzakere öncesi hedef ve sınırlarımı hazırlarım."],["I look for solutions that work for both sides.","İki tarafa da uygun çözümler ararım."],["I stay firm and polite when I say no.","Hayır derken kararlı ve kibar kalırım."]],
+prob:[["I look for the root cause, not only the symptom.","Belirtiyi değil kök nedeni ararım."],["I compare options before I decide.","Karar vermeden önce seçenekleri karşılaştırırım."],["I suggest new ideas when a process is not working.","Süreç aksadığında yeni fikirler öneririm."]]};
+const RES={com:[["Active listening skills","Aktif dinleme becerileri"],["Effective workplace communication","İş yerinde etkili iletişim"]],lead:[["Leadership basics for new managers","Yeni yöneticiler için liderlik"],["Delegation skills","Yetki devri becerileri"]],team:[["Teamwork and trust","Takım çalışması ve güven"],["Conflict resolution at work","İş yerinde çatışma çözümü"]],time:[["Time management techniques","Zaman yönetimi teknikleri"],["Eisenhower matrix prioritization","Eisenhower matrisi önceliklendirme"]],cust:[["Handling angry customers","Öfkeli müşteri yönetimi"],["Customer service skills","Müşteri hizmetleri becerileri"]],dig:[["Excel pivot tables","Excel pivot tablo"],["Excel VLOOKUP and IF","Excel DÜŞEYARA ve EĞER"]],neg:[["Negotiation skills","Müzakere becerileri"],["Win-win negotiation","Kazan-kazan müzakere"]],prob:[["Root cause analysis 5 whys","Kök neden analizi 5 neden"],["Problem solving techniques","Problem çözme teknikleri"]]};
+const GS=["const H=['Date','Code','Name','Title','Dept','com','lead','team','time','cust','dig','neg','prob'];",
+"function doPost(e){const r=JSON.parse(e.postData.contents),s=SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];",
+"if(!s.getLastRow())s.appendRow(H);",
+"s.appendRow([r.at,r.code,r.name,r.title,r.dept].concat(H.slice(5).map(k=>r.sc[k])));",
+"return ContentService.createTextOutput('ok')}",
+"function doGet(){const s=SpreadsheetApp.getActiveSpreadsheet().getSheets()[0],v=s.getDataRange().getValues();v.shift();",
+"const o=v.map(x=>({at:Utilities.formatDate(new Date(x[0]),'GMT','yyyy-MM-dd'),code:String(x[1]),name:x[2],title:x[3],dept:x[4],sc:{com:x[5],lead:x[6],team:x[7],time:x[8],cust:x[9],dig:x[10],neg:x[11],prob:x[12]}}));",
+"return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON)}"].join("\n");
+const SETUP=[["Create a Google Sheet.","Open Extensions → Apps Script, paste the code below and save.","Deploy → New deployment → Web app. Execute as: Me. Who has access: Anyone.","Copy the Web app URL and paste it into SHEET_URL at the top of this file.","Upload this file as a website and send employees its link. Managers open the same link and press Manager login (PIN = ADMIN_PIN in the code)."],["Bir Google Sheet oluşturun.","Uzantılar → Apps Script açın, aşağıdaki kodu yapıştırıp kaydedin.","Dağıt → Yeni dağıtım → Web uygulaması. Çalıştıran: Ben. Erişim: Herkes.","Web uygulaması URL'sini dosyanın başındaki SHEET_URL alanına yapıştırın.","Bu dosyayı web sitesi olarak yükleyin ve bağlantıyı çalışanlara gönderin. Yöneticiler aynı bağlantıdan Yönetici girişi ile girer (PIN = koddaki ADMIN_PIN)."]];
+const DEPT=["Retail","Design","Production","HR","Finance","Sales"],ROLE=["Associate","Specialist","Team Lead","Manager"];
+let lang=localStorage.rr_lang||"en",cur="dash",sel=null,msel="com",S;
+const t=k=>D[k][lang=="en"?0:1],ln=a=>a[lang=="en"?1:2],cn=id=>ln(C.find(c=>c[0]==id)),kn=k=>TN[k.id][lang=="en"?0:1];
+const save=()=>localStorage.rr_ld2=JSON.stringify(S);
+function seed(){S={n:1,plan:[],emps:[],res:[]};save()}
+try{S=JSON.parse(localStorage.rr_ld2)}catch(e){}if(!S||!S.emps)seed();S.res=S.res||[];let mine=null;
+const gaps=e=>C.map(c=>({c:c[0],g:e.req[c[0]]-e.cur[c[0]]})).filter(x=>x.g>0).sort((a,b)=>b.g-a.g);
+const ready=e=>Math.round(C.reduce((s,c)=>s+Math.min(e.cur[c[0]],e.req[c[0]]),0)/C.reduce((s,c)=>s+e.req[c[0]],0)*100);
+const pr=g=>g>=2?["hi",t("high")]:["me",t("med")];
+const emp=id=>S.emps.find(e=>e.id==id),crs=id=>K.find(k=>k.id==id);
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const bar=p=>`<div class=bar><i style="width:${Math.max(2,p)}%"></i></div>`;
+function addPlan(eid,kid,q){if(S.plan.some(p=>p.e==eid&&p.k==kid))return;S.plan.push({id:S.n++,e:eid,k:kid,q:q||"Q"+(1+S.n%4),s:"planned"})}
+const V={
+dash(){const gs=S.emps.map(gaps),tot=gs.reduce((s,g)=>s+g.length,0),bud=S.plan.reduce((s,p)=>s+crs(p.k).cost,0);
+const ab=C.map(c=>({c:c[0],v:avg(S.emps.map(e=>Math.max(0,e.req[c[0]]-e.cur[c[0]])))})).sort((a,b)=>b.v-a.v);
+const st=["planned","progress","done"].map(s=>S.plan.filter(p=>p.s==s).length),T=st[0]+st[1]+st[2]||1;
+const a=st[0]/T*100,b=a+st[1]/T*100;
+const top=[...S.emps].sort((x,y)=>gaps(y).reduce((s,g)=>s+g.g,0)-gaps(x).reduce((s,g)=>s+g.g,0)).slice(0,5);
+return `${SHEET_URL?"":`<div class=card style="margin-bottom:16px;border-color:var(--warn)">${t("noSheet")}</div>`}<div class="grid g5">
+<div class="card kpi"><b data-n=${S.emps.length}>0</b><span>${t("kEmp")}</span></div>
+<div class="card kpi"><b data-n=${Math.round(avg(S.emps.map(ready)))} data-s="%">0</b><span>${t("kReady")}</span></div>
+<div class="card kpi"><b data-n=${tot}>0</b><span>${t("kGaps")}</span></div>
+<div class="card kpi"><b data-n=${S.plan.length}>0</b><span>${t("kPlan")}</span></div>
+<div class="card kpi"><b data-n=${bud}>0</b><span>${t("kBud")}</span></div>
+<div class="card kpi"><b data-n=${S.res.length}>0</b><span>${t("kRes")}</span></div></div><br>
+<div class="grid g2"><div class=card><h2>${t("gapBy")}</h2>${ab.map(x=>`<div style="margin-bottom:11px"><div class=row><span>${cn(x.c)}</span><span class=sub>${x.v.toFixed(1)}</span></div>${bar(x.v/3*100)}</div>`).join("")}</div>
+<div class=card><h2>${t("status")}</h2><div class=donut style="background:conic-gradient(#e11d48 0 ${a}%,#f5b942 ${a}% ${b}%,#3ddc97 ${b}% 100%)"><div>${S.plan.length}</div></div>
+<div class=row style="justify-content:center;margin-top:14px;font-size:13px;gap:16px"><span style="color:#e11d48">● ${t("planned")} ${st[0]}</span><span style="color:#f5b942">● ${t("progress")} ${st[1]}</span><span style="color:#3ddc97">● ${t("done")} ${st[2]}</span></div></div></div><br>
+<div class=card><h2>${t("topPri")}</h2><div class=tw><table><tr><th>${t("name")}</th><th>${t("dept")}</th><th>${t("readiness")}</th><th>${t("gap")}</th><th></th></tr>${top.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.dept)}</td><td style="width:200px">${bar(ready(e))}</td><td>${gaps(e).length}</td><td><button class=btn onclick="sel=${e.id};go('tna')">${t("tna")}</button></td></tr>`).join("")}</table></div></div><br>
+<div class=card><h2>${t("recent")}</h2>${S.res.length?`<div class=tw><table><tr><th>${t("code")}</th><th>${t("name")}</th><th>${t("title")}</th><th>${t("need")}</th><th></th></tr>${S.res.slice(-6).reverse().map(r=>{const w=[...C].sort((a,b)=>r.sc[a[0]]-r.sc[b[0]])[0];return `<tr><td>${esc(r.code)}</td><td>${esc(r.name)}</td><td>${esc(r.title)}</td><td><span class="badge hi">${ln(w)} ${r.sc[w[0]]}/5</span></td><td>${esc(r.at)}</td></tr>`}).join("")}</table></div>`:`<p class=sub>${t("empty2")}</p>`}</div>`},
+emps(){return `<div class=card><h2>${t("emps")}</h2><div class=row style="justify-content:flex-start;flex-wrap:wrap;margin-bottom:14px"><input id=nn placeholder="${t("name")}"><select id=nd>${DEPT.map(d=>`<option>${d}</option>`).join("")}</select><select id=nr>${ROLE.map(d=>`<option>${d}</option>`).join("")}</select><button class="btn p" onclick="addEmp()">${t("add")}</button></div>
+<div class=tw><table><tr><th>${t("name")}</th><th>${t("dept")}</th><th>${t("role")}</th><th>${t("code")}</th><th>${t("readiness")}</th><th></th></tr>${S.emps.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.dept)}</td><td>${esc(e.role)}</td><td>${esc(e.code||"—")}</td><td style="width:180px">${bar(ready(e))}</td><td><button class=btn onclick="sel=${e.id};go('tna')">TNA</button> <button class=btn onclick="delEmp(${e.id})">${t("del")}</button></td></tr>`).join("")}</table></div></div>`},
+tna(){const e=emp(sel)||S.emps[0];if(!e)return `<div class=card><p class=sub>${t("noEmp")}</p></div>`;sel=e.id;const g=gaps(e);
+return `<div class="grid g3"><div class=card><h2>${t("emps")}</h2><div class=list>${S.emps.map(x=>`<div class="item ${x.id==sel?"on":""}" onclick="sel=${x.id};render()"><div class=row><span>${esc(x.name)}</span><span class=sub>${ready(x)}%</span></div><div class=sub>${esc(x.dept)} · ${esc(x.role)}</div></div>`).join("")}</div></div>
+<div><div class=card><div class=row><h2>${esc(e.name)}</h2><span class=sub>${t("readiness")} ${ready(e)}%</span></div>
+<div class=lv style="color:var(--mu);font-size:12px;margin:0"><span>${t("cur")}</span><span>${t("req")}</span></div>
+${C.map(c=>`<div style="margin-bottom:8px">${cn(c[0])}</div><div class=lv><label class=row><input type=range min=1 max=5 value=${e.cur[c[0]]} oninput="this.nextElementSibling.textContent=this.value" onchange="setLv('cur','${c[0]}',this.value)"><b>${e.cur[c[0]]}</b></label><label class=row><input type=range min=1 max=5 value=${e.req[c[0]]} oninput="this.nextElementSibling.textContent=this.value" onchange="setLv('req','${c[0]}',this.value)"><b>${e.req[c[0]]}</b></label></div>`).join("")}</div><br>
+<div class=card><div class=row><h2>${t("rec")}</h2></div>${g.length?`<div class=tw><table><tr><th>${t("course")}</th><th>${t("gap")}</th><th>${t("priority")}</th><th>${t("hours")}</th><th></th></tr>${g.map(x=>{const k=crs(x.c),p=pr(x.g),on=S.plan.some(q=>q.e==e.id&&q.k==k.id);return `<tr><td>${kn(k)}</td><td>${x.g}</td><td><span class="badge ${p[0]}">${p[1]}</span></td><td>${k.h}</td><td><button class="btn ${on?"":"p"}" ${on?"disabled":""} onclick="addPlan(${e.id},'${k.id}',${x.g>=2?"'Q1'":"'Q3'"});save();render()">${on?"✓":t("addPlan")}</button></td></tr>`}).join("")}</table></div>`:`<p class=sub>${t("noGap")}</p>`}</div></div></div>`},
+cat(){return `<div class="grid g2">${K.map(k=>{const n=S.emps.filter(e=>e.req[k.c]>e.cur[k.c]).length;return `<div class=card><div class=row><h3>${kn(k)}</h3><span class=badge>${cn(k.c)}</span></div><p class=sub style="margin:8px 0">${k.tp[lang=="en"?0:1].join(" · ")}</p><div class=row><span class=sub>${k.h} ${t("hours")} · $${k.cost}</span><span class="badge ${n>3?"hi":"me"}">${n} ${t("learners")}</span></div><div style="margin-top:10px">${bar(n/(S.emps.length||1)*100)}</div><div style="margin-top:12px"><button class=btn onclick="msel='${k.id}';go('mat')">${t("mat")}</button></div></div>`}).join("")}</div>`},
+plan(){const bud=S.plan.reduce((s,p)=>s+crs(p.k).cost,0),hrs=S.plan.reduce((s,p)=>s+crs(p.k).h,0);
+return `<div class="row noprint" style="margin-bottom:14px;justify-content:flex-start;flex-wrap:wrap"><button class="btn p" onclick="autoPlan()">${t("autoPlan")}</button><button class=btn onclick="csv()">${t("export")}</button><button class=btn onclick="print()">${t("print")}</button></div>
+<div class="grid g5" style="margin-bottom:16px">${["Q1","Q2","Q3","Q4"].map(q=>`<div class="card kpi"><b data-n=${S.plan.filter(p=>p.q==q).length}>0</b><span>${q}</span></div>`).join("")}<div class="card kpi"><b data-n=${bud} data-s=" $">0</b><span>${hrs} ${t("hours")}</span></div></div>
+<div class=card>${S.plan.length?`<div class=tw><table><tr><th>${t("name")}</th><th>${t("course")}</th><th>${t("hours")}</th><th>${t("cost")}</th><th>${t("quarter")}</th><th>${t("status")}</th><th></th></tr>${S.plan.map(p=>{const k=crs(p.k),e=emp(p.e);return e?`<tr><td>${esc(e.name)}</td><td>${kn(k)}</td><td>${k.h}</td><td>$${k.cost}</td><td><select onchange="upd(${p.id},'q',this.value)">${["Q1","Q2","Q3","Q4"].map(q=>`<option ${q==p.q?"selected":""}>${q}</option>`).join("")}</select></td><td><select onchange="upd(${p.id},'s',this.value)">${["planned","progress","done"].map(s=>`<option value=${s} ${s==p.s?"selected":""}>${t(s)}</option>`).join("")}</select></td><td><button class=btn onclick="S.plan=S.plan.filter(x=>x.id!=${p.id});save();render()">✕</button></td></tr>`:""}).join("")}</table></div>`:`<p class=sub>${t("empty")}</p>`}</div>`},
+mat(){const k=crs(msel),i=lang=="en"?0:1,tp=k.tp[i],m=Math.round(k.h*60/(tp.length+2)),
+who=S.emps.filter(e=>e.req[k.c]>e.cur[k.c]).map(e=>esc(e.name)).join(", ")||"—";
+const M=[["Interactive workshop","Role-play and case studies","Peer coaching","Micro-learning videos"],["Etkileşimli atölye","Rol oyunu ve vaka çalışması","Akran koçluğu","Mikro öğrenme videoları"]][i];
+return `<div class="row noprint" style="margin-bottom:14px;justify-content:flex-start;flex-wrap:wrap"><select onchange="msel=this.value;render()">${K.map(x=>`<option value=${x.id} ${x.id==msel?"selected":""}>${kn(x)}</option>`).join("")}</select><button class="btn p" onclick="print()">${t("print")}</button></div>
+<div class="card doc"><h1>${kn(k)}</h1><p class=sub>${cn(k.c)} · ${k.h} ${t("hours")} · Rubyred L&D</p>
+<h3>${t("audience")}</h3><p>${who}</p>
+<h3>${t("obj")}</h3><ul>${tp.map(x=>`<li>${i?"Uygulayabilmek:":"Apply:"} ${x.toLowerCase()}</li>`).join("")}</ul>
+<h3>${t("agenda")}</h3><ul><li>${i?"Açılış ve ön test":"Opening and pre-test"} (${m} min)</li>${tp.map(x=>`<li>${x} (${m} min)</li>`).join("")}<li>${i?"Eylem planı ve son test":"Action plan and post-test"} (${m} min)</li></ul>
+<h3>${t("methods")}</h3><ul>${M.map(x=>`<li>${x}</li>`).join("")}</ul>
+<h3>${t("activ")}</h3><ul>${tp.map(x=>`<li>${i?"Mini vaka: ":"Mini case: "}${x}</li>`).join("")}</ul>
+<h3>${t("assess")}</h3><ul><li>${i?"10 soruluk ön/son test":"10-question pre/post test"}</li><li>${i?"Yönetici gözlem listesi (30 gün)":"Manager observation checklist (30 days)"}</li></ul>
+<h3>${t("eval")}</h3><ul>${(i?["Seviye 1 Tepki: memnuniyet anketi","Seviye 2 Öğrenme: son test puanı","Seviye 3 Davranış: 30-60 gün sonra yönetici değerlendirmesi","Seviye 4 Sonuç: performans ve iş göstergeleri"]:["Level 1 Reaction: satisfaction survey","Level 2 Learning: post-test score","Level 3 Behavior: manager review after 30-60 days","Level 4 Results: performance and business metrics"]).map(x=>`<li>${x}</li>`).join("")}</ul></div>`},
+rep(){const ds=DEPT.filter(d=>S.emps.some(e=>e.dept==d));
+return `<div class=card><h2>${t("heat")}</h2><div class=tw><table class=hm><tr><th>${t("dept")}</th>${C.map(c=>`<th>${ln(c)}</th>`).join("")}</tr>${ds.map(d=>`<tr><td style="text-align:start">${d}</td>${C.map(c=>{const v=avg(S.emps.filter(e=>e.dept==d).map(e=>Math.max(0,e.req[c[0]]-e.cur[c[0]])));return `<td style="background:rgba(225,29,72,${Math.min(.85,v/3).toFixed(2)})">${v.toFixed(1)}</td>`}).join("")}</tr>`).join("")}</table></div></div><br>
+<div class="row noprint" style="justify-content:flex-start"><button class=btn onclick="csv()">${t("export")}</button><button class=btn onclick="print()">${t("print")}</button></div>`}};
+function radar(sc){const P=(i,v)=>{const a=i/8*6.2832-1.5708;return[(110+Math.cos(a)*90*v/5).toFixed(1),(110+Math.sin(a)*90*v/5).toFixed(1)]},poly=f=>C.map((c,i)=>P(i,f(c[0])).join(",")).join(" ");
+return `<svg viewBox="0 0 220 220" style="max-width:300px;width:100%;display:block;margin:auto"><g fill=none stroke="#3a2029">${[1,2,3,4,5].map(l=>`<polygon points="${poly(()=>l)}"/>`).join("")}</g><polygon points="${poly(c=>sc[c])}" fill="rgba(225,29,72,.35)" stroke="#e11d48" stroke-width=2 style="animation:up 1s"/>${C.map((c,i)=>{const p=P(i,5.9);return `<text x=${p[0]} y=${p[1]} fill="#a58f95" font-size=7 text-anchor=middle>${ln(c).split(" ")[0]}</text>`}).join("")}</svg>`}
+function links(c){return RES[c].map(r=>{const q=r[lang=="en"?0:1],u=LINKS[r[0]]||"https://www.youtube.com/results?search_query="+encodeURIComponent(q+(lang=="en"?" training":" eğitim"));return `<div class=row style="padding:6px 0"><span>▶ ${q}</span><a class=btn href="${u}" target=_blank rel=noopener style="text-decoration:none">${t("watch")}</a></div>`}).join("")}
+function resView(r){const lv=x=>x<=2?["hi",t("need")]:x==3?["me",t("devel")]:["lo",t("strong")],w=C.filter(c=>r.sc[c[0]]<=3).sort((a,b)=>r.sc[a[0]]-r.sc[b[0]]);
+return `<div class="grid g2"><div class=card><h2>${t("thanks")}</h2><p class=sub style="margin-bottom:10px">${esc(r.name)} · ${esc(r.title)} · ${esc(r.code)}</p>${radar(r.sc)}</div>
+<div class=card><h2>${t("yourRes")}</h2>${C.map(c=>{const l=lv(r.sc[c[0]]);return `<div style="margin-bottom:11px"><div class=row><span>${cn(c[0])}</span><span class="badge ${l[0]}">${l[1]} · ${r.sc[c[0]]}/5</span></div>${bar(r.sc[c[0]]/5*100)}</div>`}).join("")}</div></div><br>
+<div class=card><h2>${t("learnFor")}</h2>${w.length?w.map(c=>`<h3 style="margin:12px 0 4px;color:#ff8da1">${cn(c[0])}</h3>${links(c[0])}`).join(""):`<p class=sub>${t("noGap")}</p>`}</div>
+<div class=noprint style="margin-top:16px"><button class=btn onclick="mine=null;render()">${t("newA")}</button> <button class=btn onclick="print()">${t("print")}</button></div>`}
+Object.assign(V,{
+asmt(){if(mine)return resView(mine);
+return `<div class=card><p class=sub style="margin-bottom:14px;max-width:70ch">${t("intro")}</p>
+<div class=lv style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"><input id=ac placeholder="${t("code")}"><input id=an placeholder="${t("name")}"><input id=at placeholder="${t("title")}"><select id=ad>${DEPT.map(d=>`<option>${d}</option>`).join("")}</select></div>
+<div class=bar style="margin:6px 0 4px"><i id=pg style="width:0;animation:none;transition:width .3s"></i></div><div class=sub id=pgt>0/24</div>
+<div onchange="prog()">${C.map(c=>`<h3 style="margin:18px 0 6px;color:#ff8da1">${cn(c[0])}</h3>${Q[c[0]].map((q,i)=>`<div class=row style="padding:8px 0;border-bottom:1px solid #22131a;flex-wrap:wrap"><span style="flex:1;min-width:240px">${q[lang=="en"?0:1]}</span><span class=pills>${[1,2,3,4,5].map(n=>`<label class=pill><input type=radio name=${c[0]}${i} value=${n}><span>${n}</span></label>`).join("")}</span></div>`).join("")}`).join("")}</div>
+<div style="margin-top:18px"><button class="btn p" onclick="submitAsmt()">${t("submit")}</button></div></div>`},
+hub(){return `<p class=sub style="margin-bottom:14px">${t("hubNote")}</p><div class="grid g2">${C.map(c=>{const n=S.emps.filter(e=>e.req[c[0]]>e.cur[c[0]]).length;return `<div class=card><div class=row><h3>${cn(c[0])}</h3><span class="badge ${n>3?"hi":"me"}">${n} ${t("learners")}</span></div>${links(c[0])}</div>`}).join("")}</div>`},
+setup(){return `<div class=card><h2>${t("setup")}</h2><p class=sub style="margin-bottom:10px">SHEET_URL: ${SHEET_URL?"✓":"—"}</p><ol style="margin-left:20px;margin-bottom:14px">${SETUP[lang=="en"?0:1].map(x=>`<li>${x}</li>`).join("")}</ol><div class="row noprint" style="justify-content:flex-start;margin-bottom:8px"><button class="btn p" onclick="navigator.clipboard.writeText(GS);this.textContent=t('copied')">${t("copy")}</button><button class=btn onclick="sync()">${t("sync")}</button></div><pre style="background:#0f080b;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:12px;max-height:340px">${esc(GS)}</pre></div>`}});
+function prog(){const n=document.querySelectorAll("#v input[type=radio]:checked").length;$("#pg").style.width=n/24*100+"%";$("#pgt").textContent=n+"/24 "+t("prog2")}
+function applyRes(r){r.code=String(r.code);const sc={};C.forEach(c=>sc[c[0]]=Math.max(1,Math.min(5,+r.sc[c[0]]||3)));r.sc=sc;
+S.res=S.res.filter(x=>x.code!=r.code);S.res.push(r);
+let e=S.emps.find(x=>x.code==r.code);const L=/manager|lead|supervisor|müdür|şef|yönetici/i.test(r.title);
+if(!e){e={id:S.n++,code:r.code,cur:{},req:{}};C.forEach(c=>e.req[c[0]]=c[0]=="lead"?(L?4:2):(L?4:3));S.emps.push(e)}
+e.name=r.name;e.dept=r.dept||e.dept||"—";e.role=r.title;C.forEach(c=>e.cur[c[0]]=sc[c[0]])}
+function submitAsmt(){const f=id=>$("#"+id).value.trim(),code=f("ac"),name=f("an"),title=f("at");
+if(!code||!name||!title)return alert(t("fill"));
+const sc={};let miss=0;C.forEach(c=>{const v=Q[c[0]].map((_,i)=>+(document.querySelector("input[name="+c[0]+i+"]:checked")||{}).value||0);if(v.includes(0))miss=1;sc[c[0]]=Math.round(avg(v))});
+if(miss)return alert(t("fillq"));
+const r={code,name,title,dept:$("#ad").value,at:new Date().toISOString().slice(0,10),sc};
+applyRes(r);save();
+if(SHEET_URL)fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(r)}).catch(()=>{});
+mine=r;render()}
+async function sync(q){if(!SHEET_URL)return q||alert(t("nourl"));try{const rows=await(await fetch(SHEET_URL)).json();rows.forEach(applyRes);save();render()}catch(e){q||alert("Sync failed: "+e.message)}}
+function auth(){if(document.body.className=="emp"){const p=prompt(t("pin"));if(p===null)return;if(p!==ADMIN_PIN)return alert(t("badpin"));sessionStorage.rr_adm="1";document.body.className="";cur="dash";render();if(SHEET_URL)sync(true)}else{sessionStorage.rr_adm="";document.body.className="emp";mine=null;render()}}
+function go(v){cur=v;render()}
+function render(){const em=document.body.className=="emp";if(em)cur="asmt";document.documentElement.lang=lang;$("#sub").textContent=t("app");$("#ttl").textContent=(em?"Rubyred · ":"")+t(cur);$("#dt").textContent=em?t("app"):t("save");$("#rst").textContent=t("reset");$("#syn").textContent=t("sync");$("#lg").textContent=em?t("login"):t("logout");
+$("#l-en").className=lang=="en"?"on":"";$("#l-tr").className=lang=="tr"?"on":"";
+const ic={dash:"◧",emps:"☻",tna:"✦",cat:"▤",plan:"▦",mat:"✎",rep:"◔",asmt:"✔",hub:"▶",setup:"⚙"};
+$("#nav").innerHTML=Object.keys(V).map(k=>`<button class="${k==cur?"on":""}" onclick="go('${k}')"><span>${ic[k]}</span>${t(k)}</button>`).join("");
+$("#v").innerHTML=`<div class=view>${V[cur]()}</div>`;
+document.querySelectorAll("[data-n]").forEach(el=>{const n=+el.dataset.n,s=el.dataset.s||"",t0=performance.now();(function f(now){const p=Math.min(1,(now-t0)/900);el.textContent=Math.round(n*(1-Math.pow(1-p,3)))+s;if(p<1)requestAnimationFrame(f)})(t0)})}
+function setLang(l){lang=l;localStorage.rr_lang=l;render()}
+function setLv(k,c,v){emp(sel)[k][c]=+v;save();render()}
+function addEmp(){const n=$("#nn").value.trim();if(!n)return;const e={id:S.n++,name:n,dept:$("#nd").value,role:$("#nr").value,cur:{},req:{}};C.forEach(c=>{e.cur[c[0]]=3;e.req[c[0]]=3});S.emps.push(e);save();render()}
+function delEmp(id){S.emps=S.emps.filter(e=>e.id!=id);S.plan=S.plan.filter(p=>p.e!=id);save();render()}
+function upd(id,k,v){S.plan.find(p=>p.id==id)[k]=v;save();if(k=="s"||k=="q")render()}
+function autoPlan(){S.emps.forEach(e=>gaps(e).forEach(x=>addPlan(e.id,x.c,x.g>=2?(S.n%2?"Q1":"Q2"):(S.n%2?"Q3":"Q4"))));save();render()}
+function resetData(){if(confirm(t("sure"))){seed();render()}}
+function csv(){const rows=[["Employee","Department","Training","Hours","Cost","Quarter","Status"],...S.plan.map(p=>{const e=emp(p.e),k=crs(p.k);return[e.name,e.dept,TN[k.id][0],k.h,k.cost,p.q,p.s]})];
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n")],{type:"text/csv"}));a.download="rubyred-training-plan.csv";a.click()}
+if(sessionStorage.rr_adm!="1")document.body.className="emp";
+render();if(SHEET_URL&&document.body.className!="emp")sync(true);
+</script></body></html>
