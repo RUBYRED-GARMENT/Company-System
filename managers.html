@@ -186,6 +186,7 @@ details.dd[open] summary{border-color:var(--acb)}
       <div class="fld"><label data-i18n="saturdayLabel">Saturday</label><select id="sSat"></select></div>
       <div class="fld"><label data-i18n="departmentLabel">Department</label><select id="sDept"></select></div>
       <button class="btn" id="sExp" data-i18n="downloadExcel">Download Excel</button>
+      <span class="note" id="sNote"></span>
     </div>
     <div id="sBox"></div>
   </section>
@@ -197,9 +198,9 @@ details.dd[open] summary{border-color:var(--acb)}
    API_DAILY    -> "Daily Overtime" page    (your existing daily script, called with ?date=)
    API_SAT      -> "Saturday Overtime" page (your existing Saturday script, called with ?date=<Saturday date>)
    API_ANALYSIS -> "Overtime Analysis" page (the NEW combined script: ?from=&to= , reads both sheets) */
-const API_DAILY="https://script.google.com/macros/s/AKfycbyjoQdwnsnF-roZ7XXf4G01EHczACJmWGYq918tqd9Se3eHXG156SIz49V5Hm8P5-w1/exec";
-const API_SAT="https://script.google.com/macros/s/AKfycby6d5wMOIcUK71JA2fbCU-CE6HyMYYcdBtc3LOJ6d2SwLsU0ffuC1-R2o6myxOUlKZkJw/exec";
-const API_ANALYSIS="https://script.google.com/macros/s/AKfycbx2vmd_eLedVEeTgCpWsWMKYNbHGyS7KkRxvFv4mPa7TAl1oTost1vGZtcr0_U11XZ1/exec";
+const API_DAILY="PASTE_DAILY_OVERTIME_URL_HERE";
+const API_SAT="PASTE_SATURDAY_OVERTIME_URL_HERE";
+const API_ANALYSIS="PASTE_NEW_COMBINED_SCRIPT_URL_HERE";
 /* ================================================ */
 const CRED={id:"RUBYRED",password:"RUBYRED2006"};
 const PAL=['#d1263f','#f0b429','#e8794a','#8f1d3a','#c084a0','#6b7fd7','#3fb68b','#9a6fb0'];
@@ -212,7 +213,7 @@ const normDept=r=>DMAP[String(r||"").toLowerCase().replace(/[^a-z]/g,"")]||"Prod
 /* ---------- i18n ---------- */
 const T={
 en:{welcome:"Management Dashboard",uid:"ID",upw:"Password",signin:"Sign In",lerr:"Incorrect ID or password",mgmt:"Management Dashboard",navOv:"Overtime Analysis",navDy:"Daily Overtime",navSt:"Saturday Overtime",
- tOv:"Overtime Analysis",sOv:"Normal overtime and Saturday overtime, shown separately",tDy:"Daily Overtime",sDy:"Workers registered on a selected day",tSt:"Saturday Overtime",sSt:"Workers registered for the selected Saturday",
+ tOv:"Overtime Analysis",sOv:"Normal overtime and Saturday overtime, shown separately",tDy:"Daily Overtime",sDy:"Workers registered on a selected day",tSt:"Saturday Overtime",sSt:"Registered on Thursday, or Wednesday if empty",
  monthL:"Month",fromL:"From",toL:"To",custom:"Custom range",allDepartments:"All Departments",nSel:"{n} departments",clear:"Clear selection",exportRep:"Export report",
  srcL:"Overtime source",srcAll:"All (Normal + Saturday)",srcN:"Normal overtime",srcS:"Saturday overtime",k9:"Normal overtime entries",k10:"Saturday overtime entries",chSplit:"Normal vs Saturday by department",chSrc:"Normal vs Saturday share",colN:"Normal",colS:"Saturday",
  k1:"Total overtime entries",k2:"Average per active day",k3:"Unique workers",k4:"Peak day",k5:"Top department",k6:"Active days",k7:"Avg overtime days per worker",k8:"Trend (2nd half vs 1st)",entriesS:"entries",
@@ -222,9 +223,9 @@ en:{welcome:"Management Dashboard",uid:"ID",upw:"Password",signin:"Sign In",lerr
  tableCode:"Code",tableName:"Name",tableDept:"Department",tableJd:"JD",tableType:"Type",dateLabel:"Date",saturdayLabel:"Saturday",departmentLabel:"Department",downloadExcel:"Download Excel",
  dk1:"Workers on overtime",dk2:"Departments",dk3:"Overtime types",dk4:"Top department",cDept:"Workers by department",cType:"Workers by type",list:"Worker list",
  loading:"Loading data...",noData:"No overtime registered for this selection",err:"Connection error. Check the Web App URL and deployment settings.",
- loaded:"{a} of {b} days have data",capped:"Range limited to {n} days",badRange:"'From' must be before 'To'",wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]},
+ loaded:"{a} of {b} days have data",capped:"Range limited to {n} days",badRange:"'From' must be before 'To'",srcThu:"Registered Thursday, {d}",srcWed:"Registered Wednesday, {d}",wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]},
 tr:{welcome:"Yönetim Paneli",uid:"Kullanıcı Adı",upw:"Şifre",signin:"Giriş Yap",lerr:"Kullanıcı adı veya şifre hatalı",mgmt:"Yönetim Paneli",navOv:"Fazla Mesai Analizi",navDy:"Günlük Fazla Mesai",navSt:"Cumartesi Fazla Mesai",
- tOv:"Fazla Mesai Analizi",sOv:"Normal mesai ve Cumartesi mesaisi ayrı gösterilir",tDy:"Günlük Fazla Mesai",sDy:"Seçilen günde kayıtlı personel",tSt:"Cumartesi Fazla Mesai",sSt:"Seçilen Cumartesi için kayıtlı personel",
+ tOv:"Fazla Mesai Analizi",sOv:"Normal mesai ve Cumartesi mesaisi ayrı gösterilir",tDy:"Günlük Fazla Mesai",sDy:"Seçilen günde kayıtlı personel",tSt:"Cumartesi Fazla Mesai",sSt:"Perşembe, yoksa Çarşamba kaydı",
  monthL:"Ay",fromL:"Başlangıç",toL:"Bitiş",custom:"Özel aralık",allDepartments:"Tüm Departmanlar",nSel:"{n} departman",clear:"Seçimi temizle",exportRep:"Raporu indir",
  srcL:"Mesai kaynağı",srcAll:"Tümü (Normal + Cumartesi)",srcN:"Normal mesai",srcS:"Cumartesi mesaisi",k9:"Normal mesai kaydı",k10:"Cumartesi mesai kaydı",chSplit:"Departmana göre Normal / Cumartesi",chSrc:"Normal / Cumartesi payı",colN:"Normal",colS:"Cumartesi",
  k1:"Toplam fazla mesai kaydı",k2:"Aktif gün ortalaması",k3:"Tekil personel",k4:"En yoğun gün",k5:"En yoğun departman",k6:"Aktif gün",k7:"Personel başına ort. mesai günü",k8:"Trend (2. yarı / 1. yarı)",entriesS:"kayıt",
@@ -234,9 +235,9 @@ tr:{welcome:"Yönetim Paneli",uid:"Kullanıcı Adı",upw:"Şifre",signin:"Giriş
  tableCode:"Kod",tableName:"İsim",tableDept:"Departman",tableJd:"Görev Tanımı",tableType:"Tür",dateLabel:"Tarih",saturdayLabel:"Cumartesi",departmentLabel:"Departman",downloadExcel:"Excel İndir",
  dk1:"Fazla mesai personeli",dk2:"Departman",dk3:"Mesai türü",dk4:"En yoğun departman",cDept:"Departmana göre personel",cType:"Türe göre personel",list:"Personel listesi",
  loading:"Veriler yükleniyor...",noData:"Bu seçim için kayıt yok",err:"Bağlantı hatası. Web App bağlantısını kontrol edin.",
- loaded:"{b} günün {a} tanesinde veri var",capped:"Aralık {n} gün ile sınırlandı",badRange:"Başlangıç, bitişten önce olmalı",wd:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"]},
+ loaded:"{b} günün {a} tanesinde veri var",capped:"Aralık {n} gün ile sınırlandı",badRange:"Başlangıç, bitişten önce olmalı",srcThu:"Perşembe günü kaydedildi, {d}",srcWed:"Çarşamba günü kaydedildi, {d}",wd:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"]},
 ar:{welcome:"لوحة الإدارة",uid:"اسم المستخدم",upw:"كلمة المرور",signin:"دخول",lerr:"اسم المستخدم أو كلمة المرور غير صحيحة",mgmt:"لوحة الإدارة",navOv:"تحليل العمل الإضافي",navDy:"العمل الإضافي اليومي",navSt:"العمل الإضافي يوم السبت",
- tOv:"تحليل العمل الإضافي",sOv:"العمل الإضافي العادي ويوم السبت معروضين منفصلين",tDy:"العمل الإضافي اليومي",sDy:"العمال المسجَّلون في اليوم المحدد",tSt:"العمل الإضافي يوم السبت",sSt:"العمال المسجَّلون للسبت المحدد",
+ tOv:"تحليل العمل الإضافي",sOv:"العمل الإضافي العادي ويوم السبت معروضين منفصلين",tDy:"العمل الإضافي اليومي",sDy:"العمال المسجَّلون في اليوم المحدد",tSt:"العمل الإضافي يوم السبت",sSt:"التسجيل يوم الخميس، أو الأربعاء إن لم يوجد",
  monthL:"الشهر",fromL:"من",toL:"إلى",custom:"فترة مخصصة",allDepartments:"جميع الأقسام",nSel:"{n} أقسام",clear:"مسح الاختيار",exportRep:"تصدير التقرير",
  srcL:"نوع العمل الإضافي",srcAll:"الكل (عادي + سبت)",srcN:"العمل الإضافي العادي",srcS:"العمل الإضافي يوم السبت",k9:"تسجيلات العمل الإضافي العادي",k10:"تسجيلات عمل السبت",chSplit:"العادي مقابل السبت حسب القسم",chSrc:"نسبة العادي مقابل السبت",colN:"عادي",colS:"سبت",
  k1:"إجمالي تسجيلات العمل الإضافي",k2:"المتوسط لكل يوم عمل",k3:"عدد العمال (بدون تكرار)",k4:"أعلى يوم",k5:"أعلى قسم",k6:"أيام العمل الإضافي",k7:"متوسط أيام العمل الإضافي لكل عامل",k8:"الاتجاه (النصف الثاني مقابل الأول)",entriesS:"تسجيل",
@@ -246,7 +247,7 @@ ar:{welcome:"لوحة الإدارة",uid:"اسم المستخدم",upw:"كلم�
  tableCode:"الكود",tableName:"الاسم",tableDept:"القسم",tableJd:"المسمى الوظيفي",tableType:"النوع",dateLabel:"التاريخ",saturdayLabel:"يوم السبت",departmentLabel:"القسم",downloadExcel:"تحميل إكسل",
  dk1:"عمال العمل الإضافي",dk2:"الأقسام",dk3:"أنواع العمل الإضافي",dk4:"أعلى قسم",cDept:"العمال حسب القسم",cType:"العمال حسب النوع",list:"قائمة العمال",
  loading:"جارٍ تحميل البيانات...",noData:"لا يوجد تسجيل للعمل الإضافي لهذا الاختيار",err:"خطأ في الاتصال. تأكد من رابط الـ Web App وإعدادات النشر.",
- loaded:"{a} يوم فيه بيانات من {b}",capped:"تم تحديد الفترة بـ {n} يوم",badRange:"تاريخ البداية لازم يكون قبل النهاية",wd:["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]}};
+ loaded:"{a} يوم فيه بيانات من {b}",capped:"تم تحديد الفترة بـ {n} يوم",badRange:"تاريخ البداية لازم يكون قبل النهاية",srcThu:"تم التسجيل يوم الخميس، {d}",srcWed:"تم التسجيل يوم الأربعاء، {d}",wd:["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]}};
 let L="en",cur="ov";
 const t=k=>T[L][k];
 
@@ -455,16 +456,24 @@ function renderDetail(p,msgKey,isErr){
   $(p+"T").innerHTML=r.map(w=>`<tr><td class="n">${esc(w.code)}</td><td>${esc(w.name)}</td><td>${esc(w.department)}</td><td>${esc(w.jd)}</td><td>${esc(w.type)}</td></tr>`).join("");
   const m=$(p+"M");m.textContent=!r.length?t(msgKey||"noData"):"";m.className="msg"+(isErr?" err":"");
 }
-let dTok=0,sTok=0;
+let dTok=0,sTok=0,sSrc=null;
+/* Saturday workers are registered on Thursday; if Thursday is empty, Wednesday */
+async function satData(sat){
+  const thu=addD(sat,-2),wed=addD(sat,-3);
+  const a=await fetchDay(thu,"s");if(a.w.length)return{w:a.w,src:"srcThu",date:thu};
+  const b=await fetchDay(wed,"s");if(b.w.length)return{w:b.w,src:"srcWed",date:wed};
+  return{w:[],src:null,err:a.err||b.err};
+}
+function setSatNote(){$("sNote").textContent=sSrc?t(sSrc.k).replace("{d}",fmt(sSrc.d)):""}
 async function loadDaily(){
   const tok=++dTok,d=$("dDate").value;S.d.w=[];$("dM").textContent=t("loading");
   const r=await fetchDay(d,"n");if(tok!==dTok)return;
   S.d.w=r.w;fillDepts("d");renderDetail("d",r.err?"err":"noData",r.err);
 }
 async function loadSat(){
-  const tok=++sTok,s=$("sSat").value;S.s.w=[];$("sM").textContent=t("loading");
-  const r=await fetchDay(s,"s");if(tok!==sTok)return;   /* Saturday link receives the Saturday date itself */
-  S.s.w=r.w;fillDepts("s");renderDetail("s",r.err?"err":"noData",r.err);
+  const tok=++sTok,s=$("sSat").value;S.s.w=[];sSrc=null;setSatNote();$("sM").textContent=t("loading");
+  const r=await satData(s);if(tok!==sTok)return;
+  S.s.w=r.w;sSrc=r.src?{k:r.src,d:r.date}:null;setSatNote();fillDepts("s");renderDetail("s",r.err?"err":"noData",r.err);
 }
 function buildSats(sel){
   const n=nextSat(),el=$("sSat");el.innerHTML="";
@@ -496,7 +505,7 @@ function applyLang(l){
   document.querySelectorAll("[data-lang] button").forEach(b=>b.classList.toggle("active",b.dataset.l===l));
   ["d","s"].forEach(p=>{const sel=$(p+"Dept"),v=sel.value;fillDepts(p);sel.value=v});
   buildMonths();buildSrc();buildDD();ddLabel();
-  if($("app").classList.contains("show")){buildSats($("sSat").value);show(cur);renderOverview();["d","s"].forEach(p=>S[p].loaded&&renderDetail(p))}
+  if($("app").classList.contains("show")){buildSats($("sSat").value);setSatNote();show(cur);renderOverview();["d","s"].forEach(p=>S[p].loaded&&renderDetail(p))}
 }
 document.querySelectorAll("[data-lang]").forEach(g=>{["en","tr","ar"].forEach(l=>{const b=document.createElement("button");b.type="button";b.dataset.l=l;b.textContent=l.toUpperCase();b.onclick=()=>applyLang(l);g.appendChild(b)})});
 
