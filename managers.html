@@ -28,8 +28,6 @@ button{font-family:inherit;cursor:pointer}
 .bar{margin-top:26px;width:160px;height:3px;background:var(--bd);border-radius:3px;overflow:hidden}
 .bar::after{content:"";display:block;height:100%;width:0;background:var(--acb);animation:bar 2.1s forwards}
 @keyframes in{to{opacity:1;transform:none}}@keyframes bar{to{width:100%}}
-#login{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px}
-#login.show{display:flex}
 .card{background:linear-gradient(135deg,var(--sf),var(--bg2));border:1px solid var(--bd);border-radius:16px}
 .lcard{width:100%;max-width:360px;padding:32px 28px}
 .ltop{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
@@ -88,6 +86,7 @@ td.n{color:var(--mu);font-variant-numeric:tabular-nums}
 .ins li{background:var(--bg2);border:1px solid var(--bd);border-inline-start:3px solid var(--acb);border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.6;opacity:0;animation:in .6s forwards}
 .ins li b{color:var(--gold)}
 .msg{padding:30px;text-align:center;color:var(--mu)}.msg:empty{display:none}.msg.err{color:var(--acb)}
+.help{padding:14px 4px 0;text-align:start;font-size:13px;line-height:1.7;color:var(--fa)}
 .prog{height:3px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:18px;opacity:0;transition:opacity .3s}
 .prog.on{opacity:1}.prog div{height:100%;width:0;background:var(--acb);transition:width .3s}
 .note{color:var(--fa);font-size:13px;margin-inline-start:auto;padding-bottom:10px}
@@ -107,13 +106,6 @@ details.dd[open] summary{border-color:var(--acb)}
 </head>
 <body>
 <div id="splash"><div class="mark">Ruby<span>red</span></div><div class="tag" data-i18n="welcome">Management Dashboard</div><div class="bar"></div></div>
-
-<div id="login"><form class="card lcard" id="lform">
-  <div class="ltop"><div class="brand">Ruby<span>red</span></div><div class="lang" data-lang></div></div>
-  <div class="fld"><label data-i18n="uid">ID</label><input id="uid" autocomplete="username"></div>
-  <div class="fld"><label data-i18n="upw">Password</label><input id="upw" type="password" autocomplete="current-password"></div>
-  <button class="btn" style="width:100%" data-i18n="signin">Sign In</button><div class="lerr" id="lerr"></div>
-</form></div>
 
 <div id="app">
 <aside id="side">
@@ -141,6 +133,8 @@ details.dd[open] summary{border-color:var(--acb)}
     </div>
     <div class="prog" id="oProg"><div></div></div>
     <div class="kpis">
+      <div class="card kpi"><b class="gold" id="oK11">—</b><span data-i18n="k11">Saturday overtime days</span><i id="oK11s"></i></div>
+      <div class="card kpi"><b id="oK12">—</b><span data-i18n="k12">Normal overtime days</span><i id="oK12s"></i></div>
       <div class="card kpi"><b id="oK1">—</b><span data-i18n="k1">Total overtime entries</span></div>
       <div class="card kpi"><b id="oK9">—</b><span data-i18n="k9">Normal overtime entries</span></div>
       <div class="card kpi"><b class="gold" id="oK10">—</b><span data-i18n="k10">Saturday overtime entries</span></div>
@@ -151,6 +145,13 @@ details.dd[open] summary{border-color:var(--acb)}
       <div class="card kpi"><b class="sm" id="oK8">—</b><span data-i18n="k8">Trend (2nd half vs 1st)</span></div>
       <div class="card kpi"><b class="sm" id="oK4">—</b><span data-i18n="k4">Peak day</span><i id="oK4s"></i></div>
       <div class="card kpi"><b class="sm" id="oK5">—</b><span data-i18n="k5">Top department</span><i id="oK5s"></i></div>
+      <div class="card kpi"><b class="gold" id="oK13">—</b><span data-i18n="k13">Avg workers per Saturday</span></div>
+      <div class="card kpi"><b id="oK14">—</b><span data-i18n="k14">Direct share</span><i id="oK14s"></i></div>
+      <div class="card kpi"><b id="oK15">—</b><span data-i18n="k15">Workers in both Normal & Saturday</span><i id="oK15s"></i></div>
+      <div class="card kpi"><b id="oK18">—</b><span data-i18n="k18">Heavy overtime workers (7+ days)</span><i id="oK18s"></i></div>
+      <div class="card kpi"><b id="oK19">—</b><span data-i18n="k19">Departments involved</span></div>
+      <div class="card kpi"><b class="sm" id="oK16">—</b><span data-i18n="k16">Top job title</span><i id="oK16s"></i></div>
+      <div class="card kpi"><b class="sm" id="oK17">—</b><span data-i18n="k17">Most active worker</span><i id="oK17s"></i></div>
     </div>
     <div class="card panel" style="margin-bottom:20px"><h3 data-i18n="insights">Key insights</h3><ul class="ins" id="oIns"></ul></div>
     <div class="grid">
@@ -164,7 +165,7 @@ details.dd[open] summary{border-color:var(--acb)}
       <div class="card panel c4"><h3 data-i18n="chFreq">Workers by number of overtime days</h3><div class="chart"><canvas id="oFreq"></canvas></div></div>
       <div class="card panel c4"><h3 data-i18n="chJd">Top job titles</h3><div class="chart"><canvas id="oJd"></canvas></div></div>
       <div class="card panel c12"><h3 data-i18n="heat">Department × weekday (average workers)</h3><div class="tw"><table class="heat" id="oHeat"></table></div></div>
-      <div class="card panel c7"><h3 data-i18n="repDept">Department report</h3><div class="tw"><table><thead><tr><th data-i18n="tableDept">Department</th><th data-i18n="entries">Entries</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th><th data-i18n="workers">Workers</th><th data-i18n="avgDay">Avg/day</th><th data-i18n="share">Share</th></tr></thead><tbody id="oDeptT"></tbody></table></div></div>
+      <div class="card panel c7"><h3 data-i18n="repDept">Department report</h3><div class="tw"><table><thead><tr><th data-i18n="tableDept">Department</th><th data-i18n="entries">Entries</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th><th data-i18n="workers">Workers</th><th data-i18n="avgDay">Avg/day</th><th data-i18n="share">Share</th></tr></thead><tbody id="oDeptT"></tbody></table></div><div class="help" data-i18n="depNote"></div></div>
       <div class="card panel c5"><h3 data-i18n="topW">Most frequent overtime workers</h3><div class="tw"><table><thead><tr><th data-i18n="tableName">Name</th><th data-i18n="tableDept">Department</th><th data-i18n="daysC">Days</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th></tr></thead><tbody id="oTopT"></tbody></table></div></div>
     </div>
     <div class="msg" id="oMsg"></div>
@@ -202,13 +203,40 @@ const API_DAILY="https://script.google.com/macros/s/AKfycbyjoQdwnsnF-roZ7XXf4G01
 const API_SAT="https://script.google.com/macros/s/AKfycby6d5wMOIcUK71JA2fbCU-CE6HyMYYcdBtc3LOJ6d2SwLsU0ffuC1-R2o6myxOUlKZkJw/exec";
 const API_ANALYSIS="https://script.google.com/macros/s/AKfycbynKi7_5HWnNm_w-kx3qzkpdO56SOxQktllsnbk6iwPz9qggAIrw0X4CRgjtuF1tEt-/exec";
 /* ================================================ */
-const CRED={id:"RUBYRED",password:"RUBYRED2006"};
 const PAL=['#d1263f','#f0b429','#e8794a','#8f1d3a','#c084a0','#6b7fd7','#3fb68b','#9a6fb0'];
 const MAX_DAYS=93;
 /* Allowed departments. Anything else is converted to "Production". */
 const DEPTS=["Embroidery","Printing","Cutting","Administration","Modeling","Assortment Area","Accessories","Merchandising","Human Resources","Security","Warehouse","Outsource","WDisable","Quality Assurance","Production"];
 const DMAP={};DEPTS.forEach(d=>DMAP[d.toLowerCase().replace(/[^a-z]/g,"")]=d);
 const normDept=r=>DMAP[String(r||"").toLowerCase().replace(/[^a-z]/g,"")]||"Production";
+
+/* ---------- flexible field reading (type / job title may come under different key names) ---------- */
+const kn=s=>String(s).toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g,"");
+function pick(x,names){
+  const m={};for(const k in x)m[kn(k)]=x[k];
+  for(const n of names){const v=m[n];if(v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim()}
+  return "";
+}
+const KT=["type","overtimetype","ottype","otype","category","kind","directindirect","directtype","labortype","labourtype","نوع","النوع","نوعالعمل"];
+const KJ=["jd","jobdescription","jobtitle","jobtitles","job","title","position","designation","jobname","المسمىالوظيفي","الوظيفة","المسمى"];
+const KC=["code","empcode","employeecode","workercode","id","empid"];
+const KN=["name","empname","employeename","workername","fullname","الاسم"];
+const KD=["department","dept","departmentname","القسم"];
+/* overtime type -> DIRECT / INDIRECT */
+function normType(v){
+  const s=String(v||"").trim();if(!s)return "";
+  const l=s.toLowerCase();
+  if(/indirect|غير\s*مباشر|^ind/.test(l))return "INDIRECT";
+  if(/direct|مباشر|^dir/.test(l))return "DIRECT";
+  return s.toUpperCase();
+}
+const normJd=v=>{const s=String(v||"").replace(/\s+/g," ").trim();return /^machine/i.test(s)?"MACHINE OPERATOR":s};
+const mapW=x=>({...x,
+  code:pick(x,KC)||x.code||"",
+  name:pick(x,KN)||x.name||"",
+  department:normDept(pick(x,KD)||x.department),
+  jd:normJd(pick(x,KJ)),
+  type:normType(pick(x,KT))});
 
 /* ---------- i18n ---------- */
 const T={
@@ -217,8 +245,9 @@ en:{welcome:"Management Dashboard",uid:"ID",upw:"Password",signin:"Sign In",lerr
  monthL:"Month",fromL:"From",toL:"To",custom:"Custom range",allDepartments:"All Departments",nSel:"{n} departments",clear:"Clear selection",exportRep:"Export report",
  srcL:"Overtime source",srcAll:"All (Normal + Saturday)",srcN:"Normal overtime",srcS:"Saturday overtime",k9:"Normal overtime entries",k10:"Saturday overtime entries",chSplit:"Normal vs Saturday by department",chSrc:"Normal vs Saturday share",colN:"Normal",colS:"Saturday",
  k1:"Total overtime entries",k2:"Average per active day",k3:"Unique workers",k4:"Peak day",k5:"Top department",k6:"Active days",k7:"Avg overtime days per worker",k8:"Trend (2nd half vs 1st)",entriesS:"entries",
- insights:"Key insights",chTrend:"Daily trend & 7-day average",chDept:"Share by department",chWeek:"Weekly overtime by department",chType:"By overtime type",chWd:"Average by weekday",chFreq:"Workers by number of overtime days",chJd:"Top job titles",heat:"Department × weekday (average workers)",
- repDept:"Department report",topW:"Most frequent overtime workers",entries:"Entries",workers:"Workers",share:"Share",avgDay:"Avg/day",daysC:"Days",avg7:"7-day average",other:"Other",
+ insights:"Key insights",chTrend:"Daily trend & 7-day average",chDept:"Share by department",chWeek:"Weekly overtime by department",chType:"By overtime type (Direct / Indirect)",chWd:"Average by weekday",chFreq:"Workers by number of overtime days",chJd:"Top job titles",heat:"Department × weekday (average workers)",
+ repDept:"Department report",topW:"Most frequent overtime workers",entries:"Entries",workers:"Workers",share:"Share",avgDay:"Avg/day",daysC:"Days",avg7:"7-day average",other:"Other",unspec:"Unspecified",k11:"Saturday overtime days",k12:"Normal overtime days",k13:"Avg workers per Saturday",k14:"Direct share",k15:"Workers in both Normal & Saturday",k16:"Top job title",k17:"Most active worker",k18:"Heavy overtime workers (7+ days)",k19:"Departments involved",ofSat:"of {n} Saturdays in period",ofDays:"of {n} days in period",dirSub:"{a} direct · {b} indirect",ofW:"{n}% of workers",dUnit:"days",
+ depNote:"Entries = total overtime records (a worker is counted once per day). Workers = distinct people who did overtime in that department during the period, no matter how many days. Avg/day = Entries ÷ days that had overtime in that department.",
  i1:"{a} is the busiest weekday, averaging {b} workers.",i2:"{a} accounts for {b}% of all overtime entries.",i3:"The top 5 workers account for {b}% of all entries.",i4u:"Overtime is up {b}% in the second half of the period.",i4d:"Overtime is down {b}% in the second half of the period.",i4f:"Overtime is steady across the period.",i5:"{a} workers did overtime on 7+ days.",
  tableCode:"Code",tableName:"Name",tableDept:"Department",tableJd:"JD",tableType:"Type",dateLabel:"Date",saturdayLabel:"Saturday",departmentLabel:"Department",downloadExcel:"Download Excel",
  dk1:"Workers on overtime",dk2:"Departments",dk3:"Overtime types",dk4:"Top department",cDept:"Workers by department",cType:"Workers by type",list:"Worker list",
@@ -229,8 +258,9 @@ tr:{welcome:"Yönetim Paneli",uid:"Kullanıcı Adı",upw:"Şifre",signin:"Giriş
  monthL:"Ay",fromL:"Başlangıç",toL:"Bitiş",custom:"Özel aralık",allDepartments:"Tüm Departmanlar",nSel:"{n} departman",clear:"Seçimi temizle",exportRep:"Raporu indir",
  srcL:"Mesai kaynağı",srcAll:"Tümü (Normal + Cumartesi)",srcN:"Normal mesai",srcS:"Cumartesi mesaisi",k9:"Normal mesai kaydı",k10:"Cumartesi mesai kaydı",chSplit:"Departmana göre Normal / Cumartesi",chSrc:"Normal / Cumartesi payı",colN:"Normal",colS:"Cumartesi",
  k1:"Toplam fazla mesai kaydı",k2:"Aktif gün ortalaması",k3:"Tekil personel",k4:"En yoğun gün",k5:"En yoğun departman",k6:"Aktif gün",k7:"Personel başına ort. mesai günü",k8:"Trend (2. yarı / 1. yarı)",entriesS:"kayıt",
- insights:"Öne çıkanlar",chTrend:"Günlük trend ve 7 günlük ortalama",chDept:"Departman payı",chWeek:"Departmana göre haftalık fazla mesai",chType:"Mesai türüne göre",chWd:"Güne göre ortalama",chFreq:"Mesai gün sayısına göre personel",chJd:"En çok görev tanımları",heat:"Departman × gün (ortalama personel)",
- repDept:"Departman raporu",topW:"En sık fazla mesai yapanlar",entries:"Kayıt",workers:"Personel",share:"Pay",avgDay:"Ort./gün",daysC:"Gün",avg7:"7 günlük ortalama",other:"Diğer",
+ insights:"Öne çıkanlar",chTrend:"Günlük trend ve 7 günlük ortalama",chDept:"Departman payı",chWeek:"Departmana göre haftalık fazla mesai",chType:"Mesai türüne göre (Direct / Indirect)",chWd:"Güne göre ortalama",chFreq:"Mesai gün sayısına göre personel",chJd:"En çok görev tanımları",heat:"Departman × gün (ortalama personel)",
+ repDept:"Departman raporu",topW:"En sık fazla mesai yapanlar",entries:"Kayıt",workers:"Personel",share:"Pay",avgDay:"Ort./gün",daysC:"Gün",avg7:"7 günlük ortalama",other:"Diğer",unspec:"Belirtilmemiş",k11:"Cumartesi mesai günü",k12:"Normal mesai günü",k13:"Cumartesi başına ort. personel",k14:"Direct oranı",k15:"Hem normal hem Cumartesi yapanlar",k16:"En çok görev tanımı",k17:"En aktif personel",k18:"Yoğun mesai yapanlar (7+ gün)",k19:"Katılan departman",ofSat:"dönemdeki {n} Cumartesi içinde",ofDays:"dönemdeki {n} gün içinde",dirSub:"{a} direct · {b} indirect",ofW:"personelin %{n}'i",dUnit:"gün",
+ depNote:"Kayıt = toplam fazla mesai kaydı (bir personel her gün için bir kez sayılır). Personel = dönem içinde o departmanda fazla mesai yapan farklı kişi sayısı (kaç gün yaptığı fark etmez). Ort./gün = Kayıt ÷ o departmanda mesai olan gün sayısı.",
  i1:"{a} en yoğun gün, ortalama {b} personel.",i2:"{a}, tüm kayıtların %{b} kadarını oluşturuyor.",i3:"İlk 5 personel tüm kayıtların %{b} kadarını oluşturuyor.",i4u:"Dönemin ikinci yarısında fazla mesai %{b} arttı.",i4d:"Dönemin ikinci yarısında fazla mesai %{b} azaldı.",i4f:"Fazla mesai dönem boyunca sabit.",i5:"{a} personel 7+ gün fazla mesai yaptı.",
  tableCode:"Kod",tableName:"İsim",tableDept:"Departman",tableJd:"Görev Tanımı",tableType:"Tür",dateLabel:"Tarih",saturdayLabel:"Cumartesi",departmentLabel:"Departman",downloadExcel:"Excel İndir",
  dk1:"Fazla mesai personeli",dk2:"Departman",dk3:"Mesai türü",dk4:"En yoğun departman",cDept:"Departmana göre personel",cType:"Türe göre personel",list:"Personel listesi",
@@ -241,8 +271,9 @@ ar:{welcome:"لوحة الإدارة",uid:"اسم المستخدم",upw:"كلم�
  monthL:"الشهر",fromL:"من",toL:"إلى",custom:"فترة مخصصة",allDepartments:"جميع الأقسام",nSel:"{n} أقسام",clear:"مسح الاختيار",exportRep:"تصدير التقرير",
  srcL:"نوع العمل الإضافي",srcAll:"الكل (عادي + سبت)",srcN:"العمل الإضافي العادي",srcS:"العمل الإضافي يوم السبت",k9:"تسجيلات العمل الإضافي العادي",k10:"تسجيلات عمل السبت",chSplit:"العادي مقابل السبت حسب القسم",chSrc:"نسبة العادي مقابل السبت",colN:"عادي",colS:"سبت",
  k1:"إجمالي تسجيلات العمل الإضافي",k2:"المتوسط لكل يوم عمل",k3:"عدد العمال (بدون تكرار)",k4:"أعلى يوم",k5:"أعلى قسم",k6:"أيام العمل الإضافي",k7:"متوسط أيام العمل الإضافي لكل عامل",k8:"الاتجاه (النصف الثاني مقابل الأول)",entriesS:"تسجيل",
- insights:"أهم الملاحظات",chTrend:"الاتجاه اليومي ومتوسط 7 أيام",chDept:"نسبة الأقسام",chWeek:"العمل الإضافي الأسبوعي حسب القسم",chType:"حسب نوع العمل الإضافي",chWd:"المتوسط حسب اليوم",chFreq:"العمال حسب عدد أيام العمل الإضافي",chJd:"أكثر المسميات الوظيفية",heat:"القسم × اليوم (متوسط العمال)",
- repDept:"تقرير الأقسام",topW:"أكثر العمال تسجيلًا للعمل الإضافي",entries:"التسجيلات",workers:"العمال",share:"النسبة",avgDay:"المتوسط/يوم",daysC:"الأيام",avg7:"متوسط 7 أيام",other:"أخرى",
+ insights:"أهم الملاحظات",chTrend:"الاتجاه اليومي ومتوسط 7 أيام",chDept:"نسبة الأقسام",chWeek:"العمل الإضافي الأسبوعي حسب القسم",chType:"حسب نوع العمل الإضافي (Direct / Indirect)",chWd:"المتوسط حسب اليوم",chFreq:"العمال حسب عدد أيام العمل الإضافي",chJd:"أكثر المسميات الوظيفية",heat:"القسم × اليوم (متوسط العمال)",
+ repDept:"تقرير الأقسام",topW:"أكثر العمال تسجيلًا للعمل الإضافي",entries:"التسجيلات",workers:"العمال",share:"النسبة",avgDay:"المتوسط/يوم",daysC:"الأيام",avg7:"متوسط 7 أيام",other:"أخرى",unspec:"غير محدد",k11:"أيام عمل السبت",k12:"أيام العمل الإضافي العادي",k13:"متوسط العمال في السبت الواحد",k14:"نسبة Direct",k15:"عمال سجلوا عادي وسبت معًا",k16:"أكثر مسمى وظيفي",k17:"أكثر عامل نشاطًا",k18:"عمال إضافي كثيف (7 أيام+)",k19:"الأقسام المشاركة",ofSat:"من {n} سبت في الفترة",ofDays:"من {n} يوم في الفترة",dirSub:"{a} Direct · {b} Indirect",ofW:"{n}% من العمال",dUnit:"يوم",
+ depNote:"التسجيلات = إجمالي مرات تسجيل العمل الإضافي (العامل يُحسب مرة عن كل يوم). العمال = عدد الأشخاص المختلفين (بدون تكرار) الذين عملوا إضافي في القسم خلال الفترة مهما كان عدد أيامهم. المتوسط/يوم = التسجيلات ÷ عدد الأيام التي فيها عمل إضافي في القسم.",
  i1:"{a} هو أكثر الأيام ازدحامًا بمتوسط {b} عامل.",i2:"قسم {a} يمثل {b}% من إجمالي التسجيلات.",i3:"أعلى 5 عمال يمثلون {b}% من إجمالي التسجيلات.",i4u:"العمل الإضافي زاد {b}% في النصف الثاني من الفترة.",i4d:"العمل الإضافي انخفض {b}% في النصف الثاني من الفترة.",i4f:"العمل الإضافي ثابت على مدار الفترة.",i5:"{a} عامل سجّلوا عمل إضافي 7 أيام أو أكثر.",
  tableCode:"الكود",tableName:"الاسم",tableDept:"القسم",tableJd:"المسمى الوظيفي",tableType:"النوع",dateLabel:"التاريخ",saturdayLabel:"يوم السبت",departmentLabel:"القسم",downloadExcel:"تحميل إكسل",
  dk1:"عمال العمل الإضافي",dk2:"الأقسام",dk3:"أنواع العمل الإضافي",dk4:"أعلى قسم",cDept:"العمال حسب القسم",cType:"العمال حسب النوع",list:"قائمة العمال",
@@ -268,16 +299,18 @@ function countUp(el,to){const s=performance.now();(function f(n){const p=Math.mi
 function setNum(id,v){const el=$(id);Number.isInteger(v)?countUp(el,v):el.textContent=v}
 const sum=a=>a.reduce((x,y)=>x+y,0);
 
-/* ---------- data (every department is normalised here) ----------
-   src "n" = normal overtime link, src "s" = Saturday link */
-const cache=new Map();
+/* ---------- data (every worker is normalised here) ----------
+   src "n" = normal overtime link, src "s" = Saturday link
+   cache  = data coming from the Analysis script
+   dcache = data coming from the Daily / Saturday scripts (kept separate so they never mix) */
+const cache=new Map(),dcache=new Map();
 async function fetchDay(d,src="n",viaAnalysis=false){
-  const key=src+d;
-  if(cache.has(key))return{w:cache.get(key)};
+  const C=viaAnalysis?cache:dcache,key=src+d;
+  if(C.has(key))return{w:C.get(key)};
   const url=viaAnalysis?`${API_ANALYSIS}?type=${src==="s"?"saturday":"normal"}&date=${d}`:`${src==="s"?API_SAT:API_DAILY}?date=${d}`;
   try{const j=await(await fetch(url)).json();
-    const w=(j&&j.success&&Array.isArray(j.workers)?j.workers:[]).map(x=>({...x,department:normDept(x.department)}));
-    cache.set(key,w);return{w}}
+    const w=(j&&j.success&&Array.isArray(j.workers)?j.workers:[]).map(mapW);
+    C.set(key,w);return{w}}
   catch(e){return{w:[],err:true}}
 }
 /* whole period in ONE request; fills the cache for both types */
@@ -285,10 +318,26 @@ async function fetchRange(from,to){
   try{const j=await(await fetch(`${API_ANALYSIS}?from=${from}&to=${to}`)).json();
     if(!j||!j.success)return false;
     for(let d=from;d<=to;d=addD(d,1))[["n",j.normal],["s",j.saturday]].forEach(([k,m])=>
-      cache.set(k+d,((m&&m[d])||[]).map(x=>({...x,department:normDept(x.department)}))));
+      cache.set(k+d,((m&&m[d])||[]).map(mapW)));
     return true}catch(e){return false}
 }
 async function pool(items,fn,n=6){let i=0;await Promise.all(Array.from({length:n},async()=>{while(i<items.length){const k=items[i++];await fn(k)}}))}
+
+/* If the Analysis script does not return type / job title at all,
+   fetch them from the Daily / Saturday scripts and merge by worker code. */
+async function enrich(dates,days,pb){
+  const entries=Object.values(days).flatMap(m=>Object.values(m).flat());
+  if(!entries.length||entries.some(w=>w.type||w.jd))return;
+  const idx=w=>String(w.code||w.name||"");
+  const jobs=[...dates.filter(d=>days.n[d].length).map(d=>["n",d]),...dates.filter(d=>days.s[d].length).map(d=>["s",d])];
+  let done=0;
+  await pool(jobs,async([k,d])=>{
+    const r=k==="n"?await fetchDay(d,"n"):await satData(d);
+    const m={};r.w.forEach(x=>m[idx(x)]=x);
+    days[k][d]=days[k][d].map(w=>{const s=m[idx(w)];return s?{...w,type:w.type||s.type,jd:w.jd||s.jd}:w});
+    pb.style.width=(70+(++done/jobs.length)*30)+"%";
+  });
+}
 
 /* ---------- charts ---------- */
 Chart.defaults.color="#ac8b8e";Chart.defaults.font.family="Tajawal";
@@ -343,6 +392,8 @@ async function loadOverview(){
     await pool(jobs,async([k,d])=>{const r=await fetchDay(d,k,true);if(r.err)fails++;days[k][d]=r.w;pb.style.width=(++done/jobs.length*100)+"%"});
   }
   if(tok!==ovTok)return;
+  try{await enrich(dates,days,pb)}catch(e){}
+  if(tok!==ovTok)return;
   setTimeout(()=>pr.classList.remove("on"),400);
   if(total&&fails>=total){msg.textContent=t("err");msg.className="msg err"}
   ovState={dates,days,from,to,note};renderOverview();
@@ -363,6 +414,19 @@ function renderOverview(){
   $("oK8").textContent=a1?`${pct>0?"▲":pct<0?"▼":"■"} ${Math.abs(pct)}%`:"—";$("oK8").style.color=pct>0?"#f0b429":pct<0?"#3fb68b":"";
   $("oK4").textContent=all.length?fmt(dates[pk]).replace(/, \d{4}/,""):"—";$("oK4s").textContent=all.length?`${counts[pk]} ${t("entriesS")}`:"";
   $("oK5").textContent=dE[0]?dE[0][0]:"—";$("oK5s").textContent=dE[0]?`${dE[0][1]} ${t("entriesS")}`:"";
+  /* extra analysis cards */
+  const nSatR=dates.filter(d=>fromS(d).getDay()===6).length,dayN=cN.filter(v=>v>0).length,dayS=cS.filter(v=>v>0).length;
+  setNum("oK11",dayS);$("oK11s").textContent=t("ofSat").replace("{n}",nSatR);
+  setNum("oK12",dayN);$("oK12s").textContent=t("ofDays").replace("{n}",dates.length);
+  setNum("oK13",dayS?+(nS/dayS).toFixed(1):0);
+  const nD=all.filter(w=>w.type==="DIRECT").length,nI=all.filter(w=>w.type==="INDIRECT").length;
+  $("oK14").textContent=(nD+nI)?Math.round(nD/(nD+nI)*100)+"%":"—";$("oK14s").textContent=t("dirSub").replace("{a}",nD).replace("{b}",nI);
+  const both=plist.filter(p=>p.dn.size&&p.ds.size).length;setNum("oK15",both);$("oK15s").textContent=nP?t("ofW").replace("{n}",Math.round(both/nP*100)):"";
+  const hv7=plist.filter(p=>p.days.size>=7).length;setNum("oK18",hv7);$("oK18s").textContent=nP?t("ofW").replace("{n}",Math.round(hv7/nP*100)):"";
+  setNum("oK19",dE.length);
+  const jdA=tally(all.filter(w=>w.jd),"jd");
+  $("oK16").textContent=jdA[0]?jdA[0][0]:"—";$("oK16s").textContent=jdA[0]?`${jdA[0][1]} ${t("entriesS")}`:"";
+  $("oK17").textContent=plist[0]?plist[0].name:"—";$("oK17s").textContent=plist[0]?`${plist[0].days.size} ${t("dUnit")}`:"";
   $("oNote").textContent=[note,t("loaded").replace("{a}",active).replace("{b}",dates.length)].filter(Boolean).join(" • ");
   /* weekday stats */
   const ws=Array(7).fill(0),wn=Array(7).fill(0);dates.forEach((d,i)=>{const w=fromS(d).getDay();wn[w]++;ws[w]+=counts[i]});
@@ -397,11 +461,14 @@ function renderOverview(){
   const ds=topD.map((d,i)=>({label:d,data:ser[i],backgroundColor:PAL[i],borderRadius:3}));
   if(sum(oth))ds.push({label:t("other"),data:oth,backgroundColor:"#5a3a3e",borderRadius:3});
   chart("oWeek",{type:"bar",data:{labels:weeks.map(w=>w.slice(5)),datasets:ds},options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,ticks:{precision:0}}}}});
-  doughnut("oType",tally(all,"type").slice(0,8));
+  /* overtime type: DIRECT / INDIRECT with counts */
+  const tc=tally(all,"type"),tm={};tc.forEach(([k,v])=>tm[k]=v);
+  const tl=[["DIRECT",tm.DIRECT||0],["INDIRECT",tm.INDIRECT||0],...tc.filter(([k])=>k!=="DIRECT"&&k!=="INDIRECT").map(([k,v])=>[k==="—"?t("unspec"):k,v])];
+  doughnut("oType",tl.map(([k,v])=>[`${k} — ${v} (${all.length?Math.round(v/all.length*100):0}%)`,v]));
   bars("oWd",order.map(i=>t("wd")[i]),order.map(i=>+wavg[i].toFixed(1)),false,"#f0b429");
   const fr=[0,0,0,0];plist.forEach(p=>{const n=p.days.size;fr[n>=7?3:n>=4?2:n>=2?1:0]++});
   bars("oFreq",["1","2–3","4–6","7+"],fr,false,"#6b7fd7");
-  const jd=tally(all,"jd").slice(0,8);bars("oJd",jd.map(x=>x[0]),jd.map(x=>x[1]),true,"#3fb68b");
+  const jd=tally(all.filter(w=>w.jd),"jd").slice(0,8);bars("oJd",jd.map(x=>x[0]),jd.map(x=>x[1]),true,"#3fb68b");
   /* heatmap dept × weekday */
   const dl=dE.map(x=>x[0]),hm=dl.map(()=>Array(7).fill(0));
   all.forEach(w=>hm[dl.indexOf(w.department)][fromS(w._d).getDay()]++);
@@ -410,8 +477,8 @@ function renderOverview(){
     dl.map((d,r)=>`<tr><td>${esc(d)}</td>${order.map(i=>{const v=hv[r][i];return`<td style="background:rgba(209,38,63,${v?(.1+v/mx*.75).toFixed(2):0})">${v?v.toFixed(1):"–"}</td>`}).join("")}</tr>`).join("")+"</tbody>";
   /* tables */
   const tot=all.length||1,mxE=dE[0]?dE[0][1]:1;
-  $("oDeptT").innerHTML=dE.map(([d,c])=>{const u=plist.filter(p=>p.dept===d).length,ad=new Set(all.filter(w=>w.department===d).map(w=>w._d)).size,
-    dn=all.filter(w=>w.department===d&&w._k==="n").length;
+  $("oDeptT").innerHTML=dE.map(([d,c])=>{const rows=all.filter(w=>w.department===d),u=new Set(rows.map(w=>w.code||w.name)).size,ad=new Set(rows.map(w=>w._d)).size,
+    dn=rows.filter(w=>w._k==="n").length;
     return`<tr><td>${esc(d)}</td><td class="n">${c}</td><td class="n">${dn}</td><td class="n">${c-dn}</td><td class="n">${u}</td><td class="n">${ad?(c/ad).toFixed(1):0}</td><td><div class="share"><div data-w="${c/mxE*100}"></div><span class="n">${Math.round(c/tot*100)}%</span></div></td></tr>`}).join("");
   $("oTopT").innerHTML=plist.slice(0,10).map(p=>`<tr><td>${esc(p.name)}</td><td class="n">${esc(p.dept)}</td><td class="n">${p.days.size}</td><td class="n">${p.dn.size}</td><td class="n">${p.ds.size}</td></tr>`).join("");
   requestAnimationFrame(()=>setTimeout(()=>document.querySelectorAll("#oDeptT .share div").forEach(b=>b.style.width=b.dataset.w+"%"),50));
@@ -499,7 +566,7 @@ function show(v){
 }
 function applyLang(l){
   L=l;const dir=l==="ar"?"rtl":"ltr";document.documentElement.lang=l;
-  ["main","login","side"].forEach(i=>$(i).dir=dir);
+  ["main","side"].forEach(i=>$(i).dir=dir);
   document.title="Rubyred | "+t("mgmt");
   document.querySelectorAll("[data-i18n]").forEach(e=>{if(t(e.dataset.i18n)!==undefined)e.textContent=t(e.dataset.i18n)});
   document.querySelectorAll("[data-lang] button").forEach(b=>b.classList.toggle("active",b.dataset.l===l));
@@ -510,13 +577,7 @@ function applyLang(l){
 document.querySelectorAll("[data-lang]").forEach(g=>{["en","tr","ar"].forEach(l=>{const b=document.createElement("button");b.type="button";b.dataset.l=l;b.textContent=l.toUpperCase();b.onclick=()=>applyLang(l);g.appendChild(b)})});
 
 /* ---------- start ---------- */
-window.addEventListener("load",()=>setTimeout(()=>{$("splash").classList.add("out");setTimeout(()=>{$("splash").style.display="none";$("login").classList.add("show")},600)},2200));
-$("lform").addEventListener("submit",e=>{
-  e.preventDefault();
-  if($("uid").value.trim()===CRED.id&&$("upw").value===CRED.password){
-    $("login").classList.remove("show");$("app").classList.add("show");init();
-  }else{$("lerr").textContent=t("lerr");const c=document.querySelector(".lcard");c.classList.remove("shake");void c.offsetWidth;c.classList.add("shake")}
-});
+window.addEventListener("load",()=>setTimeout(()=>{$("splash").classList.add("out");setTimeout(()=>{$("splash").style.display="none";$("app").classList.add("show");init()},600)},2200));
 function init(){
   $("dDate").value=today();buildSats(nextSat());
   const now=new Date(),ym=`${now.getFullYear()}-${pad(now.getMonth()+1)}`;$("oMonth").value=ym;setMonth(ym);
