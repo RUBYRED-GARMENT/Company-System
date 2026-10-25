@@ -65,6 +65,7 @@ h1 small{display:block;font-size:14px;color:var(--mu);font-weight:400;margin-top
 .kpi b{display:block;font-size:32px;font-weight:900;color:var(--acb);line-height:1.1;font-variant-numeric:tabular-nums}
 .kpi b.sm{font-size:21px;padding:7px 0}
 .kpi b.gold{color:var(--gold)}
+.kpi b.ok{color:#3fb68b}
 .kpi span{display:block;margin-top:6px;font-size:13px;color:var(--mu)}
 .kpi i{font-style:normal;font-size:12px;color:var(--fa)}
 .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:20px}
@@ -136,6 +137,8 @@ details.dd[open] summary{border-color:var(--acb)}
       <div class="card kpi"><b class="gold" id="oK11">—</b><span data-i18n="k11">Saturday overtime days</span><i id="oK11s"></i></div>
       <div class="card kpi"><b id="oK12">—</b><span data-i18n="k12">Normal overtime days</span><i id="oK12s"></i></div>
       <div class="card kpi"><b id="oK1">—</b><span data-i18n="k1">Total overtime entries</span></div>
+      <div class="card kpi"><b class="ok" id="oK20">—</b><span data-i18n="k20">Approved</span><i id="oK20s"></i></div>
+      <div class="card kpi"><b id="oK21">—</b><span data-i18n="k21">Rejected</span><i id="oK21s"></i></div>
       <div class="card kpi"><b id="oK9">—</b><span data-i18n="k9">Normal overtime entries</span></div>
       <div class="card kpi"><b class="gold" id="oK10">—</b><span data-i18n="k10">Saturday overtime entries</span></div>
       <div class="card kpi"><b id="oK6">—</b><span data-i18n="k6">Active days</span></div>
@@ -164,8 +167,12 @@ details.dd[open] summary{border-color:var(--acb)}
       <div class="card panel c4"><h3 data-i18n="chWd">Average by weekday</h3><div class="chart"><canvas id="oWd"></canvas></div></div>
       <div class="card panel c4"><h3 data-i18n="chFreq">Workers by number of overtime days</h3><div class="chart"><canvas id="oFreq"></canvas></div></div>
       <div class="card panel c4"><h3 data-i18n="chJd">Top job titles</h3><div class="chart"><canvas id="oJd"></canvas></div></div>
+      <div class="card panel c4"><h3 data-i18n="chSt">Approved vs Rejected</h3><div class="chart"><canvas id="oStShare"></canvas></div></div>
+      <div class="card panel c8"><h3 data-i18n="chStTrend">Approved vs Rejected per day</h3><div class="chart"><canvas id="oStTrend"></canvas></div></div>
+      <div class="card panel c8"><h3 data-i18n="chStDept">Approved vs Rejected by department</h3><div class="chart"><canvas id="oStDept"></canvas></div></div>
+      <div class="card panel c4"><h3 data-i18n="chStCmp">Approved vs Rejected by source & type</h3><div class="chart"><canvas id="oStCmp"></canvas></div></div>
       <div class="card panel c12"><h3 data-i18n="heat">Department × weekday (average workers)</h3><div class="tw"><table class="heat" id="oHeat"></table></div></div>
-      <div class="card panel c7"><h3 data-i18n="repDept">Department report</h3><div class="tw"><table><thead><tr><th data-i18n="tableDept">Department</th><th data-i18n="entries">Entries</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th><th data-i18n="workers">Workers</th><th data-i18n="avgDay">Avg/day</th><th data-i18n="share">Share</th></tr></thead><tbody id="oDeptT"></tbody></table></div><div class="help" data-i18n="depNote"></div></div>
+      <div class="card panel c7"><h3 data-i18n="repDept">Department report</h3><div class="tw"><table><thead><tr><th data-i18n="tableDept">Department</th><th data-i18n="entries">Entries</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th><th data-i18n="stA">Approved</th><th data-i18n="stR">Rejected</th><th data-i18n="workers">Workers</th><th data-i18n="avgDay">Avg/day</th><th data-i18n="share">Share</th></tr></thead><tbody id="oDeptT"></tbody></table></div><div class="help" data-i18n="depNote"></div></div>
       <div class="card panel c5"><h3 data-i18n="topW">Most frequent overtime workers</h3><div class="tw"><table><thead><tr><th data-i18n="tableName">Name</th><th data-i18n="tableDept">Department</th><th data-i18n="daysC">Days</th><th data-i18n="colN">Normal</th><th data-i18n="colS">Saturday</th></tr></thead><tbody id="oTopT"></tbody></table></div></div>
     </div>
     <div class="msg" id="oMsg"></div>
@@ -221,6 +228,7 @@ const KT=["type","overtimetype","ottype","otype","category","kind","directindire
 const KJ=["jd","jobdescription","jobtitle","jobtitles","job","title","position","designation","jobname","المسمىالوظيفي","الوظيفة","المسمى"];
 const KC=["code","empcode","employeecode","workercode","id","empid"];
 const KN=["name","empname","employeename","workername","fullname","الاسم"];
+const KS=["status","approvalstatus","requeststatus","otstatus","state","approval","الحالة","حالةالطلب"];
 const KD=["department","dept","departmentname","القسم"];
 /* overtime type -> DIRECT / INDIRECT */
 function normType(v){
@@ -230,13 +238,18 @@ function normType(v){
   if(/direct|مباشر|^dir/.test(l))return "DIRECT";
   return s.toUpperCase();
 }
+const normStatus=v=>{const s=String(v||"").trim();if(!s)return "";const l=s.toLowerCase();
+  if(/reject|refus|declin|deny|denied|not\s*approv|unapprov|مرفوض|رفض/.test(l))return "REJECTED";
+  if(/approv|accept|granted|مقبول|موافق|معتمد/.test(l))return "APPROVED";
+  return s.toUpperCase()};
 const normJd=v=>{const s=String(v||"").replace(/\s+/g," ").trim();return /^machine/i.test(s)?"MACHINE OPERATOR":s};
 const mapW=x=>({...x,
   code:pick(x,KC)||x.code||"",
   name:pick(x,KN)||x.name||"",
   department:normDept(pick(x,KD)||x.department),
   jd:normJd(pick(x,KJ)),
-  type:normType(pick(x,KT))});
+  type:normType(pick(x,KT)),
+  status:normStatus(pick(x,KS))});
 
 /* ---------- i18n ---------- */
 const T={
@@ -246,7 +259,7 @@ en:{welcome:"Management Dashboard",uid:"ID",upw:"Password",signin:"Sign In",lerr
  srcL:"Overtime source",srcAll:"All (Normal + Saturday)",srcN:"Normal overtime",srcS:"Saturday overtime",k9:"Normal overtime entries",k10:"Saturday overtime entries",chSplit:"Normal vs Saturday by department",chSrc:"Normal vs Saturday share",colN:"Normal",colS:"Saturday",
  k1:"Total overtime entries",k2:"Average per active day",k3:"Unique workers",k4:"Peak day",k5:"Top department",k6:"Active days",k7:"Avg overtime days per worker",k8:"Trend (2nd half vs 1st)",entriesS:"entries",
  insights:"Key insights",chTrend:"Daily trend & 7-day average",chDept:"Share by department",chWeek:"Weekly overtime by department",chType:"By overtime type (Direct / Indirect)",chWd:"Average by weekday",chFreq:"Workers by number of overtime days",chJd:"Top job titles",heat:"Department × weekday (average workers)",
- repDept:"Department report",topW:"Most frequent overtime workers",entries:"Entries",workers:"Workers",share:"Share",avgDay:"Avg/day",daysC:"Days",avg7:"7-day average",other:"Other",unspec:"Unspecified",k11:"Saturday overtime days",k12:"Normal overtime days",k13:"Avg workers per Saturday",k14:"Direct share",k15:"Workers in both Normal & Saturday",k16:"Top job title",k17:"Most active worker",k18:"Heavy overtime workers (7+ days)",k19:"Departments involved",ofSat:"of {n} Saturdays in period",ofDays:"of {n} days in period",dirSub:"{a} direct · {b} indirect",ofW:"{n}% of workers",dUnit:"days",
+ repDept:"Department report",topW:"Most frequent overtime workers",entries:"Entries",workers:"Workers",share:"Share",avgDay:"Avg/day",daysC:"Days",avg7:"7-day average",other:"Other",unspec:"Unspecified",k11:"Saturday overtime days",k12:"Normal overtime days",k13:"Avg workers per Saturday",k14:"Direct share",k15:"Workers in both Normal & Saturday",k16:"Top job title",k17:"Most active worker",k18:"Heavy overtime workers (7+ days)",k19:"Departments involved",ofSat:"of {n} Saturdays in period",ofDays:"of {n} days in period",dirSub:"{a} direct · {b} indirect",ofW:"{n}% of workers",dUnit:"days",k20:"Approved",k21:"Rejected",stA:"Approved",stR:"Rejected",stO:"No status",ofTotal:"of total",chSt:"Approved vs Rejected",chStTrend:"Approved vs Rejected per day",chStDept:"Approved vs Rejected by department",chStCmp:"Approved vs Rejected by source & type",tableStatus:"Status",
  depNote:"Entries = total overtime records (a worker is counted once per day). Workers = distinct people who did overtime in that department during the period, no matter how many days. Avg/day = Entries ÷ days that had overtime in that department.",
  i1:"{a} is the busiest weekday, averaging {b} workers.",i2:"{a} accounts for {b}% of all overtime entries.",i3:"The top 5 workers account for {b}% of all entries.",i4u:"Overtime is up {b}% in the second half of the period.",i4d:"Overtime is down {b}% in the second half of the period.",i4f:"Overtime is steady across the period.",i5:"{a} workers did overtime on 7+ days.",
  tableCode:"Code",tableName:"Name",tableDept:"Department",tableJd:"JD",tableType:"Type",dateLabel:"Date",saturdayLabel:"Saturday",departmentLabel:"Department",downloadExcel:"Download Excel",
@@ -259,7 +272,7 @@ tr:{welcome:"Yönetim Paneli",uid:"Kullanıcı Adı",upw:"Şifre",signin:"Giriş
  srcL:"Mesai kaynağı",srcAll:"Tümü (Normal + Cumartesi)",srcN:"Normal mesai",srcS:"Cumartesi mesaisi",k9:"Normal mesai kaydı",k10:"Cumartesi mesai kaydı",chSplit:"Departmana göre Normal / Cumartesi",chSrc:"Normal / Cumartesi payı",colN:"Normal",colS:"Cumartesi",
  k1:"Toplam fazla mesai kaydı",k2:"Aktif gün ortalaması",k3:"Tekil personel",k4:"En yoğun gün",k5:"En yoğun departman",k6:"Aktif gün",k7:"Personel başına ort. mesai günü",k8:"Trend (2. yarı / 1. yarı)",entriesS:"kayıt",
  insights:"Öne çıkanlar",chTrend:"Günlük trend ve 7 günlük ortalama",chDept:"Departman payı",chWeek:"Departmana göre haftalık fazla mesai",chType:"Mesai türüne göre (Direct / Indirect)",chWd:"Güne göre ortalama",chFreq:"Mesai gün sayısına göre personel",chJd:"En çok görev tanımları",heat:"Departman × gün (ortalama personel)",
- repDept:"Departman raporu",topW:"En sık fazla mesai yapanlar",entries:"Kayıt",workers:"Personel",share:"Pay",avgDay:"Ort./gün",daysC:"Gün",avg7:"7 günlük ortalama",other:"Diğer",unspec:"Belirtilmemiş",k11:"Cumartesi mesai günü",k12:"Normal mesai günü",k13:"Cumartesi başına ort. personel",k14:"Direct oranı",k15:"Hem normal hem Cumartesi yapanlar",k16:"En çok görev tanımı",k17:"En aktif personel",k18:"Yoğun mesai yapanlar (7+ gün)",k19:"Katılan departman",ofSat:"dönemdeki {n} Cumartesi içinde",ofDays:"dönemdeki {n} gün içinde",dirSub:"{a} direct · {b} indirect",ofW:"personelin %{n}'i",dUnit:"gün",
+ repDept:"Departman raporu",topW:"En sık fazla mesai yapanlar",entries:"Kayıt",workers:"Personel",share:"Pay",avgDay:"Ort./gün",daysC:"Gün",avg7:"7 günlük ortalama",other:"Diğer",unspec:"Belirtilmemiş",k11:"Cumartesi mesai günü",k12:"Normal mesai günü",k13:"Cumartesi başına ort. personel",k14:"Direct oranı",k15:"Hem normal hem Cumartesi yapanlar",k16:"En çok görev tanımı",k17:"En aktif personel",k18:"Yoğun mesai yapanlar (7+ gün)",k19:"Katılan departman",ofSat:"dönemdeki {n} Cumartesi içinde",ofDays:"dönemdeki {n} gün içinde",dirSub:"{a} direct · {b} indirect",ofW:"personelin %{n}'i",dUnit:"gün",k20:"Onaylanan",k21:"Reddedilen",stA:"Onaylanan",stR:"Reddedilen",stO:"Durum yok",ofTotal:"toplamın",chSt:"Onaylanan / Reddedilen",chStTrend:"Günlük Onaylanan / Reddedilen",chStDept:"Departmana göre Onaylanan / Reddedilen",chStCmp:"Kaynak ve türe göre Onaylanan / Reddedilen",tableStatus:"Durum",
  depNote:"Kayıt = toplam fazla mesai kaydı (bir personel her gün için bir kez sayılır). Personel = dönem içinde o departmanda fazla mesai yapan farklı kişi sayısı (kaç gün yaptığı fark etmez). Ort./gün = Kayıt ÷ o departmanda mesai olan gün sayısı.",
  i1:"{a} en yoğun gün, ortalama {b} personel.",i2:"{a}, tüm kayıtların %{b} kadarını oluşturuyor.",i3:"İlk 5 personel tüm kayıtların %{b} kadarını oluşturuyor.",i4u:"Dönemin ikinci yarısında fazla mesai %{b} arttı.",i4d:"Dönemin ikinci yarısında fazla mesai %{b} azaldı.",i4f:"Fazla mesai dönem boyunca sabit.",i5:"{a} personel 7+ gün fazla mesai yaptı.",
  tableCode:"Kod",tableName:"İsim",tableDept:"Departman",tableJd:"Görev Tanımı",tableType:"Tür",dateLabel:"Tarih",saturdayLabel:"Cumartesi",departmentLabel:"Departman",downloadExcel:"Excel İndir",
@@ -272,7 +285,7 @@ ar:{welcome:"لوحة الإدارة",uid:"اسم المستخدم",upw:"كلم�
  srcL:"نوع العمل الإضافي",srcAll:"الكل (عادي + سبت)",srcN:"العمل الإضافي العادي",srcS:"العمل الإضافي يوم السبت",k9:"تسجيلات العمل الإضافي العادي",k10:"تسجيلات عمل السبت",chSplit:"العادي مقابل السبت حسب القسم",chSrc:"نسبة العادي مقابل السبت",colN:"عادي",colS:"سبت",
  k1:"إجمالي تسجيلات العمل الإضافي",k2:"المتوسط لكل يوم عمل",k3:"عدد العمال (بدون تكرار)",k4:"أعلى يوم",k5:"أعلى قسم",k6:"أيام العمل الإضافي",k7:"متوسط أيام العمل الإضافي لكل عامل",k8:"الاتجاه (النصف الثاني مقابل الأول)",entriesS:"تسجيل",
  insights:"أهم الملاحظات",chTrend:"الاتجاه اليومي ومتوسط 7 أيام",chDept:"نسبة الأقسام",chWeek:"العمل الإضافي الأسبوعي حسب القسم",chType:"حسب نوع العمل الإضافي (Direct / Indirect)",chWd:"المتوسط حسب اليوم",chFreq:"العمال حسب عدد أيام العمل الإضافي",chJd:"أكثر المسميات الوظيفية",heat:"القسم × اليوم (متوسط العمال)",
- repDept:"تقرير الأقسام",topW:"أكثر العمال تسجيلًا للعمل الإضافي",entries:"التسجيلات",workers:"العمال",share:"النسبة",avgDay:"المتوسط/يوم",daysC:"الأيام",avg7:"متوسط 7 أيام",other:"أخرى",unspec:"غير محدد",k11:"أيام عمل السبت",k12:"أيام العمل الإضافي العادي",k13:"متوسط العمال في السبت الواحد",k14:"نسبة Direct",k15:"عمال سجلوا عادي وسبت معًا",k16:"أكثر مسمى وظيفي",k17:"أكثر عامل نشاطًا",k18:"عمال إضافي كثيف (7 أيام+)",k19:"الأقسام المشاركة",ofSat:"من {n} سبت في الفترة",ofDays:"من {n} يوم في الفترة",dirSub:"{a} Direct · {b} Indirect",ofW:"{n}% من العمال",dUnit:"يوم",
+ repDept:"تقرير الأقسام",topW:"أكثر العمال تسجيلًا للعمل الإضافي",entries:"التسجيلات",workers:"العمال",share:"النسبة",avgDay:"المتوسط/يوم",daysC:"الأيام",avg7:"متوسط 7 أيام",other:"أخرى",unspec:"غير محدد",k11:"أيام عمل السبت",k12:"أيام العمل الإضافي العادي",k13:"متوسط العمال في السبت الواحد",k14:"نسبة Direct",k15:"عمال سجلوا عادي وسبت معًا",k16:"أكثر مسمى وظيفي",k17:"أكثر عامل نشاطًا",k18:"عمال إضافي كثيف (7 أيام+)",k19:"الأقسام المشاركة",ofSat:"من {n} سبت في الفترة",ofDays:"من {n} يوم في الفترة",dirSub:"{a} Direct · {b} Indirect",ofW:"{n}% من العمال",dUnit:"يوم",k20:"المقبولة (Approved)",k21:"المرفوضة (Rejected)",stA:"مقبول",stR:"مرفوض",stO:"بدون حالة",ofTotal:"من الإجمالي",chSt:"المقبول مقابل المرفوض",chStTrend:"المقبول مقابل المرفوض يوميًا",chStDept:"المقبول مقابل المرفوض حسب القسم",chStCmp:"المقبول مقابل المرفوض حسب المصدر والنوع",tableStatus:"الحالة",
  depNote:"التسجيلات = إجمالي مرات تسجيل العمل الإضافي (العامل يُحسب مرة عن كل يوم). العمال = عدد الأشخاص المختلفين (بدون تكرار) الذين عملوا إضافي في القسم خلال الفترة مهما كان عدد أيامهم. المتوسط/يوم = التسجيلات ÷ عدد الأيام التي فيها عمل إضافي في القسم.",
  i1:"{a} هو أكثر الأيام ازدحامًا بمتوسط {b} عامل.",i2:"قسم {a} يمثل {b}% من إجمالي التسجيلات.",i3:"أعلى 5 عمال يمثلون {b}% من إجمالي التسجيلات.",i4u:"العمل الإضافي زاد {b}% في النصف الثاني من الفترة.",i4d:"العمل الإضافي انخفض {b}% في النصف الثاني من الفترة.",i4f:"العمل الإضافي ثابت على مدار الفترة.",i5:"{a} عامل سجّلوا عمل إضافي 7 أيام أو أكثر.",
  tableCode:"الكود",tableName:"الاسم",tableDept:"القسم",tableJd:"المسمى الوظيفي",tableType:"النوع",dateLabel:"التاريخ",saturdayLabel:"يوم السبت",departmentLabel:"القسم",downloadExcel:"تحميل إكسل",
@@ -326,15 +339,15 @@ async function pool(items,fn,n=6){let i=0;await Promise.all(Array.from({length:n
 /* If the Analysis script does not return type / job title at all,
    fetch them from the Daily / Saturday scripts and merge by worker code. */
 async function enrich(dates,days,pb){
-  const entries=Object.values(days).flatMap(m=>Object.values(m).flat());
-  if(!entries.length||entries.some(w=>w.type||w.jd))return;
   const idx=w=>String(w.code||w.name||"");
-  const jobs=[...dates.filter(d=>days.n[d].length).map(d=>["n",d]),...dates.filter(d=>days.s[d].length).map(d=>["s",d])];
+  const need=a=>(a||[]).some(w=>(!w.type&&!w.jd)||!w.status);
+  const jobs=[...dates.filter(d=>need(days.n[d])).map(d=>["n",d]),...dates.filter(d=>need(days.s[d])).map(d=>["s",d])];
+  if(!jobs.length)return;
   let done=0;
   await pool(jobs,async([k,d])=>{
     const r=k==="n"?await fetchDay(d,"n"):await satData(d);
     const m={};r.w.forEach(x=>m[idx(x)]=x);
-    days[k][d]=days[k][d].map(w=>{const s=m[idx(w)];return s?{...w,type:w.type||s.type,jd:w.jd||s.jd}:w});
+    days[k][d]=(days[k][d]||[]).map(w=>{const o=m[idx(w)];return o?{...w,type:w.type||o.type,jd:w.jd||o.jd,status:w.status||o.status}:w});
     pb.style.width=(70+(++done/jobs.length)*30)+"%";
   });
 }
@@ -427,6 +440,9 @@ function renderOverview(){
   const jdA=tally(all.filter(w=>w.jd),"jd");
   $("oK16").textContent=jdA[0]?jdA[0][0]:"—";$("oK16s").textContent=jdA[0]?`${jdA[0][1]} ${t("entriesS")}`:"";
   $("oK17").textContent=plist[0]?plist[0].name:"—";$("oK17s").textContent=plist[0]?`${plist[0].days.size} ${t("dUnit")}`:"";
+  const nA=all.filter(w=>w.status==="APPROVED").length,nR=all.filter(w=>w.status==="REJECTED").length,nO=all.length-nA-nR;
+  setNum("oK20",nA);$("oK20s").textContent=all.length?`${Math.round(nA/all.length*100)}% ${t("ofTotal")}`:"";
+  setNum("oK21",nR);$("oK21s").textContent=all.length?`${Math.round(nR/all.length*100)}% ${t("ofTotal")}`:"";
   $("oNote").textContent=[note,t("loaded").replace("{a}",active).replace("{b}",dates.length)].filter(Boolean).join(" • ");
   /* weekday stats */
   const ws=Array(7).fill(0),wn=Array(7).fill(0);dates.forEach((d,i)=>{const w=fromS(d).getDay();wn[w]++;ws[w]+=counts[i]});
@@ -453,6 +469,23 @@ function renderOverview(){
     {label:t("srcN"),data:top8.map(d=>all.filter(w=>w.department===d&&w._k==="n").length),backgroundColor:"#d1263f",borderRadius:4},
     {label:t("srcS"),data:top8.map(d=>all.filter(w=>w.department===d&&w._k==="s").length),backgroundColor:"#f0b429",borderRadius:4}]},
     options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});
+  /* approved vs rejected */
+  const stl=[[t("stA"),nA,"#3fb68b"],[t("stR"),nR,"#d1263f"]];if(nO)stl.push([t("stO"),nO,"#7a6265"]);
+  chart("oStShare",{type:"doughnut",data:{labels:stl.map(x=>`${x[0]} — ${x[1]}`),datasets:[{data:stl.map(x=>x[1]),backgroundColor:stl.map(x=>x[2]),borderColor:"#1e1012",borderWidth:3}]},options:{cutout:"66%",plugins:{legend:{position:"bottom",labels:{boxWidth:10,padding:12}}}}});
+  const cntS=(f,st)=>all.filter(w=>f(w)&&w.status===st).length;
+  chart("oStTrend",{type:"bar",data:{labels:dates.map(d=>d.slice(5)),datasets:[
+    {label:t("stA"),data:dates.map(d=>cntS(w=>w._d===d,"APPROVED")),backgroundColor:"#3fb68b",borderRadius:3},
+    {label:t("stR"),data:dates.map(d=>cntS(w=>w._d===d,"REJECTED")),backgroundColor:"#d1263f",borderRadius:3}]},
+    options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}},scales:{x:{stacked:true,grid:{display:false},ticks:{maxTicksLimit:12}},y:{stacked:true,beginAtZero:true,ticks:{precision:0}}}}});
+  chart("oStDept",{type:"bar",data:{labels:top8,datasets:[
+    {label:t("stA"),data:top8.map(d=>cntS(w=>w.department===d,"APPROVED")),backgroundColor:"#3fb68b",borderRadius:4},
+    {label:t("stR"),data:top8.map(d=>cntS(w=>w.department===d,"REJECTED")),backgroundColor:"#d1263f",borderRadius:4}]},
+    options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});
+  const cm=[[t("colN"),w=>w._k==="n"],[t("colS"),w=>w._k==="s"],["DIRECT",w=>w.type==="DIRECT"],["INDIRECT",w=>w.type==="INDIRECT"]];
+  chart("oStCmp",{type:"bar",data:{labels:cm.map(x=>x[0]),datasets:[
+    {label:t("stA"),data:cm.map(x=>cntS(x[1],"APPROVED")),backgroundColor:"#3fb68b",borderRadius:4},
+    {label:t("stR"),data:cm.map(x=>cntS(x[1],"REJECTED")),backgroundColor:"#d1263f",borderRadius:4}]},
+    options:{plugins:{legend:{position:"bottom",labels:{boxWidth:10}}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});
   doughnut("oDept",dE.slice(0,8));
   /* weekly stacked by department */
   const wk=d=>addD(d,-((fromS(d).getDay()+6)%7)),weeks=[...new Set(dates.map(wk))];
@@ -478,8 +511,8 @@ function renderOverview(){
   /* tables */
   const tot=all.length||1,mxE=dE[0]?dE[0][1]:1;
   $("oDeptT").innerHTML=dE.map(([d,c])=>{const rows=all.filter(w=>w.department===d),u=new Set(rows.map(w=>w.code||w.name)).size,ad=new Set(rows.map(w=>w._d)).size,
-    dn=rows.filter(w=>w._k==="n").length;
-    return`<tr><td>${esc(d)}</td><td class="n">${c}</td><td class="n">${dn}</td><td class="n">${c-dn}</td><td class="n">${u}</td><td class="n">${ad?(c/ad).toFixed(1):0}</td><td><div class="share"><div data-w="${c/mxE*100}"></div><span class="n">${Math.round(c/tot*100)}%</span></div></td></tr>`}).join("");
+    dn=rows.filter(w=>w._k==="n").length,ap=rows.filter(w=>w.status==="APPROVED").length,rj=rows.filter(w=>w.status==="REJECTED").length;
+    return`<tr><td>${esc(d)}</td><td class="n">${c}</td><td class="n">${dn}</td><td class="n">${c-dn}</td><td class="n" style="color:#3fb68b">${ap}</td><td class="n" style="color:#d1263f">${rj}</td><td class="n">${u}</td><td class="n">${ad?(c/ad).toFixed(1):0}</td><td><div class="share"><div data-w="${c/mxE*100}"></div><span class="n">${Math.round(c/tot*100)}%</span></div></td></tr>`}).join("");
   $("oTopT").innerHTML=plist.slice(0,10).map(p=>`<tr><td>${esc(p.name)}</td><td class="n">${esc(p.dept)}</td><td class="n">${p.days.size}</td><td class="n">${p.dn.size}</td><td class="n">${p.ds.size}</td></tr>`).join("");
   requestAnimationFrame(()=>setTimeout(()=>document.querySelectorAll("#oDeptT .share div").forEach(b=>b.style.width=b.dataset.w+"%"),50));
   ovState.view={all,cN,cS,dE,plist};
@@ -488,9 +521,9 @@ function exportOverview(){
   if(!ovState||!ovState.view)return;const{dates}=ovState,{all,cN,cS,dE,plist}=ovState.view,wb=XLSX.utils.book_new();
   const add=(n,a)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),n);
   const sn=k=>k==="s"?"Saturday":"Normal";
-  add("Details",[["Date","Source","Code","Name","Department","JD","Type"],...all.map(w=>[w._d,sn(w._k),w.code,w.name,w.department,w.jd,w.type])]);
+  add("Details",[["Date","Source","Code","Name","Department","JD","Type","Status"],...all.map(w=>[w._d,sn(w._k),w.code,w.name,w.department,w.jd,w.type,w.status])]);
   add("Daily",[["Date","Normal","Saturday","Total"],...dates.map((d,i)=>[d,cN[i],cS[i],cN[i]+cS[i]])]);
-  add("Departments",[["Department","Entries","Normal","Saturday"],...dE.map(([d,c])=>{const n=all.filter(w=>w.department===d&&w._k==="n").length;return[d,c,n,c-n]})]);
+  add("Departments",[["Department","Entries","Normal","Saturday","Approved","Rejected"],...dE.map(([d,c])=>{const n=all.filter(w=>w.department===d&&w._k==="n").length;return[d,c,n,c-n,all.filter(w=>w.department===d&&w.status==="APPROVED").length,all.filter(w=>w.department===d&&w.status==="REJECTED").length]})]);
   add("Workers",[["Name","Department","Overtime days","Normal days","Saturday days"],...plist.map(p=>[p.name,p.dept,p.days.size,p.dn.size,p.ds.size])]);
   XLSX.writeFile(wb,`Rubyred_Overtime_Analysis_${ovState.from}_${ovState.to}.xlsx`);
 }
@@ -507,7 +540,7 @@ function boxHTML(p){return`
 <div class="grid">
  <div class="card panel c6"><h3 data-i18n="cDept">${t("cDept")}</h3><div class="chart"><canvas id="${p}C1"></canvas></div></div>
  <div class="card panel c6"><h3 data-i18n="cType">${t("cType")}</h3><div class="chart"><canvas id="${p}C2"></canvas></div></div>
- <div class="card panel c12"><h3 data-i18n="list">${t("list")}</h3><div class="tw"><table><thead><tr><th data-i18n="tableCode">${t("tableCode")}</th><th data-i18n="tableName">${t("tableName")}</th><th data-i18n="tableDept">${t("tableDept")}</th><th data-i18n="tableJd">${t("tableJd")}</th><th data-i18n="tableType">${t("tableType")}</th></tr></thead><tbody id="${p}T"></tbody></table></div><div class="msg" id="${p}M"></div></div>
+ <div class="card panel c12"><h3 data-i18n="list">${t("list")}</h3><div class="tw"><table><thead><tr><th data-i18n="tableCode">${t("tableCode")}</th><th data-i18n="tableName">${t("tableName")}</th><th data-i18n="tableDept">${t("tableDept")}</th><th data-i18n="tableJd">${t("tableJd")}</th><th data-i18n="tableType">${t("tableType")}</th><th data-i18n="tableStatus">${t("tableStatus")}</th></tr></thead><tbody id="${p}T"></tbody></table></div><div class="msg" id="${p}M"></div></div>
 </div>`}
 $("dBox").innerHTML=boxHTML("d");$("sBox").innerHTML=boxHTML("s");
 function fillDepts(p){
@@ -520,7 +553,7 @@ function renderDetail(p,msgKey,isErr){
   const r=rows(p),de=tally(r,"department"),ty=tally(r,"type");
   setNum(p+"K1",r.length);setNum(p+"K2",de.length);setNum(p+"K3",ty.length);$(p+"K4").textContent=de[0]?`${de[0][0]} (${de[0][1]})`:"—";
   doughnut(p+"C1",de.slice(0,8));doughnut(p+"C2",ty.slice(0,8));
-  $(p+"T").innerHTML=r.map(w=>`<tr><td class="n">${esc(w.code)}</td><td>${esc(w.name)}</td><td>${esc(w.department)}</td><td>${esc(w.jd)}</td><td>${esc(w.type)}</td></tr>`).join("");
+  $(p+"T").innerHTML=r.map(w=>`<tr><td class="n">${esc(w.code)}</td><td>${esc(w.name)}</td><td>${esc(w.department)}</td><td>${esc(w.jd)}</td><td>${esc(w.type)}</td><td>${esc(w.status)}</td></tr>`).join("");
   const m=$(p+"M");m.textContent=!r.length?t(msgKey||"noData"):"";m.className="msg"+(isErr?" err":"");
 }
 let dTok=0,sTok=0,sSrc=null;
@@ -549,8 +582,8 @@ function buildSats(sel){
 }
 function dl(p,name,date){
   const r=rows(p);if(!r.length)return;
-  const ws=XLSX.utils.aoa_to_sheet([[t("tableCode"),t("tableName"),t("tableDept"),t("tableJd"),t("tableType")],...r.map(w=>[w.code,w.name,w.department,w.jd,w.type])]);
-  ws["!cols"]=[{wch:12},{wch:24},{wch:18},{wch:24},{wch:14}];
+  const ws=XLSX.utils.aoa_to_sheet([[t("tableCode"),t("tableName"),t("tableDept"),t("tableJd"),t("tableType"),t("tableStatus")],...r.map(w=>[w.code,w.name,w.department,w.jd,w.type,w.status])]);
+  ws["!cols"]=[{wch:12},{wch:24},{wch:18},{wch:24},{wch:14},{wch:14}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,name.slice(0,30));XLSX.writeFile(wb,`Rubyred_${name.replace(/ /g,"_")}_${date}.xlsx`);
 }
 
