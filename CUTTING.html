@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">PRODUCTION - Overtime Management</title>
+    <title id="pageTitle">CUTTING - Overtime Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --accent: #2e7d32; --accent2: #43a047; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff;
@@ -165,7 +165,7 @@
 <div id="loginOverlay">
     <div id="loginBox">
         <div class="lock-icon">&#128272;</div>
-        <h2>PRODUCTION</h2>
+        <h2>CUTTING</h2>
         <div class="brand-sub" data-i18n="loginBrandSub">OVERTIME ACCESS</div>
         <div class="field-group">
             <label data-i18n="usernameLabel">Username</label>
@@ -196,10 +196,10 @@
     </div>
     <div class="dashboard">
         <div class="stat-box"><span data-i18n="dashRegisteredToday">Registered today:</span> <span id="countDash">0</span></div>
-        <div class="stat-box">PRODUCTION <span data-i18n="dashSystemBadge">SYSTEM</span></div>
+        <div class="stat-box">CUTTING <span data-i18n="dashSystemBadge">SYSTEM</span></div>
     </div>
-    <h2>PRODUCTION</h2>
-    <div class="brand-sub" id="brandSub">PRODUCTION OVERTIME</div>
+    <h2>CUTTING</h2>
+    <div class="brand-sub" id="brandSub">CUTTING OVERTIME</div>
     <div class="tab-bar" id="modeBar" style="margin-bottom:10px;">
         <button class="tab-btn mode-btn active" id="modeNormalBtn"   onclick="switchMode('normal')"   data-i18n="modeNormal">Normal Registration</button>
         <button class="tab-btn mode-btn"        id="modeSaturdayBtn" onclick="switchMode('saturday')" data-i18n="modeSaturday">Saturday Overtime</button>
@@ -547,8 +547,8 @@ function checkTimeGate() {
 setInterval(checkTimeGate, 1000);
 
 // ===== LOGIN =====
-var VALID_USER = "PRODUCTION";
-var VALID_PASS = "PRO112233";
+var VALID_USER = "CUTTING";
+var VALID_PASS = "CUT112233";
 
 function doLogin() {
     var user  = document.getElementById('loginUser').value.trim();
