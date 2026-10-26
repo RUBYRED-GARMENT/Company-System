@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRINTING - Overtime Management</title>
+    <title id="pageTitle">PRODUCTION - Overtime Management</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --accent: #2e7d32; --accent2: #43a047; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff; }
+        :root { --accent: #2e7d32; --accent2: #43a047; --bg: #0d0d0d; --card: #1a1a1a; --text: #fff;
+                --amber: #E6B528; --amber-light: #F3D06B; --emerald: #1FBE72; --ruby: #C0002A; }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding: 15px; transition: opacity .2s ease; }
+        body.lang-switching { opacity: .4; }
         #closedScreen { display: none; position: fixed; inset: 0; background: var(--bg); justify-content: center; align-items: center; flex-direction: column; z-index: 8888; text-align: center; padding: 20px; }
         #closedScreen.show { display: flex; }
         .closed-icon { font-size: 64px; margin-bottom: 20px; animation: pulse 2s ease-in-out infinite; }
@@ -28,14 +30,17 @@
         h2 { color: var(--accent); text-align: center; margin: 0; letter-spacing: 2px; }
         .brand-sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 25px; }
         .field-group { margin-bottom: 15px; text-align: right; }
+        html[dir="ltr"] .field-group { text-align: left; }
         label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--accent); font-weight: bold; }
-        input { width: 100%; padding: 12px; background: #262626; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 18px; outline: none; text-align: center; }
+        input, textarea { width: 100%; padding: 12px; background: #262626; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 18px; outline: none; text-align: center; font-family: inherit; }
         #nameInp    { font-size: 13px; text-align: left; direction: ltr; }
         #deptInp    { font-size: 13px; text-align: center; }
-        #addressInp { font-size: 13px; text-align: right; direction: rtl; }
+        #jdInp      { font-size: 13px; text-align: center; }
+        #addressInp { font-size: 13px; }
         .safe-hours   { color: #00ff88 !important; font-weight: bold; }
         .danger-hours { color: #ff3333 !important; font-weight: bold; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; font-family: inherit; }
+        .btn:disabled { opacity: .6; cursor: not-allowed; }
         #checkBtn  { background: var(--accent); color: white; }
         #submitBtn { background: #28a745; color: white; display: none; }
         #backBtn   { background: #444; color: white; display: none; margin-top: 5px; }
@@ -80,7 +85,6 @@
         .badge-ok   { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid #00ff8866; }
         .badge-skip { background: rgba(255,51,51,0.15);  color: #ff6666; border: 1px solid #ff444466; }
         #submitAllBtn { background: linear-gradient(135deg,#28a745,#1e7e34); color: white; font-size: 16px; letter-spacing: 1px; display: none; }
-        #submitAllBtn:disabled { opacity: 0.6; cursor: not-allowed; }
         #submitAllBtn .btn-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-left: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         #bulkResetBtn   { display: none; background: #333; color: #aaa; }
@@ -98,78 +102,135 @@
         .lock-icon { text-align: center; font-size: 38px; margin-bottom: 10px; }
         @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
         .shake { animation: shake 0.4s ease; }
+
+        /* ── Language toggle (3-way) ── */
+        .lang-toggle { display:flex; border:1px solid #333; border-radius:100px; overflow:hidden; position:relative; background:rgba(255,255,255,0.02); margin-bottom:16px; }
+        .lang-toggle-highlight { position:absolute; top:2px; bottom:2px; left:2px; width:calc(33.333% - 2px); background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:100px; transition:transform .3s ease; }
+        .lang-btn { position:relative; z-index:1; flex:1; background:transparent; border:none; cursor:pointer; padding:7px 4px; font-size:.72rem; font-weight:700; letter-spacing:.04em; color:#888; font-family:inherit; transition:color .3s ease; }
+        .lang-btn.active { color:#fff; }
+
+        /* ── Approval button + reason modal ── */
+        #approvalBtn { background: #6a1b9a; color: #fff; font-size: 13px; margin-top: 20px; }
+        #approvalMsg { margin-top: 10px; text-align: center; font-size: 12px; display: none; padding: 9px; border-radius: 8px; font-weight: bold; }
+        .modal-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.75); display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; pointer-events:none; transition: opacity .25s ease; }
+        .modal-overlay.open { opacity:1; pointer-events:all; }
+        .modal-box { background: var(--card); border:1px solid #333; border-top:4px solid #6a1b9a; border-radius:14px; width:100%; max-width:420px; padding: 1.8rem; transform: translateY(20px) scale(.97); transition: transform .3s ease; }
+        .modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+        .modal-title { font-size: 1.1rem; font-weight: bold; color:#fff; margin-bottom:4px; }
+        .modal-sub { font-size: .78rem; color:#999; margin-bottom:18px; line-height:1.5; }
+        #reasonInp { min-height: 90px; resize: vertical; text-align: left; direction: ltr; font-size: 14px; }
+        html[dir="rtl"] #reasonInp { text-align: right; direction: rtl; }
+        .modal-actions { display:flex; gap:10px; margin-top:14px; }
+        .modal-actions .btn { margin-top:0; }
+        #reasonCancelBtn { background:#333; color:#aaa; }
+        #reasonSendBtn { background:#6a1b9a; color:#fff; }
+        #reasonErr { margin-top:10px; font-size:12px; color:#ff6666; display:none; }
+        #reasonServerErr { margin-top:10px; font-size:12px; color:#ff6666; display:none; word-break:break-word; line-height:1.5; }
+
+        /* ── History section ── */
+        .history-wrap { margin-top: 24px; border-top: 1px solid #262626; padding-top: 16px; }
+        .history-title { font-size: 12px; letter-spacing: 1.5px; color: var(--accent); font-weight: bold; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+        .history-title::after { content:''; flex:1; height:1px; background:#262626; }
+        .history-list { display:flex; flex-direction:column; gap:8px; max-height: 320px; overflow-y:auto; }
+        .history-list::-webkit-scrollbar { width:5px; }
+        .history-list::-webkit-scrollbar-thumb { background:#444; border-radius:5px; }
+        .history-item { background:#161616; border:1px solid #262626; border-radius:8px; padding:10px 12px; font-size:12px; }
+        .history-row1 { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
+        .history-date { color:#ccc; font-weight:bold; }
+        .history-count { color:#888; }
+        .history-reason { color:#777; font-size:11px; margin-bottom:6px; line-height:1.4; max-height: 2.8em; overflow:hidden; }
+        .history-statuses { display:flex; gap:8px; flex-wrap:wrap; }
+        .status-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:bold; letter-spacing:.03em; border:1px solid transparent; }
+        .status-badge .dot { width:6px; height:6px; border-radius:50%; }
+        .status-badge.pending  { background:rgba(230,181,40,.12); border-color:rgba(230,181,40,.4); color:var(--amber-light); }
+        .status-badge.pending .dot { background:var(--amber-light); }
+        .status-badge.approved { background:rgba(31,190,114,.12); border-color:rgba(31,190,114,.4); color:#6EFFB0; }
+        .status-badge.approved .dot { background:var(--emerald); }
+        .status-badge.rejected { background:rgba(192,0,42,.12); border-color:rgba(192,0,42,.4); color:#FF8A9A; }
+        .status-badge.rejected .dot { background:var(--ruby); }
+        .status-badge.none { background:rgba(255,255,255,.05); border-color:#333; color:#666; }
+        .status-badge.none .dot { background:#555; }
+        .history-empty { text-align:center; padding: 18px; color:#666; font-size:12px; }
     </style>
 </head>
 <body>
 
 <div id="closedScreen">
     <div class="closed-icon">&#128274;</div>
-    <div class="closed-title">CLOSED</div>
-    <div class="closed-sub">THANK YOU</div>
+    <div class="closed-title" data-i18n="closedTitle">CLOSED</div>
+    <div class="closed-sub" data-i18n="closedSub">THANK YOU</div>
     <div class="closed-next" id="closedNextMsg"></div>
 </div>
 
 <div id="loginOverlay">
     <div id="loginBox">
         <div class="lock-icon">&#128272;</div>
-        <h2>PRINTING</h2>
-        <div class="brand-sub">OVERTIME ACCESS</div>
+        <h2>PRODUCTION</h2>
+        <div class="brand-sub" data-i18n="loginBrandSub">OVERTIME ACCESS</div>
         <div class="field-group">
-            <label>Username</label>
-            <input class="login-input" type="text" id="loginUser" placeholder="Enter username" autocomplete="off"
+            <label data-i18n="usernameLabel">Username</label>
+            <input class="login-input" type="text" id="loginUser" data-i18n-ph="usernamePlaceholder" placeholder="Enter username" autocomplete="off"
                    onkeydown="if(event.key==='Enter') document.getElementById('loginPass').focus()">
         </div>
         <div class="field-group" style="margin-bottom:0;">
-            <label>Password</label>
-            <input class="login-input" type="password" id="loginPass" placeholder="Enter password"
+            <label data-i18n="passwordLabel">Password</label>
+            <input class="login-input" type="password" id="loginPass" data-i18n-ph="passwordPlaceholder" placeholder="Enter password"
                    onkeydown="if(event.key==='Enter') doLogin()">
         </div>
-        <button id="loginBtn" onclick="doLogin()">LOGIN</button>
-        <div id="loginErr">&#1582;&#1591;&#1571; &#1601;&#1610; &#1575;&#1587;&#1605; &#1575;&#1604;&#1605;&#1587;&#1578;&#1582;&#1583;&#1605; &#1571;&#1608; &#1603;&#1604;&#1605;&#1577; &#1575;&#1604;&#1605;&#1585;&#1608;&#1585;</div>
+        <button id="loginBtn" onclick="doLogin()" data-i18n="loginBtn">LOGIN</button>
+        <div id="loginErr" data-i18n="loginErr">Incorrect username or password</div>
     </div>
 </div>
 
 <div class="container" id="mainApp" style="display:none;">
+    <div class="lang-toggle">
+        <div class="lang-toggle-highlight" id="langHighlight"></div>
+        <button class="lang-btn active" id="btnLangEn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="btnLangAr" onclick="setLang('ar')">AR</button>
+        <button class="lang-btn" id="btnLangTr" onclick="setLang('tr')">TR</button>
+    </div>
+
     <div id="countdownBanner">
-        <div class="cd-label" id="cdLabel">&#1610;&#1602;&#1601;&#1604; &#1576;&#1593;&#1583;</div>
+        <div class="cd-label" id="cdLabel" data-i18n="cdLabelClose">Closes in</div>
         <div class="cd-time cd-close" id="cdTime">00:00:00</div>
     </div>
     <div class="dashboard">
-        <div class="stat-box">&#1575;&#1604;&#1605;&#1587;&#1580;&#1604;&#1610;&#1606; &#1575;&#1604;&#1610;&#1608;&#1605;: <span id="countDash">0</span></div>
-        <div class="stat-box">PRINTING <span>SYSTEM</span></div>
+        <div class="stat-box"><span data-i18n="dashRegisteredToday">Registered today:</span> <span id="countDash">0</span></div>
+        <div class="stat-box">PRODUCTION <span data-i18n="dashSystemBadge">SYSTEM</span></div>
     </div>
-    <h2>PRINTING</h2>
-    <div class="brand-sub" id="brandSub">PRINTING OVERTIME</div>
+    <h2>PRODUCTION</h2>
+    <div class="brand-sub" id="brandSub">PRODUCTION OVERTIME</div>
     <div class="tab-bar" id="modeBar" style="margin-bottom:10px;">
-        <button class="tab-btn mode-btn active" id="modeNormalBtn"   onclick="switchMode('normal')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1593;&#1575;&#1583;&#1610;</button>
-        <button class="tab-btn mode-btn"        id="modeSaturdayBtn" onclick="switchMode('saturday')">Saturday Overtime</button>
-        <button class="tab-btn mode-btn"        id="modeHolidayBtn"  onclick="switchMode('holiday')">Holiday Overtime</button>
+        <button class="tab-btn mode-btn active" id="modeNormalBtn"   onclick="switchMode('normal')"   data-i18n="modeNormal">Normal Registration</button>
+        <button class="tab-btn mode-btn"        id="modeSaturdayBtn" onclick="switchMode('saturday')" data-i18n="modeSaturday">Saturday Overtime</button>
+        <button class="tab-btn mode-btn"        id="modeHolidayBtn"  onclick="switchMode('holiday')"  data-i18n="modeHoliday">Holiday Overtime</button>
     </div>
     <div class="tab-bar" id="viewBar">
-        <button class="tab-btn active" id="viewSingleBtn" onclick="switchView('single')">&#1578;&#1587;&#1580;&#1610;&#1604; &#1601;&#1585;&#1583;&#1610;</button>
-        <button class="tab-btn"        id="viewBulkBtn"   onclick="switchView('bulk')">&#1585;&#1601;&#1593; Excel &#1580;&#1605;&#1575;&#1593;&#1610;</button>
+        <button class="tab-btn active" id="viewSingleBtn" onclick="switchView('single')" data-i18n="viewSingle">Single Entry</button>
+        <button class="tab-btn"        id="viewBulkBtn"   onclick="switchView('bulk')"   data-i18n="viewBulk">Bulk Excel Upload</button>
     </div>
 
     <div id="singleSection">
         <div id="searchSection">
             <div class="field-group">
-                <label>&#1603;&#1608;&#1583; &#1575;&#1604;&#1593;&#1575;&#1605;&#1604;:</label>
-                <input type="text" id="codeInp" placeholder="&#1575;&#1583;&#1582;&#1604; &#1575;&#1604;&#1603;&#1608;&#1583;..." autofocus
+                <label data-i18n="codeLabel">Employee Code:</label>
+                <input type="text" id="codeInp" data-i18n-ph="codePlaceholder" placeholder="Enter code..." autofocus
                        oninput="this.value=this.value.trim()"
                        onkeydown="if(event.key==='Enter') lookupEmployee()">
             </div>
-            <button class="btn" id="checkBtn" onclick="lookupEmployee()">&#1601;&#1581;&#1589; (Check)</button>
+            <button class="btn" id="checkBtn" onclick="lookupEmployee()" data-i18n="checkBtn">Check</button>
         </div>
         <div id="detailsSection" style="display:none;">
-            <div class="field-group"><label>&#1575;&#1604;&#1575;&#1587;&#1605;:</label><input type="text" id="nameInp" disabled></div>
-            <div class="field-group"><label>&#1575;&#1604;&#1602;&#1587;&#1605;:</label><input type="text" id="deptInp" disabled></div>
-            <div class="field-group"><label>&#1575;&#1604;&#1593;&#1606;&#1608;&#1575;&#1606;:</label><input type="text" id="addressInp" disabled></div>
+            <div class="field-group"><label data-i18n="nameLabel">Name:</label><input type="text" id="nameInp" disabled></div>
+            <div class="field-group"><label data-i18n="deptLabel">Department:</label><input type="text" id="deptInp" disabled></div>
+            <div class="field-group"><label data-i18n="jdLabel">Job Description:</label><input type="text" id="jdInp" disabled></div>
+            <div class="field-group"><label data-i18n="addressLabel">Address:</label><input type="text" id="addressInp" disabled></div>
             <div class="field-group">
-                <label>&#1573;&#1580;&#1605;&#1575;&#1604;&#1610; &#1575;&#1604;&#1587;&#1575;&#1593;&#1575;&#1578;:</label>
+                <label data-i18n="hoursLabel">Total Hours:</label>
                 <input type="text" id="hoursInp" disabled style="background:transparent;border:1px solid #444;">
             </div>
-            <button class="btn" id="submitBtn" onclick="submitData()">&#1578;&#1571;&#1603;&#1610;&#1583; &#1608;&#1573;&#1585;&#1587;&#1575;&#1604; (Submit)</button>
-            <button class="btn" id="backBtn"   onclick="resetUI()">&#1585;&#1580;&#1608;&#1593; (Back)</button>
+            <button class="btn" id="submitBtn" onclick="submitData()" data-i18n="submitBtn">Submit</button>
+            <button class="btn" id="backBtn"   onclick="resetUI()" data-i18n="backBtn">Back</button>
         </div>
         <div id="msg"></div>
     </div>
@@ -181,42 +242,272 @@
              ondrop="handleDrop(event)">
             <input type="file" accept=".xlsx,.xls,.csv" onchange="handleFileInput(this)">
             <div class="upload-icon">&#128202;</div>
-            <div class="upload-label"><strong>&#1575;&#1582;&#1578;&#1585; &#1605;&#1604;&#1601; Excel</strong> &#1571;&#1608; &#1575;&#1587;&#1581;&#1576;&#1607; &#1607;&#1606;&#1575;</div>
-            <div class="upload-hint">xlsx / xls / csv &#8212; &#1575;&#1604;&#1593;&#1605;&#1608;&#1583; &#1575;&#1604;&#1571;&#1608;&#1604; &#1610;&#1581;&#1578;&#1608;&#1610; &#1571;&#1603;&#1608;&#1575;&#1583; &#1575;&#1604;&#1605;&#1608;&#1592;&#1601;&#1610;&#1606;</div>
+            <div class="upload-label"><strong data-i18n="uploadTitle">Choose Excel file</strong> <span data-i18n="uploadOr">or drop it here</span></div>
+            <div class="upload-hint" data-i18n="uploadHint">xlsx / xls / csv &#8212; first column must contain employee codes</div>
         </div>
         <div id="bulkProgress">
-            <div class="progress-text" id="progressText">&#1580;&#1575;&#1585;&#1610; &#1575;&#1604;&#1605;&#1593;&#1575;&#1604;&#1580;&#1577;...</div>
+            <div class="progress-text" id="progressText" data-i18n="progressDefault">Processing...</div>
             <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
         </div>
         <div id="bulkResultsWrap">
             <div class="bulk-stats">
-                <div class="bulk-stat eligible"><span class="stat-val" id="statEligible">0</span>&#1605;&#1587;&#1605;&#1608;&#1581; &#1604;&#1607;&#1605;</div>
-                <div class="bulk-stat blocked" ><span class="stat-val" id="statBlocked">0</span>&#1578;&#1580;&#1575;&#1608;&#1586;&#1608;&#1575; &#1575;&#1604;&#1581;&#1583;</div>
-                <div class="bulk-stat unknown" ><span class="stat-val" id="statUnknown">0</span>&#1594;&#1610;&#1585; &#1605;&#1608;&#1580;&#1608;&#1583;</div>
+                <div class="bulk-stat eligible"><span class="stat-val" id="statEligible">0</span><span data-i18n="statEligible">Eligible</span></div>
+                <div class="bulk-stat blocked" ><span class="stat-val" id="statBlocked">0</span><span data-i18n="statBlocked">Over Limit</span></div>
+                <div class="bulk-stat unknown" ><span class="stat-val" id="statUnknown">0</span><span data-i18n="statUnknown">Not Found</span></div>
             </div>
             <div class="results-table-wrap">
                 <table class="bulk-table">
-                    <thead><tr><th>&#1575;&#1604;&#1603;&#1608;&#1583;</th><th>&#1575;&#1604;&#1575;&#1587;&#1605;</th><th>&#1575;&#1604;&#1587;&#1575;&#1593;&#1575;&#1578;</th><th>&#1575;&#1604;&#1581;&#1575;&#1604;&#1577;</th></tr></thead>
+                    <thead><tr><th data-i18n="thCode">Code</th><th data-i18n="thName">Name</th><th data-i18n="thHours">Hours</th><th data-i18n="thStatus">Status</th></tr></thead>
                     <tbody id="bulkTableBody"></tbody>
                 </table>
             </div>
             <button class="btn" id="submitAllBtn" onclick="submitAllEligible()">
-                <span id="submitAllLabel">&#1578;&#1587;&#1580;&#1610;&#1604; &#1575;&#1604;&#1603;&#1604; &#1575;&#1604;&#1605;&#1587;&#1605;&#1608;&#1581; &#1604;&#1607;&#1605;</span>
+                <span id="submitAllLabel"></span>
                 <span class="btn-spinner" id="submitAllSpinner"></span>
             </button>
-            <button class="btn" id="downloadXlsBtn" onclick="downloadBulkExcel()">&#1578;&#1581;&#1605;&#1610;&#1604; &#1575;&#1604;&#1606;&#1578;&#1575;&#1574;&#1580; Excel</button>
-            <button class="btn" id="bulkResetBtn"   onclick="resetBulk()">&#1585;&#1601;&#1593; &#1605;&#1604;&#1601; &#1580;&#1583;&#1610;&#1583;</button>
+            <button class="btn" id="downloadXlsBtn" onclick="downloadBulkExcel()" data-i18n="downloadXlsBtn">Download Results Excel</button>
+            <button class="btn" id="bulkResetBtn"   onclick="resetBulk()" data-i18n="bulkResetBtn">Upload New File</button>
             <div id="bulkMsg"></div>
         </div>
     </div>
 
-    <button class="btn" style="background:transparent;border:1px solid #333;color:#aaa;font-size:11px;margin-top:20px;" onclick="downloadHistoryExcel()">&#1578;&#1581;&#1605;&#1610;&#1604; &#1587;&#1580;&#1604; &#1575;&#1604;&#1610;&#1608;&#1605; Excel</button>
+    <!-- زرار إرسال الأسماء لمدير القسم للموافقة — بيفتح مودال السبب الإجباري -->
+    <button class="btn" id="approvalBtn" onclick="openReasonModal()" data-i18n="approvalBtn">Send Names to Manager for Approval</button>
+    <div id="approvalMsg"></div>
+
+    <button class="btn" style="background:transparent;border:1px solid #333;color:#aaa;font-size:11px;margin-top:20px;" onclick="downloadHistoryExcel()" data-i18n="downloadHistoryBtn">Download Today's Log (Excel)</button>
+
+    <!-- History section -->
+    <div class="history-wrap">
+        <div class="history-title" data-i18n="historyTitle">Overtime Approval History</div>
+        <div class="history-list" id="historyList">
+            <div class="history-empty" data-i18n="historyEmpty">No approval requests sent yet</div>
+        </div>
+    </div>
+</div>
+
+<!-- Reason modal -->
+<div class="modal-overlay" id="reasonModal" onclick="handleReasonOverlayClick(event)">
+    <div class="modal-box">
+        <div class="modal-title" data-i18n="reasonModalTitle">Overtime Reason</div>
+        <div class="modal-sub" data-i18n="reasonModalSubtitle">Please write the reason for this overtime request before sending it to the manager</div>
+        <div class="field-group" style="margin-bottom:0;">
+            <label data-i18n="reasonLabel">Reason</label>
+            <textarea id="reasonInp" data-i18n-ph="reasonPlaceholder" placeholder="e.g. Urgent shipment deadline for order #..."></textarea>
+        </div>
+        <div id="reasonErr" data-i18n="reasonRequiredErr">Please write a reason before sending</div>
+        <div id="reasonServerErr"></div>
+        <div class="modal-actions">
+            <button class="btn" id="reasonCancelBtn" onclick="closeReasonModal()" data-i18n="cancelBtn">Cancel</button>
+            <button class="btn" id="reasonSendBtn" onclick="confirmSendApproval()" data-i18n="sendBtn">Send</button>
+        </div>
+    </div>
 </div>
 
 <script>
+// ===== TRANSLATIONS =====
+var translations = {
+  en: {
+    pageTitle: "PRODUCTION - Overtime Management",
+    closedTitle: "CLOSED", closedSub: "THANK YOU",
+    closedOpensIn: "Opens in", closedOpensNextSession: "Opens next session in",
+    loginBrandSub: "OVERTIME ACCESS",
+    usernameLabel: "Username", passwordLabel: "Password",
+    usernamePlaceholder: "Enter username", passwordPlaceholder: "Enter password",
+    loginBtn: "LOGIN", loginErr: "Incorrect username or password",
+    cdLabelClose: "Closes in",
+    dashRegisteredToday: "Registered today:", dashSystemBadge: "SYSTEM",
+    brandNormal: "PRODUCTION OVERTIME", brandSaturday: "SATURDAY OVERTIME", brandHoliday: "HOLIDAY OVERTIME",
+    modeNormal: "Normal Registration", modeSaturday: "Saturday Overtime", modeHoliday: "Holiday Overtime",
+    viewSingle: "Single Entry", viewBulk: "Bulk Excel Upload",
+    codeLabel: "Employee Code:", codePlaceholder: "Enter code...",
+    checkBtn: "Check",
+    nameLabel: "Name:", deptLabel: "Department:", jdLabel: "Job Description:", addressLabel: "Address:", hoursLabel: "Total Hours:",
+    submitBtn: "Submit", backBtn: "Back",
+    uploadTitle: "Choose Excel file", uploadOr: "or drop it here",
+    uploadHint: "xlsx / xls / csv — first column must contain employee codes",
+    progressDefault: "Processing...",
+    statEligible: "Eligible", statBlocked: "Over Limit", statUnknown: "Not Found",
+    thCode: "Code", thName: "Name", thHours: "Hours", thStatus: "Status",
+    badgeOk: "Eligible", badgeBlocked: "Over Limit", badgeRegistered: "Registered", badgeUnknown: "Not Found",
+    submitAllLabelTpl: "Submit {n} eligible employee(s)",
+    downloadXlsBtn: "Download Results Excel", bulkResetBtn: "Upload New File",
+    approvalBtn: "Send Names to Department Manager for Approval",
+    downloadHistoryBtn: "Download Today's Log (Excel)",
+    historyTitle: "Overtime Approval History", historyEmpty: "No approval requests sent yet",
+    historyManagerLabel: "Dept. Manager", historyFactoryLabel: "Factory Manager",
+    statusPending: "Pending", statusApproved: "Approved", statusRejected: "Rejected", statusNotYet: "Not yet",
+    reasonModalTitle: "Overtime Reason",
+    reasonModalSubtitle: "Please write the reason for this overtime request before sending it to the department manager",
+    reasonLabel: "Reason", reasonPlaceholder: "e.g. Urgent shipment deadline for order #...",
+    reasonRequiredErr: "Please write a reason before sending",
+    sendBtn: "Send", cancelBtn: "Cancel", sendingBtn: "Sending...",
+    errEnterCode: "Please enter the code", searching: "Searching...",
+    alreadyRegistered: "This employee is already registered!", codeNotFound: "Code not found",
+    timeoutErr: "Request timed out, please try again", connErr: "Connection error",
+    maxLimitErr: "Warning: exceeded the maximum limit (11:00)",
+    submitSuccess: "Submitted successfully!", submitFailed: "Failed to save",
+    bulkReadingFile: "Reading file...", bulkNoCodes: "No codes were found in the file",
+    bulkFileErr: "Error reading the file", bulkNoneEligible: "No eligible employees in this file",
+    bulkSendingProgressTpl: "Sending... {done} / {total}",
+    bulkAllSentTpl: "{n} employee(s) submitted successfully",
+    bulkPartialTpl: "Done: {sent}  |  Failed: {failed}",
+    bulkNoneToDownload: "No eligible employees to download",
+    downloadingHistory: "Downloading...", downloadFailed: "Download failed",
+    approvalSentOkTpl: "{n} name(s) sent to the department manager for approval",
+    approvalEmpty: "No new names to send", approvalError: "An error occurred while sending",
+    approvalConnErr: "Failed to connect to the server",
+    locale: "en-US"
+  },
+  ar: {
+    pageTitle: "PRODUCTION - إدارة الأوفرتايم",
+    closedTitle: "مُغلق", closedSub: "شكراً لكم",
+    closedOpensIn: "يفتح بعد", closedOpensNextSession: "يفتح الجلسة القادمة بعد",
+    loginBrandSub: "دخول نظام الأوفرتايم",
+    usernameLabel: "اسم المستخدم", passwordLabel: "كلمة المرور",
+    usernamePlaceholder: "ادخل اسم المستخدم", passwordPlaceholder: "ادخل كلمة المرور",
+    loginBtn: "دخول", loginErr: "خطأ في اسم المستخدم أو كلمة المرور",
+    cdLabelClose: "يُقفل بعد",
+    dashRegisteredToday: "المسجلين اليوم:", dashSystemBadge: "نظام",
+    brandNormal: "أوفرتايم عادي", brandSaturday: "أوفرتايم السبت", brandHoliday: "أوفرتايم عطلة",
+    modeNormal: "تسجيل عادي", modeSaturday: "أوفرتايم السبت", modeHoliday: "أوفرتايم عطلة",
+    viewSingle: "تسجيل فردي", viewBulk: "رفع Excel جماعي",
+    codeLabel: "كود العامل:", codePlaceholder: "ادخل الكود...",
+    checkBtn: "فحص",
+    nameLabel: "الاسم:", deptLabel: "القسم:", jdLabel: "الوظيفة:", addressLabel: "العنوان:", hoursLabel: "إجمالي الساعات:",
+    submitBtn: "تأكيد وإرسال", backBtn: "رجوع",
+    uploadTitle: "اختر ملف Excel", uploadOr: "أو اسحبه هنا",
+    uploadHint: "xlsx / xls / csv — العمود الأول يجب أن يحتوي أكواد الموظفين",
+    progressDefault: "جاري المعالجة...",
+    statEligible: "مسموح لهم", statBlocked: "تجاوزوا الحد", statUnknown: "غير موجود",
+    thCode: "الكود", thName: "الاسم", thHours: "الساعات", thStatus: "الحالة",
+    badgeOk: "مسموح", badgeBlocked: "تجاوز الحد", badgeRegistered: "مسجّل", badgeUnknown: "غير موجود",
+    submitAllLabelTpl: "تسجيل {n} موظف مسموح لهم",
+    downloadXlsBtn: "تحميل النتائج Excel", bulkResetBtn: "رفع ملف جديد",
+    approvalBtn: "إرسال الأسماء لمدير القسم للموافقة",
+    downloadHistoryBtn: "تحميل سجل اليوم Excel",
+    historyTitle: "سجل طلبات موافقة الأوفرتايم", historyEmpty: "لا توجد طلبات موافقة مُرسلة بعد",
+    historyManagerLabel: "مدير القسم", historyFactoryLabel: "مدير المصنع",
+    statusPending: "قيد الانتظار", statusApproved: "تمت الموافقة", statusRejected: "مرفوض", statusNotYet: "لسه",
+    reasonModalTitle: "سبب الأوفرتايم",
+    reasonModalSubtitle: "من فضلك اكتب سبب طلب الأوفرتايم ده قبل إرساله لمدير القسم",
+    reasonLabel: "السبب", reasonPlaceholder: "مثال: ميعاد تسليم شحنة عاجل لأوردر رقم...",
+    reasonRequiredErr: "من فضلك اكتب السبب قبل الإرسال",
+    sendBtn: "إرسال", cancelBtn: "إلغاء", sendingBtn: "جاري الإرسال...",
+    errEnterCode: "يرجى إدخال الكود", searching: "جاري البحث...",
+    alreadyRegistered: "الموظف مسجل بالفعل!", codeNotFound: "الكود غير موجود",
+    timeoutErr: "انتهت المهلة، حاول مرة أخرى", connErr: "خطأ في الاتصال",
+    maxLimitErr: "مرفوض: تخطى الحد الأقصى (11:00)",
+    submitSuccess: "تم التسجيل بنجاح!", submitFailed: "فشل الحفظ",
+    bulkReadingFile: "جاري قراءة الملف...", bulkNoCodes: "لم يتم العثور على أكواد في الملف",
+    bulkFileErr: "خطأ في قراءة الملف", bulkNoneEligible: "لا يوجد موظفون مسموح لهم في هذا الملف",
+    bulkSendingProgressTpl: "جاري الإرسال... {done} / {total}",
+    bulkAllSentTpl: "تم تسجيل {n} موظف بنجاح",
+    bulkPartialTpl: "تم: {sent}  |  فشل: {failed}",
+    bulkNoneToDownload: "لا يوجد موظفون مسموح لهم لتحميلهم",
+    downloadingHistory: "جاري التحميل...", downloadFailed: "فشل التحميل",
+    approvalSentOkTpl: "تم إرسال {n} اسم لمدير القسم للموافقة",
+    approvalEmpty: "لا يوجد أسماء جديدة لإرسالها", approvalError: "حدث خطأ أثناء الإرسال",
+    approvalConnErr: "فشل الاتصال بالسيرفر",
+    locale: "ar-EG"
+  },
+  tr: {
+    pageTitle: "PRODUCTION - Fazla Mesai Yönetimi",
+    closedTitle: "KAPALI", closedSub: "TEŞEKKÜRLER",
+    closedOpensIn: "Şu kadar sonra açılır", closedOpensNextSession: "Sonraki oturum şu kadar sonra açılır",
+    loginBrandSub: "FAZLA MESAİ GİRİŞİ",
+    usernameLabel: "Kullanıcı Adı", passwordLabel: "Şifre",
+    usernamePlaceholder: "Kullanıcı adını girin", passwordPlaceholder: "Şifreyi girin",
+    loginBtn: "GİRİŞ", loginErr: "Kullanıcı adı veya şifre hatalı",
+    cdLabelClose: "Şu kadar sonra kapanır",
+    dashRegisteredToday: "Bugün kaydedilen:", dashSystemBadge: "SİSTEM",
+    brandNormal: "NORMAL FAZLA MESAİ", brandSaturday: "CUMARTESİ FAZLA MESAİ", brandHoliday: "TATİL FAZLA MESAİ",
+    modeNormal: "Normal Kayıt", modeSaturday: "Cumartesi Mesaisi", modeHoliday: "Tatil Mesaisi",
+    viewSingle: "Tekli Kayıt", viewBulk: "Toplu Excel Yükleme",
+    codeLabel: "Çalışan Kodu:", codePlaceholder: "Kodu girin...",
+    checkBtn: "Kontrol Et",
+    nameLabel: "Ad:", deptLabel: "Departman:", jdLabel: "İş Tanımı:", addressLabel: "Adres:", hoursLabel: "Toplam Saat:",
+    submitBtn: "Onayla ve Gönder", backBtn: "Geri",
+    uploadTitle: "Excel dosyası seçin", uploadOr: "veya buraya sürükleyin",
+    uploadHint: "xlsx / xls / csv — ilk sütun çalışan kodlarını içermelidir",
+    progressDefault: "İşleniyor...",
+    statEligible: "Uygun", statBlocked: "Limit Aşıldı", statUnknown: "Bulunamadı",
+    thCode: "Kod", thName: "Ad", thHours: "Saat", thStatus: "Durum",
+    badgeOk: "Uygun", badgeBlocked: "Limit Aşıldı", badgeRegistered: "Kayıtlı", badgeUnknown: "Bulunamadı",
+    submitAllLabelTpl: "{n} uygun çalışanı kaydet",
+    downloadXlsBtn: "Sonuçları İndir (Excel)", bulkResetBtn: "Yeni Dosya Yükle",
+    approvalBtn: "İsimleri Bölüm Müdürüne Onaya Gönder",
+    downloadHistoryBtn: "Günlük Kaydı İndir (Excel)",
+    historyTitle: "Fazla Mesai Onay Geçmişi", historyEmpty: "Henüz gönderilmiş onay talebi yok",
+    historyManagerLabel: "Bölüm Müdürü", historyFactoryLabel: "Fabrika Müdürü",
+    statusPending: "Beklemede", statusApproved: "Onaylandı", statusRejected: "Reddedildi", statusNotYet: "Henüz değil",
+    reasonModalTitle: "Fazla Mesai Nedeni",
+    reasonModalSubtitle: "Bölüm müdürüne göndermeden önce lütfen bu fazla mesai talebinin nedenini yazın",
+    reasonLabel: "Neden", reasonPlaceholder: "örn: Sipariş #... için acil sevkiyat teslim tarihi",
+    reasonRequiredErr: "Göndermeden önce lütfen bir neden yazın",
+    sendBtn: "Gönder", cancelBtn: "İptal", sendingBtn: "Gönderiliyor...",
+    errEnterCode: "Lütfen kodu girin", searching: "Aranıyor...",
+    alreadyRegistered: "Bu çalışan zaten kayıtlı!", codeNotFound: "Kod bulunamadı",
+    timeoutErr: "İstek zaman aşımına uğradı, tekrar deneyin", connErr: "Bağlantı hatası",
+    maxLimitErr: "Uyarı: azami sınır aşıldı (11:00)",
+    submitSuccess: "Başarıyla kaydedildi!", submitFailed: "Kaydetme başarısız",
+    bulkReadingFile: "Dosya okunuyor...", bulkNoCodes: "Dosyada kod bulunamadı",
+    bulkFileErr: "Dosya okuma hatası", bulkNoneEligible: "Bu dosyada uygun çalışan yok",
+    bulkSendingProgressTpl: "Gönderiliyor... {done} / {total}",
+    bulkAllSentTpl: "{n} çalışan başarıyla kaydedildi",
+    bulkPartialTpl: "Tamamlanan: {sent}  |  Başarısız: {failed}",
+    bulkNoneToDownload: "İndirilecek uygun çalışan yok",
+    downloadingHistory: "İndiriliyor...", downloadFailed: "İndirme başarısız",
+    approvalSentOkTpl: "{n} isim bölüm müdürüne onay için gönderildi",
+    approvalEmpty: "Gönderilecek yeni isim yok", approvalError: "Gönderirken bir hata oluştu",
+    approvalConnErr: "Sunucuya bağlanılamadı",
+    locale: "tr-TR"
+  }
+};
+
+var currentLang = "en";
+function t(key) { return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key; }
+function tpl(key, vals) {
+  var s = t(key);
+  Object.keys(vals || {}).forEach(function(k){ s = s.replace('{' + k + '}', vals[k]); });
+  return s;
+}
+
+function setLang(lang, skipFade) {
+  if (lang === currentLang && !skipFade) return;
+  var apply = function() {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = (lang === "ar") ? "rtl" : "ltr";
+    document.getElementById('pageTitle').textContent = t('pageTitle');
+
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+      el.placeholder = t(el.getAttribute('data-i18n-ph'));
+    });
+
+    document.getElementById('btnLangEn').classList.toggle('active', lang === 'en');
+    document.getElementById('btnLangAr').classList.toggle('active', lang === 'ar');
+    document.getElementById('btnLangTr').classList.toggle('active', lang === 'tr');
+    var hi = document.getElementById('langHighlight');
+    var idx = lang === 'en' ? 0 : (lang === 'ar' ? 1 : 2);
+    hi.style.transform = 'translateX(' + (idx * 100) + '%)';
+
+    applyModeTheme(currentMode);
+    renderApprovalHistory(lastHistoryList);
+
+    try { localStorage.setItem('ot_lang', lang); } catch(e) {}
+  };
+  if (skipFade) { apply(); return; }
+  document.body.classList.add('lang-switching');
+  setTimeout(function(){ apply(); document.body.classList.remove('lang-switching'); }, 150);
+}
+
 // ===== TIME GATE =====
-var OPEN_H  = 7;
-var CLOSE_H = 17;
+var OPEN_H  = 0;
+var CLOSE_H = 23;
 var appUnlocked = false;
 
 function getNowSec() {
@@ -235,7 +526,6 @@ function checkTimeGate() {
         document.getElementById('closedScreen').classList.remove('show');
         if (!appUnlocked) document.getElementById('loginOverlay').style.display = 'flex';
         var rem = close - now;
-        document.getElementById('cdLabel').textContent = '\u064A\u0642\u0641\u0644 \u0628\u0639\u062F';
         document.getElementById('cdTime').className    = 'cd-time cd-close';
         document.getElementById('cdTime').textContent  = hms(rem);
         document.getElementById('countdownBanner').style.display = 'block';
@@ -247,19 +537,18 @@ function checkTimeGate() {
         closed.classList.add('show');
         var nextMsg = document.getElementById('closedNextMsg');
         if (now < open) {
-            nextMsg.innerHTML = '\u064A\u0641\u062A\u062D \u0628\u0639\u062F<span>' + hms(open - now) + '</span>';
+            nextMsg.innerHTML = t('closedOpensIn') + '<span>' + hms(open - now) + '</span>';
         } else {
             var tomorrow = (24*3600 - now) + open;
-            nextMsg.innerHTML = '\u064A\u0641\u062A\u062D \u0627\u0644\u062C\u0644\u0633\u0629 \u0627\u0644\u0642\u0627\u062F\u0645\u0629 \u0628\u0639\u062F<span>' + hms(tomorrow) + '</span>';
+            nextMsg.innerHTML = t('closedOpensNextSession') + '<span>' + hms(tomorrow) + '</span>';
         }
     }
 }
 setInterval(checkTimeGate, 1000);
-checkTimeGate();
 
 // ===== LOGIN =====
-var VALID_USER = "PRINTING";
-var VALID_PASS = "PRINT112233";
+var VALID_USER = "PRODUCTION";
+var VALID_PASS = "PRO112233";
 
 function doLogin() {
     var user  = document.getElementById('loginUser').value.trim();
@@ -273,7 +562,8 @@ function doLogin() {
         appUnlocked = true;
         currentMode = 'normal';
         applyModeTheme(currentMode);
-        Promise.all([updateDashboard(), preloadEmployees()]);
+        ensureModeData(currentMode);
+        startHistoryPolling();
         setTimeout(function(){ document.getElementById('codeInp').focus(); }, 100);
     } else {
         errEl.style.display = 'block';
@@ -284,18 +574,12 @@ function doLogin() {
 }
 
 // ===== API =====
-// رابط سكريبت التسجيل العادي (Overtime عادي)
-var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbxT0oQSOExGrA91uaqpi9VSw6uQElE74xSGqGru1RpXRD5yX1G5tURzEjy8hSeQuIf8sg/exec";
-// ضع هنا رابط سكريبت شيت "Saturday Overtime" لما تبعته
-var API_URL_SATURDAY = "https://script.google.com/macros/s/AKfycbz4KbVPxRDb3a5xlf3yisp_hMYddj2KKGseXApI9Z9CVKidks7QgQMznf_Arg_00LAZ/exec";
-// ضع هنا رابط سكريبت شيت "Holiday Overtime" لما تبعته
-var API_URL_HOLIDAY  = "https://script.google.com/macros/s/AKfycbwKqFQ6dsJOscgy5TtVKQNC0f7X584FvxdVbumjmYPt7uS9Io1s-ER4fAxbXHBjn-yo/exec";
+var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbxdez-ljtNjBhnVqRaxv6tNxJsHNq3I0pTH8TvajMFs0lbT3cymbhzX3vi4mmWzh40I/exec";
+var API_URL_SATURDAY = "https://script.google.com/macros/s/AKfycbxdez-ljtNjBhnVqRaxv6tNxJsHNq3I0pTH8TvajMFs0lbT3cymbhzX3vi4mmWzh40I/exec";
+var API_URL_HOLIDAY  = "https://script.google.com/macros/s/AKfycbxdez-ljtNjBhnVqRaxv6tNxJsHNq3I0pTH8TvajMFs0lbT3cymbhzX3vi4mmWzh40I/exec";
 
-// الوضع الحالي: normal | saturday | holiday
 var currentMode = 'normal';
-
 var MODE_COLORS = { normal: '#2e7d32', saturday: '#1565c0', holiday: '#6a1b9a' };
-var MODE_LABELS = { normal: 'PRINTING OVERTIME', saturday: 'SATURDAY OVERTIME', holiday: 'HOLIDAY OVERTIME' };
 
 function getApiUrl(mode) {
     if (mode === 'saturday') return API_URL_SATURDAY;
@@ -306,29 +590,109 @@ function getApiUrl(mode) {
 function applyModeTheme(mode) {
     document.documentElement.style.setProperty('--accent', MODE_COLORS[mode] || MODE_COLORS.normal);
     var bs = document.getElementById('brandSub');
-    if (bs) bs.textContent = MODE_LABELS[mode] || MODE_LABELS.normal;
+    var key = mode === 'saturday' ? 'brandSaturday' : (mode === 'holiday' ? 'brandHoliday' : 'brandNormal');
+    if (bs) bs.textContent = t(key);
 }
 
+// ===== LOCAL CACHE (سرعة البحث) =====
+// employeeCacheStore : كل موظفي الشيت الرئيسي (بيتحمّلوا مرة واحدة في طلب واحد)
+// registeredStore    : أكواد المسجلين النهارده (بتتحدّث كل 20 ثانية + محليًا عند كل تسجيل)
+// pendingStore       : أكواد سجّلناها إحنا لسه السيرفر ماأكدهاش (عشان التحديث الدوري مايمسحهاش بالغلط)
 var employeeCacheStore = { normal: {}, saturday: {}, holiday: {} };
 var cacheLoadedStore   = { normal: false, saturday: false, holiday: false };
+var registeredStore    = { normal: {}, saturday: {}, holiday: {} };
+var pendingStore       = { normal: {}, saturday: {}, holiday: {} };
+var preloadPromises    = { normal: null, saturday: null, holiday: null };
+var PENDING_TTL_MS     = 60000;
 
-async function preloadEmployees() {
-    var mode = currentMode;
-    if (cacheLoadedStore[mode]) return;
+async function preloadEmployees(mode, force) {
+    mode = mode || currentMode;
+    if (!force && cacheLoadedStore[mode]) return;
+    if (preloadPromises[mode]) return preloadPromises[mode];
+    preloadPromises[mode] = (async function() {
+        try {
+            var ctrl = new AbortController();
+            var timer = setTimeout(function(){ ctrl.abort(); }, 30000);
+            var res   = await fetch(getApiUrl(mode) + '?action=getAllEmployees', { signal: ctrl.signal });
+            clearTimeout(timer);
+            var data  = await res.json();
+            if (data.status === "success" && data.employees) {
+                var store = {};
+                data.employees.forEach(function(e){ store[String(e.code).trim()] = e; });
+                employeeCacheStore[mode] = store;
+                cacheLoadedStore[mode]   = true;
+                applyRegisteredList(mode, data.registered || []);
+            }
+        } catch(e) {}
+        preloadPromises[mode] = null;
+    })();
+    return preloadPromises[mode];
+}
+
+function applyRegisteredList(mode, list) {
+    var set = {};
+    for (var i = 0; i < list.length; i++) {
+        var c = String(list[i]).trim();
+        if (c) set[c] = true;
+    }
+    var now = Date.now(), pend = pendingStore[mode];
+    Object.keys(pend).forEach(function(c){
+        if (set[c]) delete pend[c];                      // السيرفر أكّدها
+        else if (now - pend[c] < PENDING_TTL_MS) set[c] = true; // لسه جديدة، نحتفظ بيها
+        else delete pend[c];                             // عدّى وقت كفاية ومالقيناهاش
+    });
+    registeredStore[mode] = set;
+    if (mode === currentMode) updateCountFromLocal();
+}
+function markRegisteredLocal(mode, code) {
+    code = String(code).trim();
+    registeredStore[mode][code] = true;
+    pendingStore[mode][code] = Date.now();
+}
+function unmarkRegisteredLocal(mode, code) {
+    code = String(code).trim();
+    delete registeredStore[mode][code];
+    delete pendingStore[mode][code];
+}
+function updateCountFromLocal() {
+    document.getElementById('countDash').innerText = Object.keys(registeredStore[currentMode]).length;
+}
+
+async function fetchRegisteredRaw(mode) {
     try {
         var ctrl = new AbortController();
         var timer = setTimeout(function(){ ctrl.abort(); }, 15000);
-        var res   = await fetch(getApiUrl(mode) + '?action=getAllEmployees', { signal: ctrl.signal });
+        var res = await fetch(getApiUrl(mode) + '?action=getTodayCodes', { signal: ctrl.signal });
         clearTimeout(timer);
-        var data  = await res.json();
-        if (data.status === "success" && data.employees) {
-            data.employees.forEach(function(e){ employeeCacheStore[mode][String(e.code).trim()] = e; });
-            cacheLoadedStore[mode] = true;
-        }
+        var d = await res.json();
+        if (d.status === 'success' && d.registered) return d.registered;
     } catch(e) {}
+    return null;
+}
+async function refreshRegistered(mode) {
+    var list = await fetchRegisteredRaw(mode);
+    if (list) applyRegisteredList(mode, list);
 }
 
-// ===== MODE (normal / saturday / holiday) + VIEW (single / bulk) =====
+// يحمّل بيانات الوضع (Normal/Saturday/Holiday) لو لسه، ويحدّث العدّاد
+function ensureModeData(mode) {
+    if (cacheLoadedStore[mode]) { updateCountFromLocal(); return Promise.resolve(); }
+    document.getElementById('countDash').innerText = '...';
+    return preloadEmployees(mode).then(function(){
+        if (mode !== currentMode) return;
+        if (cacheLoadedStore[mode]) updateCountFromLocal();
+        else updateDashboardRemote(); // لو السكريبت لسه القديم (مفيش getAllEmployees)
+    });
+}
+
+setInterval(function(){
+    if (appUnlocked && !document.hidden && cacheLoadedStore[currentMode]) refreshRegistered(currentMode);
+}, 20000);
+setInterval(function(){
+    if (appUnlocked && !document.hidden && cacheLoadedStore[currentMode]) preloadEmployees(currentMode, true);
+}, 600000);
+
+// ===== MODE + VIEW =====
 var currentView = 'single';
 
 function switchMode(mode) {
@@ -338,10 +702,9 @@ function switchMode(mode) {
     document.getElementById('modeHolidayBtn').classList.toggle('active', mode==='holiday');
 
     applyModeTheme(mode);
-    updateDashboard();
-    if (!cacheLoadedStore[mode]) preloadEmployees();
+    ensureModeData(mode);
+    startHistoryPolling();
 
-    // إعادة عرض نفس نوع الشاشة (فردي/جماعي) اللي كان المستخدم فيه، لكن بالوضع الجديد
     switchView(currentView);
 }
 
@@ -379,45 +742,63 @@ function extractLiteralTime(raw) {
 }
 function isEligible(t){ var h=parseInt(t.split(':')[0])||0, m=parseInt(t.split(':')[1])||0; return !(h>11||(h===11&&m>0)); }
 
-async function fetchEmployee(code) {
+// allowRemote=false في الرفع الجماعي (بنثق في الكاش ومنسألش السيرفر عن كل كود)
+async function fetchEmployee(code, allowRemote) {
     var mode = currentMode;
-    if (cacheLoadedStore[mode] && employeeCacheStore[mode][code]) return { found:true, data:employeeCacheStore[mode][code] };
+    if (cacheLoadedStore[mode]) {
+        if (registeredStore[mode][code]) return { found:true, alreadyRegistered:true, data:null };
+        var cached = employeeCacheStore[mode][code];
+        if (cached) return { found:true, data:cached };
+        if (!allowRemote) return { found:false };
+    }
     try {
         var ctrl=new AbortController(), timer=setTimeout(function(){ ctrl.abort(); },15000);
         var res=await fetch(getApiUrl(mode)+'?code='+encodeURIComponent(code),{signal:ctrl.signal});
         clearTimeout(timer);
         var d=await res.json();
         if (d.status==="success"){
-            var emp={name:d.name, dept:d.dept, hours:d.hours, address:d.address||''};
+            var emp={name:d.name, dept:d.dept, hours:d.hours, address:d.address||'', jd:d.jd||''};
             employeeCacheStore[mode][code]=emp;
             return {found:true, data:emp};
         }
-        if (d.status==="already_registered") return {found:true,alreadyRegistered:true,data:null};
+        if (d.status==="already_registered") { registeredStore[mode][code]=true; return {found:true,alreadyRegistered:true,data:null}; }
     } catch(e) {}
     return {found:false};
 }
 
-// ===== BULK UPLOAD (وضع التسجيل العادي فقط) =====
+// ===== BULK UPLOAD =====
 var eligibleList=[], lastBulkResults=[];
 
 function handleDrop(e){ e.preventDefault(); document.getElementById('uploadZone').classList.remove('drag-over'); var f=e.dataTransfer.files[0]; if(f) processExcelFile(f); }
 function handleFileInput(i){ var f=i.files[0]; if(f) processExcelFile(f); }
 
 function processExcelFile(file) {
-    showBulkMsg("\u062C\u0627\u0631\u064A \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0645\u0644\u0641...","info");
+    showBulkMsg(t('bulkReadingFile'),"info");
     var reader = new FileReader();
     reader.onload = function(e) {
         try {
             var data=new Uint8Array(e.target.result), wb=XLSX.read(data,{type:'array'});
             var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
-            var codes=[], startRow=0;
+            var codes=[], seen={}, startRow=0;
             if (rows.length>0){ var fc=String(rows[0][0]).trim(); if(isNaN(fc)&&fc!=='') startRow=1; }
-            for (var i=startRow;i<rows.length;i++){ var r=String(rows[i][0]).trim(); if(r&&r!==''&&r!=='undefined') codes.push(r); }
-            if (!codes.length){ showBulkMsg("\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 \u0623\u0643\u0648\u0627\u062F \u0641\u064A \u0627\u0644\u0645\u0644\u0641","error"); return; }
+            for (var i=startRow;i<rows.length;i++){
+                var r=String(rows[i][0]).trim();
+                if(r&&r!==''&&r!=='undefined'&&!seen[r]){ seen[r]=true; codes.push(r); } // بنشيل الأكواد المتكررة جوه الملف
+            }
+            if (!codes.length){ showBulkMsg(t('bulkNoCodes'),"error"); return; }
             hideBulkMsg(); lookupBulkCodes(codes);
-        } catch(err){ showBulkMsg("\u062E\u0637\u0623 \u0641\u064A \u0642\u0631\u0627\u0621\u0629 \u0627\u0644\u0645\u0644\u0641","error"); }
+        } catch(err){ showBulkMsg(t('bulkFileErr'),"error"); }
     };
     reader.readAsArrayBuffer(file);
+}
+
+function buildBulkResult(code, r) {
+    if (!r.found)
+        return {code:code, status:'unknown', name:'-', dept:'-', jd:'-', address:'-', displayTime:'-', eligible:false};
+    if (r.alreadyRegistered)
+        return {code:code, status:'registered', name:'-', dept:'-', jd:'-', address:'-', displayTime:'-', eligible:false};
+    var tm=extractLiteralTime(r.data.hours), el=isEligible(tm);
+    return {code:code, status:el?'ok':'blocked', name:r.data.name, dept:r.data.dept, jd:r.data.jd||'', address:r.data.address||'', displayTime:tm, eligible:el};
 }
 
 async function lookupBulkCodes(codes) {
@@ -425,24 +806,37 @@ async function lookupBulkCodes(codes) {
     document.getElementById('bulkProgress').style.display='block';
     document.getElementById('bulkResultsWrap').style.display='none';
     hideBulkMsg();
-    var results=[], total=codes.length;
+    var mode = currentMode;
+    var total = codes.length;
     var fill=document.getElementById('progressFill'), prog=document.getElementById('progressText');
-    for (var i=0;i<total;i++) {
-        var code=codes[i];
-        prog.textContent='\u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B... '+(i+1)+' / '+total+'  ('+code+')';
-        fill.style.width=((i/total)*100)+'%';
-        var r=await fetchEmployee(code);
-        if (!r.found)
-            results.push({code:code, status:'unknown', name:'-', dept:'-', address:'-', displayTime:'-', eligible:false});
-        else if (r.alreadyRegistered)
-            results.push({code:code, status:'registered', name:'-', dept:'-', address:'-', displayTime:'-', eligible:false});
-        else {
-            var t=extractLiteralTime(r.data.hours), el=isEligible(t);
-            results.push({code:code, status:el?'ok':'blocked', name:r.data.name, dept:r.data.dept, address:r.data.address||'', displayTime:t, eligible:el});
+    prog.textContent = t('progressDefault');
+
+    // لو الكاش لسه بيتحمّل نستناه بدل ما نسأل السيرفر عن كل كود
+    if (!cacheLoadedStore[mode]) await preloadEmployees(mode);
+
+    var fast = cacheLoadedStore[mode];     // بحث محلي لحظي
+    var results = new Array(total);
+    var done = 0, next = 0;
+
+    async function worker() {
+        while (true) {
+            var i = next++;
+            if (i >= total) return;
+            var r = await fetchEmployee(codes[i], false);
+            results[i] = buildBulkResult(codes[i], r);
+            done++;
+            if (!fast || done % 100 === 0) {
+                prog.textContent = tpl('bulkSendingProgressTpl',{done:done,total:total});
+                fill.style.width = ((done/total)*100) + '%';
+            }
+            if (fast && done % 200 === 0) await sleep(0); // نسيب المتصفح يرسم
         }
-        await sleep(80);
     }
-    fill.style.width='100%'; prog.textContent='\u0627\u0643\u062A\u0645\u0644\u062A \u0627\u0644\u0645\u0639\u0627\u0644\u062C\u0629'; await sleep(400);
+    var workers = [], conc = fast ? 1 : 5; // لو الكاش مش شغال (سكريبت قديم) نبحث 5 أكواد في نفس الوقت
+    for (var k = 0; k < conc; k++) workers.push(worker());
+    await Promise.all(workers);
+
+    fill.style.width='100%';
     renderBulkResults(results);
 }
 
@@ -456,45 +850,68 @@ function renderBulkResults(results) {
     document.getElementById('statEligible').textContent=el.length;
     document.getElementById('statBlocked').textContent=bl.length;
     document.getElementById('statUnknown').textContent=un.length;
-    var tbody=document.getElementById('bulkTableBody'); tbody.innerHTML='';
+    var parts=[];
     results.forEach(function(r){
-        var tr=document.createElement('tr');
         var badge='';
-        if      (r.status==='ok')         badge='<span class="row-badge badge-ok">\u0645\u0633\u0645\u0648\u062D</span>';
-        else if (r.status==='blocked')    badge='<span class="row-badge badge-skip">\u062A\u062C\u0627\u0648\u0632 \u0627\u0644\u062D\u062F</span>';
-        else if (r.status==='registered') badge='<span class="row-badge badge-skip">\u0645\u0633\u062C\u0651\u0644</span>';
-        else                              badge='<span class="row-badge" style="background:rgba(255,165,0,0.1);color:#ffa500;border:1px solid #cc840066">\u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F</span>';
+        if      (r.status==='ok')         badge='<span class="row-badge badge-ok">'+t('badgeOk')+'</span>';
+        else if (r.status==='blocked')    badge='<span class="row-badge badge-skip">'+t('badgeBlocked')+'</span>';
+        else if (r.status==='registered') badge='<span class="row-badge badge-skip">'+t('badgeRegistered')+'</span>';
+        else                              badge='<span class="row-badge" style="background:rgba(255,165,0,0.1);color:#ffa500;border:1px solid #cc840066">'+t('badgeUnknown')+'</span>';
         var hourColor = r.status==='ok'?'color:#00ff88':r.status==='blocked'?'color:#ff4444':'color:#888';
-        tr.innerHTML='<td style="font-family:monospace;color:#ddd">'+r.code+'</td><td>'+r.name+'</td><td style="'+hourColor+'">'+r.displayTime+'</td><td>'+badge+'</td>';
-        tbody.appendChild(tr);
+        parts.push('<tr><td style="font-family:monospace;color:#ddd">'+escapeHtml(r.code)+'</td><td>'+escapeHtml(r.name)+(r.jd&&r.jd!=='-'?'<br><span style="color:#777;font-size:10px;">'+escapeHtml(r.jd)+'</span>':'')+'</td><td style="'+hourColor+'">'+r.displayTime+'</td><td>'+badge+'</td></tr>');
     });
+    document.getElementById('bulkTableBody').innerHTML = parts.join('');   // رسم الجدول مرة واحدة
     eligibleList=el;
     var sb=document.getElementById('submitAllBtn');
-    if (el.length>0){ sb.style.display='block'; document.getElementById('submitAllLabel').textContent='\u062A\u0633\u062C\u064A\u0644 '+el.length+' \u0645\u0648\u0638\u0641 \u0645\u0633\u0645\u0648\u062D \u0644\u0647\u0645'; }
-    else { sb.style.display='none'; showBulkMsg('\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0641\u0648\u0646 \u0645\u0633\u0645\u0648\u062D \u0644\u0647\u0645 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u0644\u0641','warn'); }
+    if (el.length>0){ sb.style.display='block'; document.getElementById('submitAllLabel').textContent=tpl('submitAllLabelTpl',{n:el.length}); }
+    else { sb.style.display='none'; showBulkMsg(t('bulkNoneEligible'),'warn'); }
     document.getElementById('downloadXlsBtn').style.display='block';
     document.getElementById('bulkResetBtn').style.display='block';
 }
 
+// الإرسال دفعات كبيرة (طلب واحد لكل 400 موظف) بدل طلب لكل موظف، وبعدها بنتأكد من السيرفر مين اتسجل فعلًا
 async function submitAllEligible() {
     if (!eligibleList.length) return;
+    var mode = currentMode;
     var btn=document.getElementById('submitAllBtn'), label=document.getElementById('submitAllLabel'), spinner=document.getElementById('submitAllSpinner');
     btn.disabled=true; spinner.style.display='inline-block';
-    var sent=0, failed=0;
-    for (var i=0; i<eligibleList.length; i++) {
-        var emp=eligibleList[i];
+
+    var list = eligibleList.slice();
+    var CHUNK = 400, postedOk = [], postedFail = [];
+    for (var s = 0; s < list.length; s += CHUNK) {
+        var chunk = list.slice(s, s + CHUNK);
+        label.textContent = tpl('bulkSendingProgressTpl',{done:Math.min(s + CHUNK, list.length), total:list.length});
+        var batch = chunk.map(function(emp){
+            return { code:emp.code, name:emp.name, dept:emp.dept, jd:emp.jd||'', hours:emp.displayTime, address:emp.address||'' };
+        });
         try {
-            await fetch(getApiUrl(currentMode),{method:'POST',mode:'no-cors',body:JSON.stringify({
-                code:emp.code, name:emp.name, dept:emp.dept, hours:emp.displayTime, address:emp.address||''
-            })});
-            sent++;
-        } catch(e){ failed++; }
-        label.textContent='\u062C\u0627\u0631\u064A \u0627\u0644\u0625\u0631\u0633\u0627\u0644... '+(sent+failed)+' / '+eligibleList.length;
-        await sleep(150);
+            await fetch(getApiUrl(mode),{method:'POST',mode:'no-cors',body:JSON.stringify({batch:batch})});
+            postedOk = postedOk.concat(chunk);
+        } catch(e) { postedFail = postedFail.concat(chunk); }
     }
-    spinner.style.display='none'; btn.disabled=false; updateDashboard();
-    if (failed===0){ btn.style.display='none'; showBulkMsg('\u062A\u0645 \u062A\u0633\u062C\u064A\u0644 '+sent+' \u0645\u0648\u0638\u0641 \u0628\u0646\u062C\u0627\u062D','success'); }
-    else { label.textContent='\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629'; showBulkMsg('\u062A\u0645: '+sent+'  |  \u0641\u0634\u0644: '+failed,'warn'); }
+
+    // تأكيد من السيرفر: مين اتسجل فعلًا؟
+    label.textContent = t('progressDefault');
+    var failed = postedFail.slice();
+    var serverList = await fetchRegisteredRaw(mode);
+    if (serverList) {
+        var onServer = {};
+        serverList.forEach(function(c){ onServer[String(c).trim()] = true; });
+        postedOk.forEach(function(emp){ if (!onServer[String(emp.code).trim()]) failed.push(emp); });
+        applyRegisteredList(mode, serverList);
+    } else {
+        postedOk.forEach(function(emp){ markRegisteredLocal(mode, emp.code); });
+        updateCountFromLocal();
+    }
+    var sent = list.length - failed.length;
+
+    spinner.style.display='none'; btn.disabled=false;
+    if (failed.length===0){ btn.style.display='none'; eligibleList=[]; showBulkMsg(tpl('bulkAllSentTpl',{n:sent}),'success'); }
+    else {
+        eligibleList = failed;   // نسيب اللي فشل عشان يتعاد إرساله
+        label.textContent = tpl('submitAllLabelTpl',{n:failed.length});
+        showBulkMsg(tpl('bulkPartialTpl',{sent:sent,failed:failed.length}),'warn');
+    }
 }
 
 // ===== EXCEL EXPORTS =====
@@ -515,43 +932,41 @@ function xlsHeader() {
 }
 
 function downloadBulkExcel() {
-    // ثغرة سابقة: كان بيتم تحميل كل الأسماء حتى اللي تجاوزوا الحد أو مش مسموح لهم بالتسجيل.
-    // التعديل: الشيت اللي بيتحمل بيحتوي فقط على الموظفين المسموح لهم بالتسجيل (eligible).
     var eligibleOnly = lastBulkResults.filter(function(r){ return r.status === 'ok'; });
-    if (!eligibleOnly.length) { showBulkMsg("\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0641\u0648\u0646 \u0645\u0633\u0645\u0648\u062D \u0644\u0647\u0645 \u0644\u062A\u062D\u0645\u064A\u0644\u0647\u0645","warn"); return; }
+    if (!eligibleOnly.length) { showBulkMsg(t('bulkNoneToDownload'),"warn"); return; }
     var d = new Date().toISOString().split('T')[0];
     var html = xlsHeader() + '<table>'
-        + '<tr><td colspan="4" class="title">PRINTING - OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
-        + '<tr><td colspan="2" class="meta">Date</td><td colspan="2" class="meta">'+d+'</td></tr>'
-        + '<tr><td colspan="4" style="border:none;height:6px;"></td></tr>'
-        + '<tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th></tr>';
+        + '<tr><td colspan="5" class="title">PRODUCTION - OVERTIME REPORT</td></tr>'
+        + '<tr><td colspan="2" class="meta">Date</td><td colspan="3" class="meta">'+d+'</td></tr>'
+        + '<tr><td colspan="5" style="border:none;height:6px;"></td></tr>'
+        + '<tr><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Job Description</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th></tr>';
     eligibleOnly.forEach(function(r){
-        html+='<tr><td>'+r.code+'</td><td>'+r.name+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+r.displayTime+'</td></tr>';
+        html+='<tr><td>'+r.code+'</td><td>'+r.name+'</td><td>'+(r.jd||'-')+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+r.displayTime+'</td></tr>';
     });
     html+='</table></body></html>';
-    triggerXls(html,'PRINTING_Overtime_BulkResult_'+d+'.xls');
+    triggerXls(html,'PRODUCTION_Overtime_BulkResult_'+d+'.xls');
 }
 
 async function downloadHistoryExcel() {
-    showMessage("\u062C\u0627\u0631\u064A \u0627\u0644\u062A\u062D\u0645\u064A\u0644...","info");
+    showMessage(t('downloadingHistory'),"info");
     try {
         var res=await fetch(getApiUrl(currentMode)+'?action=getFullTodayData'), data=await res.json();
         if (data.status==="success") {
             var d=new Date().toISOString().split('T')[0];
             var html=xlsHeader()+'<table>'
-                +'<tr><td colspan="7" class="title">PRINTING - DAILY OVERTIME REPORT ('+(MODE_LABELS[currentMode]||'')+')</td></tr>'
-                +'<tr><td colspan="3" class="meta">Date</td><td colspan="4" class="meta">'+d+'</td></tr>'
-                +'<tr><td colspan="3" class="meta">Total Registered</td><td colspan="4" class="meta num">'+data.list.length+'</td></tr>'
-                +'<tr><td colspan="7" style="border:none;height:6px;"></td></tr>'
-                +'<tr><th class="hdr">#</th><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Department</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th><th class="hdr">Reg. Time</th></tr>';
+                +'<tr><td colspan="8" class="title">PRODUCTION - DAILY OVERTIME REPORT</td></tr>'
+                +'<tr><td colspan="3" class="meta">Date</td><td colspan="5" class="meta">'+d+'</td></tr>'
+                +'<tr><td colspan="3" class="meta">Total Registered</td><td colspan="5" class="meta num">'+data.list.length+'</td></tr>'
+                +'<tr><td colspan="8" style="border:none;height:6px;"></td></tr>'
+                +'<tr><th class="hdr">#</th><th class="hdr">Employee Code</th><th class="hdr">Full Name</th><th class="hdr">Department</th><th class="hdr">Job Description</th><th class="hdr">Address</th><th class="hdr">Overtime Hours</th><th class="hdr">Reg. Time</th></tr>';
             data.list.forEach(function(r,i){
-                html+='<tr><td class="num">'+(i+1)+'</td><td>'+r.code+'</td><td>'+r.name+'</td><td>'+r.dept+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+extractLiteralTime(r.hours)+'</td><td>'+formatRegTime(r.time)+'</td></tr>';
+                html+='<tr><td class="num">'+(i+1)+'</td><td>'+r.code+'</td><td>'+r.name+'</td><td>'+r.dept+'</td><td>'+(r.jd||'-')+'</td><td>'+(r.address||'-')+'</td><td class="h-ok">'+extractLiteralTime(r.hours)+'</td><td>'+formatRegTime(r.time)+'</td></tr>';
             });
             html+='</table></body></html>';
-            triggerXls(html,'PRINTING_Overtime_'+d+'.xls');
+            triggerXls(html,'PRODUCTION_Overtime_'+d+'.xls');
             hideMessage();
         }
-    } catch(e){ showMessage("\u0641\u0634\u0644 \u0627\u0644\u062A\u062D\u0645\u064A\u0644","error"); }
+    } catch(e){ showMessage(t('downloadFailed'),"error"); }
 }
 
 function triggerXls(html, filename) {
@@ -573,32 +988,47 @@ function resetBulk() {
 // ===== SINGLE =====
 async function lookupEmployee() {
     var code=String(document.getElementById('codeInp').value).trim();
-    if (!code) return showMessage("\u064A\u0631\u062C\u0649 \u0625\u062F\u062E\u0627\u0644 \u0627\u0644\u0643\u0648\u062F","error");
-    if (cacheLoadedStore[currentMode]&&employeeCacheStore[currentMode][code]){ var e=employeeCacheStore[currentMode][code]; displayEmployee({status:"success",name:e.name,dept:e.dept,hours:e.hours,address:e.address||''}); return; }
-    showMessage("\u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B...","info");
+    if (!code) return showMessage(t('errEnterCode'),"error");
+    var mode = currentMode;
+
+    // لو الكاش لسه بيتحمّل نستناه (مرة واحدة بس في أول الاستخدام)
+    if (!cacheLoadedStore[mode] && preloadPromises[mode]) {
+        showMessage(t('searching'),"info");
+        await preloadPromises[mode];
+    }
+
+    // بحث محلي لحظي: متكرر؟ موجود؟
+    if (cacheLoadedStore[mode]) {
+        if (registeredStore[mode][code]) return showMessage(t('alreadyRegistered'),"error");
+        var e = employeeCacheStore[mode][code];
+        if (e) { displayEmployee({status:"success",name:e.name,dept:e.dept,jd:e.jd||'',hours:e.hours,address:e.address||''}); return; }
+    }
+
+    // مش موجود في الكاش (أو الكاش مش شغال): نسأل السيرفر مرة واحدة
+    showMessage(t('searching'),"info");
     try {
         var ctrl=new AbortController(), timer=setTimeout(function(){ ctrl.abort(); },15000);
-        var res=await fetch(getApiUrl(currentMode)+'?code='+code,{signal:ctrl.signal}); clearTimeout(timer);
+        var res=await fetch(getApiUrl(mode)+'?code='+encodeURIComponent(code),{signal:ctrl.signal}); clearTimeout(timer);
         var data=await res.json();
-        if (data.status==="already_registered") return showMessage("\u0627\u0644\u0645\u0648\u0638\u0641 \u0645\u0633\u062C\u0644 \u0628\u0627\u0644\u0641\u0639\u0644!","error");
-        if (data.status==="success"){ displayEmployee(data); employeeCacheStore[currentMode][code]={name:data.name,dept:data.dept,hours:data.hours,address:data.address||''}; }
-        else showMessage("\u0627\u0644\u0643\u0648\u062F \u063A\u064A\u0631 \u0645\u0648\u062C\u0648\u062F","error");
-    } catch(e){ showMessage(e.name==='AbortError'?"\u0627\u0646\u062A\u0647\u062A \u0627\u0644\u0645\u0647\u0644\u0629\u060C \u062D\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649":"\u062E\u0637\u0623 \u0641\u064A \u0627\u0644\u0627\u062A\u0635\u0627\u0644","error"); }
+        if (data.status==="already_registered") { registeredStore[mode][code]=true; return showMessage(t('alreadyRegistered'),"error"); }
+        if (data.status==="success"){ displayEmployee(data); employeeCacheStore[mode][code]={name:data.name,dept:data.dept,jd:data.jd||'',hours:data.hours,address:data.address||''}; }
+        else showMessage(t('codeNotFound'),"error");
+    } catch(err){ showMessage(err.name==='AbortError'?t('timeoutErr'):t('connErr'),"error"); }
 }
 
 function displayEmployee(data) {
     document.getElementById('nameInp').value    = data.name;
     document.getElementById('deptInp').value    = data.dept;
+    document.getElementById('jdInp').value      = data.jd || '';
     document.getElementById('addressInp').value = data.address || '';
-    var t=extractLiteralTime(data.hours), hInp=document.getElementById('hoursInp');
-    hInp.value=t; hInp.className='';
+    var tm=extractLiteralTime(data.hours), hInp=document.getElementById('hoursInp');
+    hInp.value=tm; hInp.className='';
 
     if (currentMode === 'normal') {
-        var h=parseInt(t.split(':')[0])||0, m=parseInt(t.split(':')[1])||0;
-        if (h>11||(h===11&&m>0)){ hInp.classList.add('danger-hours'); document.getElementById('submitBtn').style.display='none'; showMessage("\u0645\u0631\u0641\u0648\u0636: \u062A\u062E\u0637\u0649 \u0627\u0644\u062D\u062F \u0627\u0644\u0623\u0642\u0635\u0649 (11:00)","error"); }
+        var h=parseInt(tm.split(':')[0])||0, m=parseInt(tm.split(':')[1])||0;
+        if (h>11||(h===11&&m>0)){ hInp.classList.add('danger-hours'); document.getElementById('submitBtn').style.display='none'; showMessage(t('maxLimitErr'),"error"); }
         else { hInp.classList.add('safe-hours'); document.getElementById('submitBtn').style.display='block'; hideMessage(); }
     } else {
-        // Saturday / Holiday overtime: لا يوجد أي شرط أو حد أقصى للساعات - أي موظف يقدر يسجل
         hInp.classList.add('safe-hours');
         document.getElementById('submitBtn').style.display='block';
         hideMessage();
@@ -609,20 +1039,30 @@ function displayEmployee(data) {
     document.getElementById('backBtn').style.display='block';
 }
 
-async function submitData() {
+// التسجيل الفردي: بنظهر النجاح فورًا ونبعت للسيرفر في الخلفية (لو فشل بنرجّع الكود ونعرض خطأ)
+function submitData() {
+    var mode = currentMode;
     var payload={
         code:    document.getElementById('codeInp').value,
         name:    document.getElementById('nameInp').value,
         dept:    document.getElementById('deptInp').value,
+        jd:      document.getElementById('jdInp').value || '',
         address: document.getElementById('addressInp').value || '',
         hours:   document.getElementById('hoursInp').value
     };
-    try {
-        await fetch(getApiUrl(currentMode),{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
-        showMessage("\u062A\u0645 \u0627\u0644\u062A\u0633\u062C\u064A\u0644 \u0628\u0646\u062C\u0627\u062D!","success");
-        updateDashboard();
-        setTimeout(resetUI,1500);
-    } catch(e){ showMessage("\u0641\u0634\u0644 \u0627\u0644\u062D\u0641\u0638","error"); }
+    var code = String(payload.code).trim();
+    if (registeredStore[mode][code]) { showMessage(t('alreadyRegistered'),"error"); return; }
+
+    markRegisteredLocal(mode, code);
+    updateCountFromLocal();
+    showMessage(t('submitSuccess'),"success");
+    setTimeout(resetUI, 600);
+
+    fetch(getApiUrl(mode),{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}).catch(function(){
+        unmarkRegisteredLocal(mode, code);
+        if (mode === currentMode) updateCountFromLocal();
+        showMessage(t('submitFailed') + ' (' + code + ')',"error");
+    });
 }
 
 function resetUI(){
@@ -633,7 +1073,12 @@ function resetUI(){
     hideMessage();
 }
 
-async function updateDashboard() {
+// العدّاد: محلي لو الكاش شغال، وإلا بنسأل السيرفر (للسكريبت القديم)
+function updateDashboard() {
+    if (cacheLoadedStore[currentMode]) updateCountFromLocal();
+    else updateDashboardRemote();
+}
+async function updateDashboardRemote() {
     try {
         var ctrl=new AbortController();
         setTimeout(function(){ ctrl.abort(); },10000);
@@ -649,11 +1094,151 @@ function formatRegTime(raw) {
     var match=str.match(/^(\d{1,2}):(\d{2})/); if(match) return match[1].padStart(2,'0')+':'+match[2]; return str;
 }
 
+// ===== REASON MODAL + APPROVAL SEND =====
+function openReasonModal() {
+    document.getElementById('reasonInp').value = '';
+    document.getElementById('reasonErr').style.display = 'none';
+    document.getElementById('reasonServerErr').style.display = 'none';
+    document.getElementById('reasonModal').classList.add('open');
+    setTimeout(function(){ document.getElementById('reasonInp').focus(); }, 100);
+}
+function closeReasonModal() {
+    document.getElementById('reasonModal').classList.remove('open');
+}
+function handleReasonOverlayClick(e) {
+    if (e.target === document.getElementById('reasonModal')) closeReasonModal();
+}
+
+async function confirmSendApproval() {
+    var reason = document.getElementById('reasonInp').value.trim();
+    var errEl  = document.getElementById('reasonErr');
+    var srvEl  = document.getElementById('reasonServerErr');
+    srvEl.style.display = 'none';
+    if (!reason) { errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+
+    var sendBtn = document.getElementById('reasonSendBtn');
+    var orig = sendBtn.textContent;
+    sendBtn.disabled = true;
+    sendBtn.textContent = t('sendingBtn');
+
+    try {
+        var ctrl=new AbortController(), timer=setTimeout(function(){ ctrl.abort(); },40000);
+        var url = getApiUrl(currentMode) + '?action=sendApprovalBatch&reason=' + encodeURIComponent(reason);
+        var res = await fetch(url, { signal: ctrl.signal });
+        clearTimeout(timer);
+        var data = await res.json();
+
+        if (data.status === 'success') {
+            closeReasonModal();
+            showApprovalMsg(tpl('approvalSentOkTpl',{n:data.count}), 'success');
+            loadApprovalHistory();
+        } else if (data.status === 'empty') {
+            closeReasonModal();
+            showApprovalMsg(t('approvalEmpty'), 'info');
+        } else if (data.status === 'missing_reason') {
+            errEl.style.display = 'block';
+        } else {
+            // نعرض سبب الفشل الحقيقي جوه المودال (مثلاً: مفيش صلاحية إرسال إيميل)
+            srvEl.textContent = t('approvalError') + (data.message ? ' \u2014 ' + data.message : '');
+            srvEl.style.display = 'block';
+        }
+    } catch (e) {
+        srvEl.textContent = t('approvalConnErr');
+        srvEl.style.display = 'block';
+    } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = orig;
+    }
+}
+
+// ===== APPROVAL HISTORY (polling) =====
+var HISTORY_POLL_MS = 5000; // كل كام ملي ثانية نحدّث الـ History
+var historyPollInterval = null;
+var lastHistoryList = [];
+
+function startHistoryPolling() {
+    stopHistoryPolling();
+    loadApprovalHistory();
+    historyPollInterval = setInterval(loadApprovalHistory, HISTORY_POLL_MS);
+}
+function stopHistoryPolling() {
+    if (historyPollInterval) { clearInterval(historyPollInterval); historyPollInterval = null; }
+}
+document.addEventListener('visibilitychange', function(){
+    if (!appUnlocked) return;
+    if (document.hidden) stopHistoryPolling();
+    else {
+        startHistoryPolling();
+        if (cacheLoadedStore[currentMode]) refreshRegistered(currentMode);
+    }
+});
+
+async function loadApprovalHistory() {
+    try {
+        var res = await fetch(getApiUrl(currentMode) + '?action=getApprovalHistory');
+        var data = await res.json();
+        if (data.status === 'success') {
+            lastHistoryList = data.list || [];
+            renderApprovalHistory(lastHistoryList);
+        }
+    } catch (e) {}
+}
+
+function statusKey(raw) {
+    var s = String(raw || '').trim().toLowerCase();
+    if (!s) return 'none';
+    if (s.indexOf('approved') !== -1) return 'approved';
+    if (s.indexOf('rejected') !== -1) return 'rejected';
+    return 'pending';
+}
+function statusBadge(raw) {
+    var key = statusKey(raw);
+    var label = key === 'approved' ? t('statusApproved') : key === 'rejected' ? t('statusRejected') : key === 'pending' ? t('statusPending') : t('statusNotYet');
+    return '<span class="status-badge ' + key + '"><span class="dot"></span>' + label + '</span>';
+}
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str === undefined || str === null ? '' : String(str);
+    return div.innerHTML;
+}
+
+function renderApprovalHistory(list) {
+    var wrap = document.getElementById('historyList');
+    if (!list || !list.length) {
+        wrap.innerHTML = '<div class="history-empty">' + t('historyEmpty') + '</div>';
+        return;
+    }
+    wrap.innerHTML = '';
+    list.forEach(function(item){
+        var el = document.createElement('div');
+        el.className = 'history-item';
+        el.innerHTML =
+            '<div class="history-row1"><span class="history-date">' + escapeHtml(item.createdAt ? String(item.createdAt).slice(0,16) : item.date) + '</span>' +
+            '<span class="history-count">' + escapeHtml(item.count) + '</span></div>' +
+            (item.reason ? '<div class="history-reason">' + escapeHtml(item.reason) + '</div>' : '') +
+            '<div class="history-statuses">' +
+              '<span style="color:#666;font-size:10px;">' + t('historyManagerLabel') + ':</span>' + statusBadge(item.deptStatus) +
+              '<span style="color:#666;font-size:10px;">' + t('historyFactoryLabel') + ':</span>' + statusBadge(item.factoryStatus) +
+            '</div>';
+        wrap.appendChild(el);
+    });
+}
+
 function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
-function showMessage(t,c){ var m=document.getElementById('msg'); m.innerText=t; m.className=c; m.style.display='block'; }
+function showMessage(txt,c){ var m=document.getElementById('msg'); m.innerText=txt; m.className=c; m.style.display='block'; }
 function hideMessage(){ document.getElementById('msg').style.display='none'; }
-function showBulkMsg(t,c){ var m=document.getElementById('bulkMsg'); m.innerText=t; m.className=c; m.style.display='block'; }
+function showBulkMsg(txt,c){ var m=document.getElementById('bulkMsg'); m.innerText=txt; m.className=c; m.style.display='block'; }
 function hideBulkMsg(){ document.getElementById('bulkMsg').style.display='none'; }
+function showApprovalMsg(txt,c){ var m=document.getElementById('approvalMsg'); m.innerText=txt; m.className=c; m.style.display='block'; setTimeout(function(){ m.style.display='none'; }, 4500); }
+
+// ===== INIT =====
+window.onload = function() {
+    var saved = 'en';
+    try { saved = localStorage.getItem('ot_lang') || 'en'; } catch(e) {}
+    setLang(saved, true);
+    checkTimeGate();
+};
 </script>
 </body>
 </html>
