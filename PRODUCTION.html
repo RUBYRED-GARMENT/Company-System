@@ -521,8 +521,8 @@ function setLang(lang, skipFade) {
 }
 
 // ===== TIME GATE =====
-var OPEN_H  = 0;
-var CLOSE_H = 23;
+var OPEN_H  = 11;
+var CLOSE_H = 15;
 var appUnlocked = false;
 
 function getNowSec() {
@@ -589,9 +589,9 @@ function doLogin() {
 }
 
 // ===== API =====
-var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbyQz8TAhdqnYaZ_d2szEDYkgP779WzgG66iDeMv7kj9Mhu-xsXp9t6VtMW9jM55lrma/exec";
-var API_URL_SATURDAY = "https://script.google.com/macros/s/AKfycbx0__xBWjP7qr7p7J8M5WBm7dQzmFK4dem7sjXPXwDQoeJymxFy_NgofooHYORf0fP5/exec";
-var API_URL_HOLIDAY  = "https://script.google.com/macros/s/AKfycbwOaioAzq88nL__OfDaGtaIV5mtUUdwaMOTs9xZ6Q05YbfHku9HLiHV4PZuqgHKwfjy/exec";
+var API_URL_NORMAL   = "https://script.google.com/macros/s/AKfycbwt36EZEA2vrkDMYkQHb-N_bBGWdTcK6avxD3dXhz-VBjADIOw4Ma2SIFywsMWMQFbf/exec";
+var API_URL_SATURDAY = "https://script.google.com/macros/s/AKfycby6jImzAvXnbqS6xSD3f71Usv9RohxIxU8TQPvhh7s4369BSOGXIAwVZ79TSqnBuyQO/exec";
+var API_URL_HOLIDAY  = "https://script.google.com/macros/s/AKfycbx0zBoWUPOu5gWhpuxFt5cwg8jPM8WDyx0v4E-8sn6A9Z0Ja9rFQV657niuCxTIPibp/exec";
 
 var currentMode = 'normal';
 var MODE_COLORS = { normal: '#2e7d32', saturday: '#1565c0', holiday: '#6a1b9a' };
