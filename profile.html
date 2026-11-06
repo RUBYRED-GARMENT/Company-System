@@ -355,7 +355,7 @@ footer{text-align:center;padding:20px;color:var(--mu);font-size:.72rem;border-to
 </div>
 
 <script>
-const URL_ = "https://script.google.com/macros/s/AKfycbyRvQik6m-6KwtLcXhC0Av1fXYr1p6NIPPg1cHMFXMRsarPsXLAFnEyomfghyRy9D2ysg/exec";
+const URL_ = "https://script.google.com/macros/s/AKfycbxm6VIqg_CdDIjYnfJZHwmYnp1B4Rp7fqFXpgJNI91ZWLjdCi5snQ1osN1M6BOWxSbe9Q/exec";
 const POLL = 30000;
 let code=null, emp={}, lang="en", poll=null, busy=false, histData=[], filter="all", seen={};
 
@@ -481,7 +481,11 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeLeave();closeP
   if(e.key==="Enter"&&!code&&document.activeElement.tagName==="INPUT"){$("fLogin").style.display!=="none"?doLogin():doReg()}});
 
 /* permissions */
-function permLbl(pt){if(pt==="Exit")return"🚪 "+t("pmExitL");if(pt==="Entry")return"🏭 "+t("pmEntryL");return"🖐 "+t("pmMissingL")+" ("+(/Entry/.test(pt)?t("pmEntryL"):t("pmExitL"))+")"}
+function permLbl(pt){pt=String(pt||"").trim();
+  if(/^missing/i.test(pt))return"🖐 "+t("pmMissingL")+(/entry/i.test(pt)?" ("+t("pmEntryL")+")":/exit/i.test(pt)?" ("+t("pmExitL")+")":"");
+  if(/^exit/i.test(pt))return"🚪 "+t("pmExitL");
+  if(/^(entry|enter)/i.test(pt))return"🏭 "+t("pmEntryL");
+  return"📝 "+(pt?esc(pt):"—")}
 let pSig="";
 function renderPStats(){const c={all:permData.length,approved:0,pending:0,rejected:0};permData.forEach(h=>c[overall(h.status)]++);
   const sig=JSON.stringify(c)+lang;if(sig===pSig)return;pSig=sig;
