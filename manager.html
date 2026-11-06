@@ -54,6 +54,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .yes{background:var(--ok)}.no{background:var(--p)}
 .sk{height:150px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);position:relative;overflow:hidden}.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(212,175,106,.12) 50%,transparent 70%);transform:translateX(-100%);animation:skm 1.3s infinite}@keyframes skm{to{transform:translateX(100%)}}
 .fl button b{background:var(--gold);color:#222;border-radius:99px;padding:0 7px;font-size:.68rem;margin-inline-start:6px}
+.tag{align-self:flex-start;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold);border:1px solid var(--bd);border-radius:99px;padding:4px 14px;font-size:.78rem;font-weight:700}
 .empty{grid-column:1/-1;text-align:center;color:var(--mu);padding:40px}
 #toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;width:92%;max-width:380px;pointer-events:none}
 .toast{background:var(--s1);border:1px solid var(--bd);border-inline-start:3px solid var(--ok);border-radius:10px;padding:12px 16px;font-size:.85rem;animation:up .4s var(--ease),out .4s 3.4s forwards}.toast.e{border-inline-start-color:var(--p)}
@@ -97,7 +98,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-hei
 </div>
 
 <script>
-const URL_="https://script.google.com/macros/s/AKfycbyRvQik6m-6KwtLcXhC0Av1fXYr1p6NIPPg1cHMFXMRsarPsXLAFnEyomfghyRy9D2ysg/exec";
+const URL_="https://script.google.com/macros/s/AKfycbxm6VIqg_CdDIjYnfJZHwmYnp1B4Rp7fqFXpgJNI91ZWLjdCi5snQ1osN1M6BOWxSbe9Q/exec";
 let ty="leave",mc=null,mp=null,me={},data=[],filter="todo",lang="en",poll=null,lastTodo=-1;
 const T={en:{pEntry:"Entry",pExit:"Exit",pMissing:"Missing Stamp",tLeave:"Leaves",tPerm:"Permissions",pdate:"Date · Time",sub:"MANAGER PORTAL",back:"← Employee Portal",logout:"Sign Out",tl:"Sign In",tr:"Register",lt:"Manager sign in",ls:"Use your manager code and password",rt:"Manager registration",rs:"Your code must be listed as a manager",code:"Manager Code",pass:"Password",pass2:"Confirm Password",search:"🔍 Search employee, department, type...",fill:"Please fill in all fields",mism:"Passwords do not match",short:"Password must be at least 6 characters",conn:"Connection error, try again",regOk:"Registered! You can sign in now",hi:"Welcome,",hrN:"HR – final approval",mgN:"Department manager",todo:"Needs action",approved:"Approved",rejected:"Rejected",all:"All",total:"Total",empty:"No requests here",type:"Type",from:"From",to:"To",days:"days",dept:"Department",ok:"✔ Approve",no:"✘ Reject",cok:"Approve this request?",cno:"Reject this request?",done:"Decision saved",newReq:"🔔 New request needs your action",stPend:"Waiting for manager",stMA:"Approved by manager",stMR:"Rejected by manager",stHA:"Approved by HR",stHR:"Rejected by HR"},
 ar:{pEntry:"دخول",pExit:"خروج",pMissing:"بيان عذر",tLeave:"الإجازات",tPerm:"الأذونات",pdate:"التاريخ · الوقت",sub:"بوابة المديرين",back:"← بوابة الموظفين",logout:"تسجيل الخروج",tl:"دخول",tr:"تسجيل",lt:"دخول المدير",ls:"استخدم كود المدير وكلمة المرور",rt:"تسجيل مدير",rs:"يجب أن يكون كودك مسجلاً كمدير",code:"كود المدير",pass:"كلمة المرور",pass2:"تأكيد كلمة المرور",search:"🔍 ابحث بالموظف أو القسم أو النوع...",fill:"يرجى ملء جميع الحقول",mism:"كلمتا المرور غير متطابقتين",short:"كلمة المرور 6 أحرف على الأقل",conn:"خطأ في الاتصال، حاول مجدداً",regOk:"تم التسجيل! يمكنك الدخول الآن",hi:"مرحباً،",hrN:"الموارد البشرية – الموافقة النهائية",mgN:"مدير القسم",todo:"بانتظار قرارك",approved:"تمت الموافقة",rejected:"مرفوضة",all:"الكل",total:"الإجمالي",empty:"لا توجد طلبات",type:"النوع",from:"من",to:"إلى",days:"يوم",dept:"القسم",ok:"✔ موافقة",no:"✘ رفض",cok:"الموافقة على هذا الطلب؟",cno:"رفض هذا الطلب؟",done:"تم حفظ القرار",newReq:"🔔 طلب جديد بانتظار قرارك",stPend:"بانتظار المدير",stMA:"وافق المدير",stMR:"رفض المدير",stHA:"وافقت الموارد البشرية",stHR:"رفضت الموارد البشرية"},tr:{pEntry:"Giriş",pExit:"Çıkış",pMissing:"Eksik Basım Mazereti",tLeave:"İzinler",tPerm:"Giriş/Çıkış",pdate:"Tarih · Saat",sub:"YÖNETİCİ PORTALI",back:"← Çalışan Portalı",logout:"Çıkış Yap",tl:"Giriş Yap",tr:"Kayıt",lt:"Yönetici girişi",ls:"Yönetici kodunuz ve şifrenizi kullanın",rt:"Yönetici kaydı",rs:"Kodunuz yönetici olarak tanımlı olmalı",code:"Yönetici Kodu",pass:"Şifre",pass2:"Şifre Tekrar",search:"🔍 Çalışan, bölüm, tür ara...",fill:"Lütfen tüm alanları doldurun",mism:"Şifreler eşleşmiyor",short:"Şifre en az 6 karakter olmalı",conn:"Bağlantı hatası, tekrar deneyin",regOk:"Kayıt tamam! Giriş yapabilirsiniz",hi:"Hoş geldiniz,",hrN:"İK – nihai onay",mgN:"Bölüm yöneticisi",todo:"İşlem bekleyen",approved:"Onaylandı",rejected:"Reddedildi",all:"Tümü",total:"Toplam",empty:"Talep yok",type:"Tür",from:"Başlangıç",to:"Bitiş",days:"gün",dept:"Bölüm",ok:"✔ Onayla",no:"✘ Reddet",cok:"Bu talep onaylansın mı?",cno:"Bu talep reddedilsin mi?",done:"Karar kaydedildi",newReq:"🔔 Kararınızı bekleyen yeni talep",stPend:"Yönetici bekleniyor",stMA:"Yönetici onayladı",stMR:"Yönetici reddetti",stHA:"İK onayladı",stHR:"İK reddetti"}};
@@ -134,7 +135,11 @@ function loadAll(){load(ty);load(ty==="leave"?"perm":"leave")}
 function setTy(k){if(k===ty)return;ty=k;filter="todo";data=cache[k]||[];paint();
   if(!cache[k])$("list").innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div>';
   load(k)}
-const typeTxt=s=>s==="Entry"?t("pEntry"):s==="Exit"?t("pExit"):/^Missing Stamp/.test(s||"")?t("pMissing")+" ("+(/Entry/.test(s)?t("pEntry"):t("pExit"))+")":s;
+const typeTxt=s=>{s=String(s||"").trim();
+  if(/^missing/i.test(s))return"🖐 "+t("pMissing")+(/entry/i.test(s)?" ("+t("pEntry")+")":/exit/i.test(s)?" ("+t("pExit")+")":"");
+  if(/^exit/i.test(s))return"🚪 "+t("pExit");
+  if(/^(entry|enter)/i.test(s))return"🏭 "+t("pEntry");
+  return s||"—"};
 const kind=s=>/approved/i.test(s)?"a":/rejected/i.test(s)?"r":"p";
 const stTxt=s=>({"Pending":"stPend","Approved by Manager":"stMA","Rejected by Manager":"stMR","Approved by HR":"stHA","Rejected by HR":"stHR"}[s]?t({"Pending":"stPend","Approved by Manager":"stMA","Rejected by Manager":"stMR","Approved by HR":"stHA","Rejected by HR":"stHR"}[s]):s);
 const dc=(s,e)=>s&&e&&e>=s?Math.round((new Date(e)-new Date(s))/864e5)+1:"";
@@ -149,6 +154,7 @@ function render(){document.querySelectorAll("#fl2 button").forEach((b,i)=>b.clas
   const l=data.filter(d=>(filter==="all"||(filter==="todo"?d.actionable:filter==="approved"?kind(d.status)==="a":kind(d.status)==="r"))&&(d.name+d.dept+d.type+d.code+d.job).toLowerCase().includes(q)).reverse();
   $("list").innerHTML=l.length?l.map((d,i)=>`<div class="rq ${kind(d.status)}" style="animation-delay:${Math.min(i,10)*40}ms">
   <div class="who"><div class="av">${esc(String(d.name||"?").trim().charAt(0))}</div><div><b>${esc(d.name)}</b><small>${esc(d.code)} · ${esc(d.job)}</small></div></div>
+  ${d.time!==undefined?`<span class="tag">${esc(typeTxt(d.type))}</span>`:""}
   <div class="row"><span>${t("dept")}</span><span>${esc(d.dept)}</span></div>
   <div class="row"><span>${t("type")}</span><span>${esc(typeTxt(d.type))}</span></div>
   ${d.time!==undefined?`<div class="row"><span>${t("pdate")}</span><span>${esc(d.start)} · ${esc(d.time)}</span></div>`:`<div class="row"><span>${t("from")} → ${t("to")}</span><span>${esc(d.start)} → ${esc(d.end)} ${dc(d.start,d.end)?`(${dc(d.start,d.end)} ${t("days")})`:""}</span></div>`}
